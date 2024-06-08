@@ -1,32 +1,38 @@
 'use server'
 
-import { toast } from '@/components/ui/use-toast';
-import { allCategories } from '@/lib/currentData';
-import { pool } from '@/lib/db'
 import { storage } from '@/lib/firebase/firebase';
-import { Thing } from '@/lib/interfaces';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { redirect } from 'next/navigation'
 import { v4 as uuidv4 } from 'uuid';
+import prisma from '@/lib/prisma/db'
 
 export async function createNewThing({ userId }: { userId: string }) {
-    const data = await pool.query('SELECT * FROM "Thing" WHERE userid = $1', [userId])
+    const data = await prisma.thing.findFirst({ where: { userid: userId } })
     const newId = uuidv4();
 
-    if (data.rows[0] === undefined) {
-        const data = await pool.query('INSERT INTO "Thing" (id, userid) VALUES ($1, $2) RETURNING *', [newId, userId])
+    if (data === null) {
+        const data = await prisma.thing.create({ data: { id: newId, userid: userId } })
 
-        return redirect(`/create/${data.rows[0].id}/structure`)
-    } else if (!data.rows[0].addedCategory && !data.rows[0].addedDescription && !data.rows[0].addedLocation) {
-        return redirect(`/create/${data.rows[0].id}/structure`)
-    } else if (data.rows[0].addedCategory && !data.rows[0].addedDescription) {
-        return redirect(`/create/${data.rows[0].id}/description`)
+        return redirect(`/create/${data.id}/structure`)
+    } else if (!data.addedcategory && !data.addeddescription && !data.addedlocation) {
+        return redirect(`/create/${data.id}/structure`)
+    } else if (data.addedcategory && !data.addeddescription) {
+        return redirect(`/create/${data.id}/description`)
     }
 }
 
 export async function createNewCategory(formData: FormData) {
     const categoryName = formData.get('categoryName')
-    await pool.query('INSERT INTO "Categories" (name) VALUES ($1)', [categoryName])
+    await prisma.thing.update(
+        {
+            where: {
+                id: formData.get('thingId') as string
+            },
+            data: {
+                category: categoryName as string
+            }
+        }
+    )
 }
 
 export async function createCategoryPage(formData: FormData) {
@@ -34,16 +40,27 @@ export async function createCategoryPage(formData: FormData) {
     const categoryName = formData.get('categoryName') as string
 
     try {
-        const data = await pool.query('SELECT category FROM "Thing" WHERE id = $1', [thingId]);
-
-        if (data.rows.length === 0) return { success: false, error: "Thing not found" };
-
-        if (data.rows[0].category !== null) return { success: false, error: "Category already added", categoryName: data.rows[0].category };
-
-        await pool.query(
-            'UPDATE "Thing" SET category = $2, addedcategory = $3 WHERE id = $1 RETURNING *',
-            [thingId, categoryName, true]
+        const data = await prisma.thing.findUnique(
+            {
+                where:
+                    { id: thingId }
+            }
         );
+        if (!data) return { success: false, error: "Thing not found" };
+
+        if (data.category === categoryName) return { success: false, error: "Category already added", categoryName: data.category };
+
+        await prisma.thing.update(
+            {
+                where: {
+                    id: thingId
+                },
+                data: {
+                    category: categoryName,
+                    addedcategory: true
+                }
+            }
+        )
 
         return redirect(`/create/${thingId}/description`);
     } catch (error) {
@@ -66,11 +83,12 @@ export async function createDescription(formData: FormData) {
     }
 
     try {
-        const currentData = await pool.query('SELECT name, description, photothing FROM "Thing" WHERE id = $1', [thingId]);
+        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
 
-        const currentName = currentData.rows[0]?.name;
-        const currentDescription = currentData.rows[0]?.description;
-        const currentPhotoURL = currentData.rows[0]?.photothing;
+            
+        const currentName = currentData?.name;
+        const currentDescription = currentData?.description;
+        const currentPhotoURL = currentData?.photothing;
 
         if (currentName === name && currentDescription === description && currentPhotoURL) {
             return { success: true, text: "Nothing changed" };
@@ -85,11 +103,18 @@ export async function createDescription(formData: FormData) {
             await uploadBytes(mountainsRef, photoThing);
             photoURL = await getDownloadURL(mountainsRef);
         }
-    
-        await pool.query(
-            'UPDATE "Thing" SET name = $2, description = $3, photothing = $4, addeddescription = $5 WHERE id = $1 RETURNING *',
-            [thingId, name, description, photoURL, true]
-        );
+
+        await prisma.thing.update({
+            where: {
+                id: thingId
+            },
+            data: {
+                name: name,
+                description: description,
+                photothing: photoURL,
+                addeddescription: true
+            }
+        })
 
         return { success: true, redirect: true };
     } catch (error) {
