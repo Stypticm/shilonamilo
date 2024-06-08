@@ -27,7 +27,7 @@ const CreateCategory = ({ thingId, onCategoryCreated }: { thingId: string, onCat
                 <input
                     type="text"
                     name="categoryName"
-                    placeholder="Category Name"
+                    placeholder="Create a new category"
                     value={categoryName as string}
                     className='w-full border border-slate-500 rounded-md p-2'
                     onChange={(e) => setCategoryName(e.target.value)}
