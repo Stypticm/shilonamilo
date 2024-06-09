@@ -35,7 +35,7 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
                 title: 'Error',
                 variant: 'destructive',
             });
-        } else if (result?.text) {
+        } else if (result?.text === 'Nothing changed') {
             router.push(`/create/${params.id}/ineed`)
         } else if (result?.redirect) {
             router.push(`/create/${params.id}/ineed`)

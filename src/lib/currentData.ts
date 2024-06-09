@@ -32,3 +32,16 @@ export const choosedDescription = async (id: string) => {
     })
     return data
 }
+
+export const choosedIneed = async (id: string) => {
+    const data = await prisma.thing.findUnique({
+        where: {
+            id
+        },
+        select: {
+            youneed: true,
+            photoyouneed: true
+        }
+    })
+    return data
+}

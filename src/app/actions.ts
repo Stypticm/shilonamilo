@@ -85,40 +85,48 @@ export async function createDescription(formData: FormData) {
     try {
         const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
 
-            
         const currentName = currentData?.name;
         const currentDescription = currentData?.description;
         const currentPhotoURL = currentData?.photothing;
 
         if (currentName === name && currentDescription === description && currentPhotoURL) {
             return { success: true, text: "Nothing changed" };
-        } else if (currentName && currentDescription && currentPhotoURL) {
-            return { success: true, text: "All fields already filled" };
-        }
+        } else if (currentName !== name || currentDescription !== description || currentPhotoURL) {
+            let photoURL = currentPhotoURL;
 
-        let photoURL = currentPhotoURL;
-
-        if (photoThing && !currentPhotoURL) {
-            const mountainsRef = ref(storage, `${thingId}/${photoThing.name}`);
-            await uploadBytes(mountainsRef, photoThing);
-            photoURL = await getDownloadURL(mountainsRef);
-        }
-
-        await prisma.thing.update({
-            where: {
-                id: thingId
-            },
-            data: {
-                name: name,
-                description: description,
-                photothing: photoURL,
-                addeddescription: true
+            if (photoThing && !currentPhotoURL) {
+                const mountainsRef = ref(storage, `${thingId}/${photoThing.name}`);
+                await uploadBytes(mountainsRef, photoThing);
+                photoURL = await getDownloadURL(mountainsRef);
             }
-        })
 
-        return { success: true, redirect: true };
+            await prisma.thing.update({
+                where: {
+                    id: thingId
+                },
+                data: {
+                    name: name,
+                    description: description,
+                    photothing: photoURL,
+                    addeddescription: true
+                }
+            })
+            return { success: true, redirect: true };
+        }
     } catch (error) {
         console.log(error)
         return { error: "Error uploading photo" };
     }
+}
+
+export async function createWhatYouNeed(formData: FormData) { 
+    const thingId = formData.get('thingId') as string;
+    const name = formData.get('name') as string;
+    const photoYouNeed = formData.get('photoYouNeed') as File;
+
+    if (!name) {
+        return { error: "Name field must be filled" };
+    }
+
+    console.log(name, photoYouNeed)
 }
