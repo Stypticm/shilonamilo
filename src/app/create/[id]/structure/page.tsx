@@ -13,8 +13,8 @@ import React, { useEffect } from 'react'
 const StructureRoute = ({ params }: { params: { id: string } }) => {
 
     const router = useRouter()
-    const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>('')
-    const [categories, setCategories] = React.useState<{ id: string, name: string }[]>([])
+    const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null)
+    const [categories, setCategories] = React.useState<{ id: number, name: string}[]>([])
 
     const fetchCategories = async () => {
         const data = await allCategories()
@@ -23,7 +23,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
     const currentCategoryName = async () => {
         const data = await choosedCategory(params.id)
-        setSelectedCategory(data)
+        setSelectedCategory(data || null)
     }
 
     useEffect(() => {
@@ -67,16 +67,16 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
             <form action={handleChooseCategory}>
                 <input type="hidden" name="thingId" value={params.id} />
-                <input type="hidden" name="categoryName" value={selectedCategory} />
+                <input type="hidden" name="categoryName" value={selectedCategory as string} />
 
                 <div className='w-3/5 mx-auto mt-2'>
-                    <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+                    <Select onValueChange={setSelectedCategory} value={selectedCategory as string}>
                         <SelectTrigger>
                             <SelectValue placeholder='Choose a category' />
                         </SelectTrigger>
                         <SelectContent>
                             {
-                                categories.map((category: { id: string, name: string }) => (
+                                categories.map((category: { id: number, name: string }) => (
                                     <SelectItem key={category.id} value={category.name}>
                                         {[category.name.split("")[0].toUpperCase(), category.name.slice(1)].join("")}
                                     </SelectItem>

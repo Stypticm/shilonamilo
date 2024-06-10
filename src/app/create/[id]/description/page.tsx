@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 import { choosedDescription } from '@/lib/currentData'
-import { Router } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
@@ -36,7 +35,7 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
                 title: 'Error',
                 variant: 'destructive',
             });
-        } else if (result?.text) {
+        } else if (result?.text === 'Nothing changed') {
             router.push(`/create/${params.id}/ineed`)
         } else if (result?.redirect) {
             router.push(`/create/${params.id}/ineed`)
@@ -45,9 +44,9 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
 
     const fetchFilledFields = async () => {
         const data = await choosedDescription(params.id)
-        setName(data.name || '')
-        setDescription(data.description || '')
-        setPhotoThingURL(data.photothing || null)
+        setName(data?.name || '')
+        setDescription(data?.description || '')
+        setPhotoThingURL(data?.photothing || null)
     }
 
     useEffect(() => {

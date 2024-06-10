@@ -1,18 +1,47 @@
 'use server'
 
-import { pool } from './db'
+import prisma from './prisma/db'
 
 export const allCategories = async () => {
-    const data = await pool.query('SELECT * FROM "Categories"')
-    return data.rows
+    const data = await prisma.categories.findMany()
+    return data
 }
 
 export const choosedCategory = async (id: string) => {
-    const data = await pool.query('SELECT category FROM "Thing" WHERE id = $1', [id]);
-    return data.rows[0].category
+    const data = await prisma.thing.findUnique({
+        where: {
+            id
+        },
+        select: {
+            category: true
+        }
+    })
+    return data?.category
 }
 
 export const choosedDescription = async (id: string) => {
-    const data = await pool.query('SELECT photothing, name, description FROM "Thing" WHERE id = $1', [id]);
-    return data.rows[0]
+    const data = await prisma.thing.findUnique({
+        where: {
+            id
+        },
+        select: {
+            name: true,
+            description: true,
+            photothing: true
+        }
+    })
+    return data
+}
+
+export const choosedIneed = async (id: string) => {
+    const data = await prisma.thing.findUnique({
+        where: {
+            id
+        },
+        select: {
+            youneed: true,
+            photoyouneed: true
+        }
+    })
+    return data
 }
