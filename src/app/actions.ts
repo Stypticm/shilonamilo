@@ -14,10 +14,14 @@ export async function createNewThing({ userId }: { userId: string }) {
         const data = await prisma.thing.create({ data: { id: newId, userid: userId } })
 
         return redirect(`/create/${data.id}/structure`)
-    } else if (!data.addedcategory && !data.addeddescription && !data.addedlocation) {
+    } else if (!data.addedcategory && !data.addeddescription && !data.addedyouneed && !data.addedlocation) {
         return redirect(`/create/${data.id}/structure`)
-    } else if (data.addedcategory && !data.addeddescription) {
+    } else if (data.addedcategory && !data.addeddescription && !data.addedyouneed && !data.addedlocation) {
         return redirect(`/create/${data.id}/description`)
+    } else if (data.addedcategory && data.addeddescription && !data.addedyouneed && !data.addedlocation) {
+        return redirect(`/create/${data.id}/ineed`)
+    } else if (data.addedcategory && data.addeddescription && data.addedyouneed && !data.addedlocation) {
+        return redirect(`/create/${data.id}/location`)
     }
 }
 
@@ -128,5 +132,37 @@ export async function createWhatYouNeed(formData: FormData) {
         return { error: "Name field must be filled" };
     }
 
-    console.log(name, photoYouNeed)
+    try {
+        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
+
+        const currentName = currentData?.youneed;
+        const currentPhotoYouNeed = currentData?.photoyouneed;
+
+        if (currentName === name && currentPhotoYouNeed) {
+            return { success: true, text: "Nothing changed" };
+        } else if (currentName !== name || currentPhotoYouNeed) {
+            let photoURL = currentPhotoYouNeed;
+
+            if (photoYouNeed && !currentPhotoYouNeed) {
+                const mountainsRef = ref(storage, `${thingId}/${photoYouNeed.name}`);
+                await uploadBytes(mountainsRef, photoYouNeed);
+                photoURL = await getDownloadURL(mountainsRef);
+            }
+
+            await prisma.thing.update({
+                where: {
+                    id: thingId
+                },
+                data: {
+                    youneed: name,
+                    photoyouneed: photoURL,
+                    addedyouneed: true
+                }
+            })
+            return { success: true, redirect: true };
+        }
+    } catch (error) {
+        console.log(error)
+        return { error: "Error uploading photo" };
+    }
 }

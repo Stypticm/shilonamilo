@@ -3,11 +3,14 @@
 import { createWhatYouNeed } from '@/app/actions'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
 import { Input } from '@/components/ui/input'
+import { toast } from '@/components/ui/use-toast'
 import { choosedIneed } from '@/lib/currentData'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const INeedRoute = ({ params }: { params: { id: string } }) => {
 
+    const router = useRouter()
     const [name, setName] = React.useState<string>('')
     const [photoYouNeedURL, setPhotoYouNeedURL] = React.useState<string | null>(null)
 
@@ -23,6 +26,17 @@ const INeedRoute = ({ params }: { params: { id: string } }) => {
 
         const result = await createWhatYouNeed(formData);
 
+        if (result?.error) {
+            toast({
+                description: result.error,
+                title: 'Error',
+                variant: 'destructive',
+            })
+        } else if (result?.text === 'Nothing changed') {
+            router.push(`/create/${params.id}/location`)
+        } else if (result?.redirect) {
+            router.push(`/create/${params.id}/location`)
+        }
     }
 
     const fetchFilledFields = async () => {
