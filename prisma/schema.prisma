@@ -29,13 +29,13 @@ model Thing {
   city             String?    @db.VarChar(255)
   category         String?    @db.VarChar(255)
   youneed          String?
-  addedcategory    Boolean?
-  addeddescription Boolean?
-  addedlocation    Boolean?
   createdat        DateTime?  @default(now()) @db.Timestamp(6)
   userid           String?    @db.VarChar(255)
   photothing       String?    @db.VarChar(255)
   photoyouneed     String?    @db.VarChar(255)
+  addedcategory    Boolean?
+  addeddescription Boolean?
+  addedlocation    Boolean?
   addedyouneed     Boolean?
   Favorite         Favorite[]
   User             User?      @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)

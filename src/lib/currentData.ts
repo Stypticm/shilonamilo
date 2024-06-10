@@ -1,6 +1,8 @@
 'use server'
 
 import prisma from './prisma/db'
+import countryList from 'react-select-country-list'
+import { City } from 'country-state-city'
 
 export const allCategories = async () => {
     const data = await prisma.categories.findMany()
@@ -44,4 +46,14 @@ export const choosedIneed = async (id: string) => {
         }
     })
     return data
+}
+
+export const allCountries = async () => {
+    const data = countryList().getData()
+    return data.map(country => ({ value: country.value, label: country.label }))
+}
+
+export const citiesOfCountry = async (countryCode: string) => {
+    const data = City.getCitiesOfCountry(countryCode)
+    return data?.map(city => ({ value: city.name, label: city.name }))
 }
