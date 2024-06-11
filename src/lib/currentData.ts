@@ -57,3 +57,26 @@ export const citiesOfCountry = async (countryCode: string) => {
     const data = City.getCitiesOfCountry(countryCode)
     return data?.map(city => ({ value: city.name, label: city.name }))
 }
+
+export const getAllThings = async () => {
+    const data = await prisma.thing.findMany({
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            category: true,
+            country: true,
+            city: true,
+            photothing: true,
+            youneed: true,
+            photoyouneed: true,
+            addedlocation: true,
+            addedyouneed: true,
+            addeddescription: true,
+            addedcategory: true
+        }
+    })
+
+    const filteredData = data.filter(thing => thing.addedlocation && thing.addedyouneed && thing.addeddescription && thing.addedcategory)
+    return { filteredData }
+}

@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Categories {
-  id   Int    @id @default(autoincrement())
+  id   String @id @default(uuid())
   name String @db.VarChar(255)
 }
 
 model Favorite {
-  id        String    @id @db.VarChar(255)
+  id        String    @id @default(uuid())
   userid    String?   @db.VarChar(255)
   thingid   String?   @db.VarChar(255)
   createdat DateTime? @default(now()) @db.Timestamp(6)
@@ -22,7 +22,7 @@ model Favorite {
 }
 
 model Thing {
-  id               String     @id @db.VarChar(255)
+  id               String     @id @default(uuid())
   name             String?    @db.VarChar(255)
   description      String?
   country          String?    @db.VarChar(255)
@@ -31,8 +31,8 @@ model Thing {
   youneed          String?
   createdat        DateTime?  @default(now()) @db.Timestamp(6)
   userid           String?    @db.VarChar(255)
-  photothing       String?    @db.VarChar(255)
-  photoyouneed     String?    @db.VarChar(255)
+  photothing       String?    @db.VarChar(512)
+  photoyouneed     String?    @db.VarChar(512)
   addedcategory    Boolean?
   addeddescription Boolean?
   addedlocation    Boolean?
@@ -42,7 +42,7 @@ model Thing {
 }
 
 model User {
-  id        String     @id @db.VarChar(255)
+  id        String     @id @unique
   email     String     @db.VarChar(255)
   firstname String     @db.VarChar(255)
   photourl  String?    @db.VarChar(255)

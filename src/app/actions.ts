@@ -3,18 +3,24 @@
 import { storage } from '@/lib/firebase/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { redirect } from 'next/navigation'
-import { v4 as uuidv4 } from 'uuid';
 import prisma from '@/lib/prisma/db'
 
 export async function createNewThing({ userId }: { userId: string }) {
-    const data = await prisma.thing.findFirst({ where: { userid: userId } })
-    const newId = uuidv4();
+    const data = await prisma.thing.findFirst({
+        where: {
+            userid: userId
+        },
+        orderBy: {
+            createdat: 'desc'
+        }
+    })
+
+    console.log(data)
 
     if (data === null) {
         const data = await prisma.thing.create({
             data: {
-                id: newId,
-                userid: userId
+                userid: userId,
             }
         })
 
@@ -30,7 +36,6 @@ export async function createNewThing({ userId }: { userId: string }) {
     } else if (data.addedcategory && data.addeddescription && data.addedyouneed && data.addedlocation) {
         const data = await prisma.thing.create({
             data: {
-                id: newId,
                 userid: userId
             }
         })
@@ -40,13 +45,10 @@ export async function createNewThing({ userId }: { userId: string }) {
 
 export async function createNewCategory(formData: FormData) {
     const categoryName = formData.get('categoryName')
-    await prisma.thing.update(
+    await prisma.categories.create(
         {
-            where: {
-                id: formData.get('thingId') as string
-            },
             data: {
-                category: categoryName as string
+                name: categoryName as string
             }
         }
     )
@@ -56,37 +58,19 @@ export async function createCategoryPage(formData: FormData) {
     const thingId = formData.get('thingId') as string
     const categoryName = formData.get('categoryName') as string
 
-    try {
-        const data = await prisma.thing.findUnique(
-            {
-                where:
-                    { id: thingId }
+    await prisma.thing.update(
+        {
+            where: {
+                id: thingId
+            },
+            data: {
+                category: categoryName,
+                addedcategory: true
             }
-        );
-        if (!data) return { success: false, error: "Thing not found" };
+        }
+    )
 
-        if (data.category === categoryName) return { success: false, error: "Category already added", categoryName: data.category };
-
-        await prisma.thing.update(
-            {
-                where: {
-                    id: thingId
-                },
-                data: {
-                    category: categoryName,
-                    addedcategory: true
-                }
-            }
-        )
-
-        return redirect(`/create/${thingId}/description`);
-    } catch (error) {
-        console.error('Error updating category:', error);
-        return {
-            success: false,
-            error: "An error occurred while adding the category"
-        };
-    }
+    return { success: true, redirect: true };
 }
 
 export async function createDescription(formData: FormData) {

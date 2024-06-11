@@ -14,7 +14,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
     const router = useRouter()
     const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null)
-    const [categories, setCategories] = React.useState<{ id: number, name: string}[]>([])
+    const [categories, setCategories] = React.useState<{ id: string, name: string }[]>([])
 
     const fetchCategories = async () => {
         const data = await allCategories()
@@ -39,15 +39,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
         try {
             const result = await createCategoryPage(formData);
 
-            if (result?.error === 'Category already added') {
-                router.push(`/create/${params.id}/description`);
-            } else if (result?.error) {
-                toast({
-                    description: result.error,
-                    title: 'Error',
-                    variant: 'destructive',
-                })
-            } else {
+            if (result?.redirect) {
                 router.push(`/create/${params.id}/description`);
             }
         } catch (error) {
@@ -76,7 +68,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {
-                                categories.map((category: { id: number, name: string }) => (
+                                categories.map((category: { id: string, name: string }) => (
                                     <SelectItem key={category.id} value={category.name}>
                                         {[category.name.split("")[0].toUpperCase(), category.name.slice(1)].join("")}
                                     </SelectItem>
