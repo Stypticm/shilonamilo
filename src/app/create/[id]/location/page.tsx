@@ -3,10 +3,10 @@
 import { createLocation } from '@/app/actions'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/components/ui/use-toast'
 import { allCountries, citiesOfCountry } from '@/lib/currentData'
 import useDebounceValue from '@/lib/hooks/useDebounce'
-import { City } from 'country-state-city'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 
@@ -14,9 +14,7 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
   const router = useRouter()
 
   const [countries, setCountries] = React.useState<{ value?: string, label: string }[]>([])
-
   const [country, setCountry] = React.useState<string | null>('')
-  const [isCountryValid, setIsCountryValid] = React.useState<boolean>(false)
 
   const [city, setCity] = React.useState<string | null>('')
   const [isCityValid, setIsCityValid] = React.useState<boolean>(false)
@@ -29,27 +27,12 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
     fetchCountries()
   }, [])
 
-  const validateCountry = (value: string) => {
-    const countryExists = countries.some(country => country.label.toLowerCase() === value.toLowerCase())
-    setIsCountryValid(countryExists)
-    return countryExists
-  }
-
-  const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setCountry(value)
-    if (value) {
-      validateCountry(value)
-    } else {
-      setIsCountryValid(true)
-    }
-  }
-
-
   const validateCity = async (country: string, city: string) => {
+    if (countries.length === 0) return false;
+
     const countryData = countries.find(c => c.label.toLowerCase() === country.toLowerCase())
 
-    if (countryData && countryData.value) {
+    if (countryData && countryData?.value) {
       const cities = await citiesOfCountry(countryData.value!)
       const cityExists = cities?.some(c => c.value.toLowerCase() === city.toLowerCase())
       setIsCityValid(cityExists!)
@@ -67,7 +50,7 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
       }
     }
     validate()
-  }, [debouncedCity, country])
+  }, [debouncedCity, country, countries])
 
   const handleCityChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -84,7 +67,6 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
     formData.append('city', formData.get('city') as string)
 
     const result = await createLocation(formData);
-
 
     if (result?.error) {
       toast({
@@ -109,9 +91,20 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
       <form action={clientAction}>
         <input type="hidden" name="thingId" value={params.id} />
         <div className='w-3/5 mx-auto mt-2 flex flex-col gap-4'>
-          <Input name="country" value={country as string} placeholder="Enter name of your country" onChange={handleCountryChange} />
-          {!isCountryValid ? <p className='text-sm text-red-500'>Country not found</p> : null}
-          {isCountryValid && country ? <p className='text-sm text-green-500'>Country found</p> : null}
+          <Select onValueChange={setCountry} value={country as string}>
+            <SelectTrigger>
+              <SelectValue placeholder='Choose a country' />
+            </SelectTrigger>
+            <SelectContent>
+              {
+                countries.map((country) => (
+                  <SelectItem key={country.value} value={country.label as string}>
+                    {country.label}
+                  </SelectItem>
+                ))
+              }
+            </SelectContent>
+          </Select>
           {
             country && (
               <>
