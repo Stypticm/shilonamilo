@@ -31,20 +31,20 @@ const ThingRoute = async ({ params }: { params: { id: string } }) => {
     const data = await getThing(params.id)
 
     return (
-        <div className='w-[75%] mx-auto flex justify-around'>
+        <div className='w-[75%] mx-auto flex flex-wrap sm:w-[50%] sm:justify-center gap-4'>
             <section>
                 <div className='flex flex-row gap-2'>
                     <h1 className='font-bold'>This is my stuff:</h1>
                     <span>{data?.name}</span>
                 </div>
-                <div className='relative h-[350px] w-[350px] flex justify-center'>
+                <div className='relative h-[250px] w-[250px] flex justify-center'>
                     <Image
                         alt="Image of warehouse"
                         src={`${data?.photothing}`}
 
                         className='rounded-lg h-full object-cover'
-                        width={450}
-                        height={450}
+                        width={250}
+                        height={250}
                         priority
                     />
                 </div>
@@ -57,14 +57,14 @@ const ThingRoute = async ({ params }: { params: { id: string } }) => {
                     <h1 className='font-bold'>I need:</h1>
                     <span>{data?.youneed}</span>
                 </div>
-                <div className='relative h-[350px] w-[350px] flex justify-center'>
+                <div className='relative h-[250px] w-[250px] flex justify-center'>
                     <Image
                         alt="Image of warehouse"
                         src={`${data?.photoyouneed}`}
 
                         className='rounded-lg h-full object-cover'
-                        width={450}
-                        height={450}
+                        width={250}
+                        height={250}
                         priority
                     />
                 </div>

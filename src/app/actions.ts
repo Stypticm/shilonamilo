@@ -77,7 +77,8 @@ export async function createDescription(formData: FormData) {
     const thingId = formData.get('thingId') as string;
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-    const photoThing = formData.get('photoThing') as File;
+    const photoThingFile = formData.get('photoThingFile') as File;
+    const photoThingURL = formData.get('photoThingURL') as string;
 
     if (!name || !description) {
         return { error: "Name and description fields must be filled" };
@@ -94,11 +95,14 @@ export async function createDescription(formData: FormData) {
             return { success: true, text: "Nothing changed" };
         } else if (currentName !== name || currentDescription !== description || currentPhotoURL) {
             let photoURL = currentPhotoURL;
-
-            if (photoThing && !currentPhotoURL) {
-                const mountainsRef = ref(storage, `${thingId}/${photoThing.name}`);
-                await uploadBytes(mountainsRef, photoThing);
-                photoURL = await getDownloadURL(mountainsRef);
+            if (photoThingFile) {
+                if (photoThingFile && !currentPhotoURL) {
+                    const mountainsRef = ref(storage, `${thingId}/${photoThingFile.name}`);
+                    await uploadBytes(mountainsRef, photoThingFile);
+                    photoURL = await getDownloadURL(mountainsRef);
+                }
+            } else if (photoThingURL) {
+                photoURL = photoThingURL
             }
 
             await prisma.thing.update({
