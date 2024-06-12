@@ -2,6 +2,7 @@
 
 import { createDescription } from '@/app/actions'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
@@ -15,19 +16,28 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
 
     const [name, setName] = useState<string>('')
     const [description, setDescription] = useState<string>('')
+    const [photoThingFile, setPhotoThingFile] = useState<string | null>(null)
     const [photoThingURL, setPhotoThingURL] = useState<string | null>(null)
+
+    const [toggleButton, setToggleButton] = useState<boolean>(false)
+    const [text, setText] = useState<'url' | 'file'>('url')
 
     const clientAction = async (formData: FormData) => {
         formData.append('thingId', params.id)
         formData.append('name', name)
         formData.append('description', description)
 
-        const photoThing = formData.get('photoThing') as File
-        if (photoThing) {
-            formData.append('photoThing', photoThing)
+        const photoThingFile = formData.get('photoThingFile') as File
+        if (photoThingFile) {
+            formData.append('photoThingphotoThingFile', photoThingFile)
         }
 
-        const result = await createDescription(formData);
+        const photoThingURL = formData.get('photoThingURL') as string
+        if (photoThingURL) {
+            formData.append('photoThingphotoThingURL', photoThingURL)
+        }
+
+        await createDescription(formData);
 
         if (result?.error) {
             toast({
@@ -47,6 +57,7 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
         setName(data?.name || '')
         setDescription(data?.description || '')
         setPhotoThingURL(data?.photothing || null)
+        setPhotoThingFile(data?.photothing || null)
     }
 
     useEffect(() => {
@@ -65,10 +76,24 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
                 <div className='w-3/5 mx-auto flex flex-col gap-4 mt-2'>
                     <Input name="name" type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
                     <Textarea placeholder="Try to describe your thing, and quality" value={description} onChange={(e) => setDescription(e.target.value)} />
+
                     {
-                        photoThingURL ?
-                            <Input name="photoThing" type="file" placeholder="Insert photo url your thing" disabled /> :
-                            <Input name="photoThing" type="file" placeholder="Insert photo url your thing" />
+                        !toggleButton ?
+                            <>
+                                {
+                                    photoThingFile ?
+                                        <Input name="photoThing" type="file" disabled /> :
+                                        <Input name="photoThingFile" type="file" />
+                                }
+                            </> :
+                            <>
+                                {
+                                    photoThingURL ?
+                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' disabled /> :
+                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' />
+                                }
+
+                            </>
                     }
                     {
                         photoThingURL &&
@@ -81,6 +106,12 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
 
                 <CreationButtonBar />
             </form>
+
+            <div className='w-full text-center mt-5'>
+                <Button variant="secondary" onClick={() => setToggleButton(!toggleButton)}>{
+                    toggleButton ? 'Choose File' : 'Insert URL'
+                }</Button>
+            </div>
         </>
     )
 }

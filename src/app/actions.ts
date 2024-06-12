@@ -3,15 +3,26 @@
 import { storage } from '@/lib/firebase/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { redirect } from 'next/navigation'
-import { v4 as uuidv4 } from 'uuid';
 import prisma from '@/lib/prisma/db'
 
 export async function createNewThing({ userId }: { userId: string }) {
-    const data = await prisma.thing.findFirst({ where: { userid: userId } })
-    const newId = uuidv4();
+    const data = await prisma.thing.findFirst({
+        where: {
+            userid: userId
+        },
+        orderBy: {
+            createdat: 'desc'
+        }
+    })
+
+    console.log(data)
 
     if (data === null) {
-        const data = await prisma.thing.create({ data: { id: newId, userid: userId } })
+        const data = await prisma.thing.create({
+            data: {
+                userid: userId,
+            }
+        })
 
         return redirect(`/create/${data.id}/structure`)
     } else if (!data.addedcategory && !data.addeddescription && !data.addedyouneed && !data.addedlocation) {
@@ -22,18 +33,22 @@ export async function createNewThing({ userId }: { userId: string }) {
         return redirect(`/create/${data.id}/ineed`)
     } else if (data.addedcategory && data.addeddescription && data.addedyouneed && !data.addedlocation) {
         return redirect(`/create/${data.id}/location`)
+    } else if (data.addedcategory && data.addeddescription && data.addedyouneed && data.addedlocation) {
+        const data = await prisma.thing.create({
+            data: {
+                userid: userId
+            }
+        })
+        return redirect(`/create/${data.id}/structure`)
     }
 }
 
 export async function createNewCategory(formData: FormData) {
     const categoryName = formData.get('categoryName')
-    await prisma.thing.update(
+    await prisma.categories.create(
         {
-            where: {
-                id: formData.get('thingId') as string
-            },
             data: {
-                category: categoryName as string
+                name: categoryName as string
             }
         }
     )
@@ -43,44 +58,27 @@ export async function createCategoryPage(formData: FormData) {
     const thingId = formData.get('thingId') as string
     const categoryName = formData.get('categoryName') as string
 
-    try {
-        const data = await prisma.thing.findUnique(
-            {
-                where:
-                    { id: thingId }
+    await prisma.thing.update(
+        {
+            where: {
+                id: thingId
+            },
+            data: {
+                category: categoryName,
+                addedcategory: true
             }
-        );
-        if (!data) return { success: false, error: "Thing not found" };
+        }
+    )
 
-        if (data.category === categoryName) return { success: false, error: "Category already added", categoryName: data.category };
-
-        await prisma.thing.update(
-            {
-                where: {
-                    id: thingId
-                },
-                data: {
-                    category: categoryName,
-                    addedcategory: true
-                }
-            }
-        )
-
-        return redirect(`/create/${thingId}/description`);
-    } catch (error) {
-        console.error('Error updating category:', error);
-        return {
-            success: false,
-            error: "An error occurred while adding the category"
-        };
-    }
+    return { success: true, redirect: true };
 }
 
 export async function createDescription(formData: FormData) {
     const thingId = formData.get('thingId') as string;
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-    const photoThing = formData.get('photoThing') as File;
+    const photoThingFile = formData.get('photoThingFile') as File;
+    const photoThingURL = formData.get('photoThingURL') as string;
 
     if (!name || !description) {
         return { error: "Name and description fields must be filled" };
@@ -97,11 +95,14 @@ export async function createDescription(formData: FormData) {
             return { success: true, text: "Nothing changed" };
         } else if (currentName !== name || currentDescription !== description || currentPhotoURL) {
             let photoURL = currentPhotoURL;
-
-            if (photoThing && !currentPhotoURL) {
-                const mountainsRef = ref(storage, `${thingId}/${photoThing.name}`);
-                await uploadBytes(mountainsRef, photoThing);
-                photoURL = await getDownloadURL(mountainsRef);
+            if (photoThingFile) {
+                if (photoThingFile && !currentPhotoURL) {
+                    const mountainsRef = ref(storage, `${thingId}/${photoThingFile.name}`);
+                    await uploadBytes(mountainsRef, photoThingFile);
+                    photoURL = await getDownloadURL(mountainsRef);
+                }
+            } else if (photoThingURL) {
+                photoURL = photoThingURL
             }
 
             await prisma.thing.update({
@@ -123,7 +124,7 @@ export async function createDescription(formData: FormData) {
     }
 }
 
-export async function createWhatYouNeed(formData: FormData) { 
+export async function createWhatYouNeed(formData: FormData) {
     const thingId = formData.get('thingId') as string;
     const name = formData.get('name') as string;
     const photoYouNeed = formData.get('photoYouNeed') as File;
@@ -164,5 +165,41 @@ export async function createWhatYouNeed(formData: FormData) {
     } catch (error) {
         console.log(error)
         return { error: "Error uploading photo" };
+    }
+}
+
+export async function createLocation(formData: FormData) {
+    const thingId = formData.get('thingId') as string;
+    const country = formData.get('country') as string;
+    const city = formData.get('city') as string;
+
+    if (!country || !city) {
+        return { error: "Country and city fields must be filled" };
+    }
+
+    try {
+        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
+
+        const currentCountry = currentData?.country;
+        const currentCity = currentData?.city;
+
+        if (currentCountry === country && currentCity === city) {
+            return { success: true, text: "Nothing changed" };
+        } else if (currentCountry !== country || currentCity !== city) {
+            await prisma.thing.update({
+                where: {
+                    id: thingId
+                },
+                data: {
+                    country: country,
+                    city: city,
+                    addedlocation: true
+                }
+            })
+            return { success: true, redirect: true };
+        }
+    } catch (error) {
+        console.log(error)
+        return { error: "Wrong country or city" };
     }
 }
