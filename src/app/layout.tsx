@@ -26,9 +26,9 @@ export default function RootLayout({
 
         {authModal}
 
-        <div>
+        <>
           {children}
-        </div>
+        </>
         <Toaster />
       </body>
     </html>

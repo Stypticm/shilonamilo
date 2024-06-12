@@ -8,15 +8,17 @@ export interface User {
 
 export interface Thing {
   id: string;
-  name?: string;
-  description?: string;
-  country?: string;
-  city?: string;
-  category?: string;
-  youneed?: string;
-  photothing?: string;
-  addedCategory?: boolean;
-  addedDescription?: boolean;
-  addedLocation?: boolean;
-  userId: string | undefined
+  name?: string | null;
+  description?: string | null;
+  country?: string | null;
+  city?: string | null;
+  category?: string | null;
+  youneed?: string | null;
+  photothing?: string | null;
+  photoyouneed?: string | null;
+  userid?: string | null;
+  addedcategory?: boolean | null;
+  addeddescription?: boolean | null;
+  addedlocation?: boolean | null;
+  addedyouneed?: boolean | null;
 }
