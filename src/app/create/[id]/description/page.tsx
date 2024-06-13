@@ -37,7 +37,7 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
             formData.append('photoThingphotoThingURL', photoThingURL)
         }
 
-        await createDescription(formData);
+        const result = await createDescription(formData);
 
         if (result?.error) {
             toast({
