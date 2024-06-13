@@ -62,6 +62,11 @@ const Menu: React.FC = () => {
                 </form>
               </DropdownMenuItem>
               <DropdownMenuItem>
+                <Link href={'/chats'} className='w-full'>
+                  Chats
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
                 <Link href={'/favorites'} className='w-full'>
                   Favorite things
                 </Link>
