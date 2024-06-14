@@ -1,12 +1,20 @@
 import { User } from 'lucide-react'
 import React from 'react'
+import Image from 'next/image'
 
-const ChatsUser = () => {
+const ChatsUser = ({ userPhoto }: { userPhoto: string }) => {
     return (
         <section className='mt-5 rounded-lg cursor-pointer flex'>
-            <div className='w-[1/5]'>
-                {/* <Image src= width={50} height={50} alt="user profile" className='rounded-full' /> */}
-                <User className='w-14 h-14 rounded-full bg-slate-100' />
+            <div className='w-1/5'>
+                <Image src={
+                    userPhoto || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
+                }
+                    alt="User avatar"
+                    className='rounded-full h-10 w-10 hidden md:block'
+                    width={48}
+                    height={48}
+                    priority={true}
+                />
             </div>
             <div className='ml-2 w-full'>
                 <section className='flex justify-between'>
