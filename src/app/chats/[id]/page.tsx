@@ -10,7 +10,7 @@ import ChatMessages from '@/app/components/ChatMessages'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
 import { User as CurrentUser } from '@/lib/interfaces'
 
-const ChatsRoute = ({ params }: { params: { id: string } }) => {
+const ChatsRoute = () => {
 
     const [user, setUser] = useState<CurrentUser | null>(null);
 
