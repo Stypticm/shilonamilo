@@ -3,6 +3,8 @@
 import prisma from './prisma/db'
 import countryList from 'react-select-country-list'
 import { City } from 'country-state-city'
+import { auth } from './firebase/firebase'
+import { onAuthStateChanged } from '@firebase/auth'
 
 export const allCategories = async () => {
     const data = await prisma.categories.findMany()

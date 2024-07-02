@@ -1,17 +1,15 @@
 'use client'
 
-import { allCountries, getAllThings } from '@/lib/currentData'
+import { getAllThings } from '@/lib/currentData'
 import { Thing } from '@/lib/interfaces'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import countryList from 'react-select-country-list'
 
 const MainContent = () => {
   const router = useRouter()
 
   const [allThings, setAllThings] = useState<Thing[]>([])
-
 
   useEffect(() => {
     const fetchThings = async () => {

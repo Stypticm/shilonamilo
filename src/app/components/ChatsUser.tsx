@@ -10,7 +10,7 @@ const ChatsUser = ({ userPhoto }: { userPhoto: string }) => {
                     userPhoto || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
                 }
                     alt="User avatar"
-                    className='rounded-full h-10 w-10 hidden md:block'
+                    className='rounded-full h-8 w-8 hidden md:block'
                     width={48}
                     height={48}
                     priority={true}

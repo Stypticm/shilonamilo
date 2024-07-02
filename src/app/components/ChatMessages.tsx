@@ -29,7 +29,7 @@ const ChatMessages = ({ userPhoto }: { userPhoto: string }) => {
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Distinctio sequi nemo cum in doloribus eius ipsum dolores corporis culpa officia tempore possimus deleniti voluptatem, sit ut autem. Ipsum corporis ab quaerat totam eaque molestias quam ullam sapiente explicabo expedita ex, saepe omnis ducimus reiciendis consectetur repudiandae nesciunt blanditiis aliquam? Nulla?
                 </p>
                 <section className='w-1/5 flex justify-center items-center'>
-                    <Rabbit className='w-11 h-11 rounded-full bg-slate-100' />
+                    <Rabbit className='w-11 h-11 rounded-full bg-slate-100 hidden md:block' />
                 </section>
             </section>
         </div>
