@@ -21,6 +21,7 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
         return () => unsubscribe();
     }, []);
 
+    console.log(data)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -81,8 +82,7 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
                                     src={data.photothing as string}
 
                                     className='rounded-lg h-full object-cover'
-                                    width={250}
-                                    height={250}
+                                    fill
                                     priority
                                 />
                             ) : null
@@ -105,8 +105,7 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
                                     src={data.photoyouneed as string}
 
                                     className='rounded-lg h-full object-cover'
-                                    width={250}
-                                    height={250}
+                                    fill
                                     priority
                                 />
                             ) : null

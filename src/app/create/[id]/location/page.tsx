@@ -16,6 +16,8 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
   const [countries, setCountries] = React.useState<{ value?: string, label: string }[]>([])
   const [country, setCountry] = React.useState<string | null>('')
 
+  console.log(country)
+
   const [city, setCity] = React.useState<string | null>('')
   const [isCityValid, setIsCityValid] = React.useState<boolean>(false)
 
@@ -63,8 +65,8 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
 
   const clientAction = async (formData: FormData) => {
     formData.append('thingId', params.id)
-    formData.append('country', formData.get('country') as string)
-    formData.append('city', formData.get('city') as string)
+    formData.append('country', country as string)
+    formData.append('city', city as string)
 
     const result = await createLocation(formData);
 

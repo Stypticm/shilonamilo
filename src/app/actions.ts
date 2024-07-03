@@ -167,9 +167,10 @@ export async function createWhatYouNeed(formData: FormData) {
                 try {
                     const response = await fetch(photoYouNeedURL);
                     const blob = await response.blob();
-                    const fileName = `externam-photo.${blob.type.split('/')[1]}`;
+                    const fileExptension = photoYouNeedURL.split('.').pop();
+                    const fileName = `externam-photo.${fileExptension}`;
                     const urlRef = ref(storage, `${thingId}/${fileName}`);
-                    await uploadBytes(urlRef, blob);
+                    await uploadBytes(urlRef, blob as Blob);
                     photoURL = await getDownloadURL(urlRef);
                 } catch (error) {
                     console.log(error)
@@ -200,7 +201,7 @@ export async function createLocation(formData: FormData) {
     const country = formData.get('country') as string;
     const city = formData.get('city') as string;
 
-    if (!country || !city) {
+    if (!country && !city) {
         return { error: "Country and city fields must be filled" };
     }
 
