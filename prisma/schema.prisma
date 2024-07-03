@@ -14,11 +14,13 @@ model Categories {
 
 model Favorite {
   id        String    @id @default(uuid())
-  userid    String?   @db.VarChar(255)
-  thingid   String?   @db.VarChar(255)
-  createdat DateTime? @default(now()) @db.Timestamp(6)
-  Thing     Thing?    @relation(fields: [thingid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
   User      User?     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userid    String?   @db.VarChar(255)
+  Thing     Thing?    @relation(fields: [thingid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  thingid   String?   @db.VarChar(255)
+  
+  createdat DateTime? @default(now()) @db.Timestamp(6)
 }
 
 model Thing {
