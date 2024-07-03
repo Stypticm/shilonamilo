@@ -20,7 +20,6 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
     const [photoThingURL, setPhotoThingURL] = useState<string | null>(null)
 
     const [toggleButton, setToggleButton] = useState<boolean>(false)
-    const [text, setText] = useState<'url' | 'file'>('url')
 
     const clientAction = async (formData: FormData) => {
         formData.append('thingId', params.id)

@@ -1,9 +1,10 @@
 'use server'
 
 import { storage } from '@/lib/firebase/firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma/db'
+import { revalidatePath } from 'next/cache';
 
 export async function createNewThing({ userId }: { userId: string }) {
     const data = await prisma.thing.findFirst({
@@ -95,6 +96,7 @@ export async function createDescription(formData: FormData) {
             return { success: true, text: "Nothing changed" };
         } else if (currentName !== name || currentDescription !== description || currentPhotoURL) {
             let photoURL = currentPhotoURL;
+
             if (photoThingFile) {
                 if (photoThingFile && !currentPhotoURL) {
                     const mountainsRef = ref(storage, `${thingId}/${photoThingFile.name}`);
@@ -102,7 +104,17 @@ export async function createDescription(formData: FormData) {
                     photoURL = await getDownloadURL(mountainsRef);
                 }
             } else if (photoThingURL) {
-                photoURL = photoThingURL
+                try {
+                    const response = await fetch(photoThingURL);
+                    const blob = await response.blob();
+                    const fileName = `externam-photo.${blob.type.split('/')[1]}`;
+                    const urlRef = ref(storage, `${thingId}/${fileName}`);
+                    await uploadBytes(urlRef, blob);
+                    photoURL = await getDownloadURL(urlRef);
+                } catch (error) {
+                    console.log(error)
+                    return { error: "Error uploading photo" };
+                }
             }
 
             await prisma.thing.update({
@@ -127,7 +139,8 @@ export async function createDescription(formData: FormData) {
 export async function createWhatYouNeed(formData: FormData) {
     const thingId = formData.get('thingId') as string;
     const name = formData.get('name') as string;
-    const photoYouNeed = formData.get('photoYouNeed') as File;
+    const photoYouNeedURL = formData.get('photoYouNeedURL') as string;
+    const photoYouNeedFile = formData.get('photoYouNeedFile') as File;
 
     if (!name) {
         return { error: "Name field must be filled" };
@@ -144,10 +157,24 @@ export async function createWhatYouNeed(formData: FormData) {
         } else if (currentName !== name || currentPhotoYouNeed) {
             let photoURL = currentPhotoYouNeed;
 
-            if (photoYouNeed && !currentPhotoYouNeed) {
-                const mountainsRef = ref(storage, `${thingId}/${photoYouNeed.name}`);
-                await uploadBytes(mountainsRef, photoYouNeed);
-                photoURL = await getDownloadURL(mountainsRef);
+            if (photoYouNeedFile) {
+                if (photoYouNeedFile && !currentPhotoYouNeed) {
+                    const mountainsRef = ref(storage, `${thingId}/${photoYouNeedFile.name}`);
+                    await uploadBytes(mountainsRef, photoYouNeedFile);
+                    photoURL = await getDownloadURL(mountainsRef);
+                }
+            } else if (photoYouNeedURL) {
+                try {
+                    const response = await fetch(photoYouNeedURL);
+                    const blob = await response.blob();
+                    const fileName = `externam-photo.${blob.type.split('/')[1]}`;
+                    const urlRef = ref(storage, `${thingId}/${fileName}`);
+                    await uploadBytes(urlRef, blob);
+                    photoURL = await getDownloadURL(urlRef);
+                } catch (error) {
+                    console.log(error)
+                    return { error: "Error uploading photo" };
+                }
             }
 
             await prisma.thing.update({
@@ -202,4 +229,44 @@ export async function createLocation(formData: FormData) {
         console.log(error)
         return { error: "Wrong country or city" };
     }
+}
+
+export async function addToFavorite(formData: FormData) {
+    const thingId = formData.get('thingId') as string;
+    const userId = formData.get('userId') as string;
+    const pathName = formData.get('pathName') as string;
+
+    try {
+        await prisma.favorite.create({
+            data: {
+                thingid: thingId,
+                userid: userId
+            }
+        })
+
+    } catch (error) {
+        console.log(error)
+        return { error: "Error adding to favorite" };
+    }
+    revalidatePath(pathName);
+}
+
+export async function removeFromFavorite(formData: FormData) {
+    const favoriteId = formData.get('favoriteId') as string;
+    const userId = formData.get('userId') as string;
+    const pathName = formData.get('pathName') as string;
+
+    try {
+        await prisma.favorite.delete({
+            where: {
+                id: favoriteId,
+                userid: userId
+            }
+        })
+
+    } catch (error) {
+        console.log(error)
+        return { error: "Error removing from favorite" };
+    }
+    revalidatePath(pathName);
 }

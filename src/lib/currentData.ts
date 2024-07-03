@@ -3,8 +3,7 @@
 import prisma from './prisma/db'
 import countryList from 'react-select-country-list'
 import { City } from 'country-state-city'
-import { auth } from './firebase/firebase'
-import { onAuthStateChanged } from '@firebase/auth'
+import { unstable_noStore as noStore } from 'next/cache'
 
 export const allCategories = async () => {
     const data = await prisma.categories.findMany()
@@ -60,25 +59,72 @@ export const citiesOfCountry = async (countryCode: string) => {
     return data?.map(city => ({ value: city.name, label: city.name }))
 }
 
-export const getAllThings = async () => {
-    const data = await prisma.thing.findMany({
-        select: {
-            id: true,
-            name: true,
-            description: true,
-            category: true,
-            country: true,
-            city: true,
-            photothing: true,
-            youneed: true,
-            photoyouneed: true,
-            addedlocation: true,
-            addedyouneed: true,
-            addeddescription: true,
-            addedcategory: true
-        }
-    })
+export const getAllThings = async (userId?: string) => {
+    noStore();
+    try {
+        const allThings = await prisma.thing.findMany({
+            where: {
+                addedcategory: true,
+                addeddescription: true,
+                addedlocation: true,
+                addedyouneed: true,
+            },
+            include: {
+                Favorite: {
+                    where: {
+                        userid: userId ?? undefined
+                    },
+                    select: {
+                        id: true,
+                        userid: true,
+                        thingid: true,
+                    }
+                }
+            }
+        });
 
-    const filteredData = data.filter(thing => thing.addedlocation && thing.addedyouneed && thing.addeddescription && thing.addedcategory)
-    return { filteredData }
+        const mappedThings = allThings.map(thing => ({
+            ...thing,
+            isInFavoriteList: thing.Favorite.length > 0
+        }));
+
+        return mappedThings
+
+    } catch (error) {
+        throw new Error(`Failed to fetch all things: ${error}`);
+    }
+}
+
+export const getFavorites = async (userId: string) => {
+    noStore();
+    try {
+        const data = await prisma.favorite.findMany({
+            where: {
+                userid: userId
+            },
+            select: {
+                id: true,
+                userid: true,
+                thingid: true,
+                createdat: true,
+                Thing: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                        country: true,
+                        city: true,
+                        photothing: true,
+                        youneed: true,
+                        photoyouneed: true,
+                        Favorite: true
+                    }
+                }
+            }
+        })
+    
+        return data
+    } catch (error) {
+        throw new Error(`Failed to fetch favorites: ${error}`)
+    }
 }

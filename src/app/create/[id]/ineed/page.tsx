@@ -2,26 +2,33 @@
 
 import { createWhatYouNeed } from '@/app/actions'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/use-toast'
 import { choosedIneed } from '@/lib/currentData'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
 
 const INeedRoute = ({ params }: { params: { id: string } }) => {
 
     const router = useRouter()
-    const [name, setName] = React.useState<string>('')
-    const [photoYouNeedURL, setPhotoYouNeedURL] = React.useState<string | null>(null)
+    const [name, setName] = useState<string>('')
+    const [photoYouNeedURL, setPhotoYouNeedURL] = useState<string | null>(null)
+    const [photoYouNeedFile, setPhotoYouNeedFile] = useState<string | null>(null)
 
+    const [toggleButton, setToggleButton] = useState<boolean>(false)
 
     const clientAction = async (formData: FormData) => {
         formData.append('thingId', params.id)
         formData.append('name', name)
 
-        const photoYouNeed = formData.get('photoYouNeed') as File
-        if (photoYouNeed) {
-            formData.append('photoYouNeed', photoYouNeed)
+        const photoYouNeedFile = formData.get('photoYouNeed') as File
+        if (photoYouNeedFile) {
+            formData.append('photoYouNeed', photoYouNeedFile)
+        }
+        const photoYouNeedURL = formData.get('photoYouNeedURL') as string
+        if (photoYouNeedURL) {
+            formData.append('photoYouNeedURL', photoYouNeedURL)
         }
 
         const result = await createWhatYouNeed(formData);
@@ -43,6 +50,7 @@ const INeedRoute = ({ params }: { params: { id: string } }) => {
         const data = await choosedIneed(params.id)
         setName(data?.youneed || '')
         setPhotoYouNeedURL(data?.photoyouneed || null)
+        setPhotoYouNeedFile(data?.photoyouneed || null)
     }
 
     React.useEffect(() => {
@@ -63,9 +71,22 @@ const INeedRoute = ({ params }: { params: { id: string } }) => {
                     <Input name="name" type="text" placeholder="Enter what you need" value={name} onChange={(e) => setName(e.target.value)} />
 
                     {
-                        photoYouNeedURL ?
-                            <Input name="photoYouNeed" type="file" placeholder="Add foto of you need" disabled /> :
-                            <Input name="photoYouNeed" type="file" placeholder="Add foto of you need" />
+                        !toggleButton ?
+                            <>
+                                {
+                                    photoYouNeedFile ?
+                                        <Input name="photoThing" type="file" disabled /> :
+                                        <Input name="photoThingFile" type="file" />
+                                }
+                            </> :
+                            <>
+                                {
+                                    photoYouNeedURL ?
+                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' disabled /> :
+                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' />
+                                }
+
+                            </>
                     }
                     {
                         photoYouNeedURL &&
@@ -78,6 +99,12 @@ const INeedRoute = ({ params }: { params: { id: string } }) => {
 
                 <CreationButtonBar />
             </form>
+
+            <div className='w-full text-center mt-5'>
+                <Button variant="secondary" onClick={() => setToggleButton(!toggleButton)}>{
+                    toggleButton ? 'Choose File' : 'Insert URL'
+                }</Button>
+            </div>
         </>
     )
 }
