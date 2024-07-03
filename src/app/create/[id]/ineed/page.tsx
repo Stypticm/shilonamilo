@@ -12,6 +12,7 @@ import React, { useState } from 'react'
 const INeedRoute = ({ params }: { params: { id: string } }) => {
 
     const router = useRouter()
+
     const [name, setName] = useState<string>('')
     const [photoYouNeedURL, setPhotoYouNeedURL] = useState<string | null>(null)
     const [photoYouNeedFile, setPhotoYouNeedFile] = useState<string | null>(null)
@@ -75,15 +76,15 @@ const INeedRoute = ({ params }: { params: { id: string } }) => {
                             <>
                                 {
                                     photoYouNeedFile ?
-                                        <Input name="photoThing" type="file" disabled /> :
-                                        <Input name="photoThingFile" type="file" />
+                                        <Input name="photoYouNeedFile" type="file" disabled /> :
+                                        <Input name="photoYouNeedFile" type="file" />
                                 }
                             </> :
                             <>
                                 {
                                     photoYouNeedURL ?
-                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' disabled /> :
-                                        <Input name="photoThingURL" type="text" placeholder='Insert photo url' />
+                                        <Input name="photoYouNeedURL" type="text" placeholder='Insert photo url' disabled /> :
+                                        <Input name="photoYouNeedURL" type="text" placeholder='Insert photo url' />
                                 }
 
                             </>

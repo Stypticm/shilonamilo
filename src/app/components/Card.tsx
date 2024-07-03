@@ -25,7 +25,7 @@ const Card = ({
         const formData = new FormData();
         formData.append('thingId', id);
         formData.append('userId', userId as string);
-        formData.append('pathName', window.location.pathname);
+        formData.append('pathName', pathName as string);
 
         try {
             await addToFavorite(formData);
@@ -41,7 +41,7 @@ const Card = ({
         const formData = new FormData();
         formData.append('favoriteId', favoriteId as string);
         formData.append('userId', userId as string);
-        formData.append('pathName', window.location.pathname);
+        formData.append('pathName', pathName as string);
 
         try {
             await removeFromFavorite(formData);
