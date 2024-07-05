@@ -57,7 +57,7 @@ const Menu: React.FC = () => {
               <DropdownMenuItem>
                 <form action={createThingId} className='w-full'>
                   <button type='submit' className='w-full text-start'>
-                    Add a new thing
+                    Add a new lot
                   </button>
                 </form>
               </DropdownMenuItem>
@@ -68,12 +68,12 @@ const Menu: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href={`/favorites/${user.uid}`} className='w-full'>
-                  Favorite things
+                  Favorite lots
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href={`/my-stuff/${user.uid}`} className='w-full'>
-                  My stuff
+                  My lots
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

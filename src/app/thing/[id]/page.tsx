@@ -21,7 +21,6 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
         return () => unsubscribe();
     }, []);
 
-    console.log(data)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -63,6 +62,10 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
         } catch (error) {
             console.error('Error deleting thing:', error);
         }
+    }
+
+    const handleEditThing = async (id: string) => {
+        router.push(`/thing/${id}/edit`);
     }
 
 
@@ -115,10 +118,10 @@ const ThingRoute = ({ params }: { params: { id: string } }) => {
             </div>
             {
                 isThingBelongsToUser && <div className='fixed w-full bottom-0 z-10 bg-[#4A5C6A] border-t border-slate-800 h-24'>
-                    <div className='flex items-center justify-end px-5 lg:px-10 h-full'>
-                        {/* <Button variant="secondary" size='lg' >
+                    <div className='flex items-center justify-between px-5 lg:px-10 h-full'>
+                        <Button variant="secondary" size='lg' onClick={() => handleEditThing(params.id)}>
                             Edit
-                        </Button> */}
+                        </Button>
                         <Button variant="destructive" size='lg' onClick={() => handleDeleteThing(params.id)}>
                             Delete
                         </Button>

@@ -29,6 +29,7 @@ export interface Thing {
   addedlocation?: boolean | null;
   addedyouneed?: boolean | null;
   isInFavoriteList?: boolean | null;
+  createdat?: string | Date | null;
   Favorite?: Omit<Favorite, 'createdat'>[] | null;
 }
 

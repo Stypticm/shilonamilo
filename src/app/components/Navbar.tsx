@@ -7,19 +7,19 @@ import SearchComponent from './SearchComponent'
 const Navbar = () => {
     return (
         <>
-            <section className='flex justify-between font-medium w-full h-24'>
+            <section className='flex justify-between font-medium w-full h-24 mb-5'>
                 <Link href='/' className='text-3xl font-bold flex items-center justify-center ml-5'>
                     <span>ShiloNaMilo</span>
                 </Link>
 
-                <SearchComponent />
+                <Title />
 
                 <main className='mr-5 lg:mr-10 flex'>
                     <Menu />
                 </main>
 
             </section>
-            <Title />
+            <SearchComponent />
         </>
     )
 }
