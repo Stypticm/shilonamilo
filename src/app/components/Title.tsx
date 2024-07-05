@@ -1,16 +1,14 @@
-import { Separator } from '@/components/ui/separator'
 import React from 'react'
 
 const Title = () => {
     return (
-        <>
-            <section className='w-full text-center mb-5'>
-                <h3 className='text-2xl font-bold text-foreground-secondary mb-2'>
-                    Change what you don't need for what you need
-                </h3>
-                <Separator className='bg-foreground mx-auto w-2/3 lg:w-3/6' />
-            </section>
-        </>
+        <section className='w-full text-center m-5'>
+            <blockquote className='font-serif font-bold text-muted-foreground mb-2 italic'>
+                "In trade, barter is a system of exchange in which participants in a transaction <br />
+                directly exchange goods or services for other goods or <br />
+                services without using a medium of exchange, such as money."
+            </blockquote>
+        </section>
     )
 }
 

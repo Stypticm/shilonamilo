@@ -41,3 +41,18 @@ export const deleteThing = async (id: string) => {
         console.error('Error deleting thing:', error);
     }
 }
+
+export const getThingById = async (id: string) => {
+    try {
+        const data = await prisma.thing.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        return data
+    } catch (error) {
+        console.error('Error fetching thing:', error);
+    }
+
+}
