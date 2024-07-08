@@ -6,12 +6,12 @@ import { City } from 'country-state-city'
 import { unstable_noStore as noStore } from 'next/cache'
 
 export const allCategories = async () => {
-    const data = await prisma.categories.findMany()
+    const data = await prisma.category.findMany()
     return data
 }
 
 export const choosedCategory = async (id: string) => {
-    const data = await prisma.thing.findUnique({
+    const data = await prisma.lot.findUnique({
         where: {
             id
         },
@@ -23,31 +23,31 @@ export const choosedCategory = async (id: string) => {
 }
 
 export const choosedDescription = async (id: string) => {
-    const data = await prisma.thing.findUnique({
+    const data = await prisma.lot.findUnique({
         where: {
             id
         },
         select: {
             name: true,
             description: true,
-            photothing: true
+            photolot: true
         }
     })
     return data
 }
 
-export const choosedIneed = async (id: string) => {
-    const data = await prisma.thing.findUnique({
-        where: {
-            id
-        },
-        select: {
-            youneed: true,
-            photoyouneed: true
-        }
-    })
-    return data
-}
+// export const choosedIneed = async (id: string) => {
+//     const data = await prisma.lot.findUnique({
+//         where: {
+//             id
+//         },
+//         select: {
+            
+//             photoyouneed: true
+//         }
+//     })
+//     return data
+// }
 
 export const allCountries = async () => {
     const data = countryList().getData()
@@ -59,39 +59,38 @@ export const citiesOfCountry = async (countryCode: string) => {
     return data?.map(city => ({ value: city.name, label: city.name }))
 }
 
-export const getAllThings = async (userId?: string) => {
+export const getAllLots = async (userId?: string) => {
     noStore();
     try {
-        const allThings = await prisma.thing.findMany({
+        const allLots = await prisma.lot.findMany({
             where: {
                 addedcategory: true,
                 addeddescription: true,
                 addedlocation: true,
-                addedyouneed: true,
             },
             include: {
                 Favorite: {
                     where: {
-                        userid: userId ?? undefined
+                        userId: userId ?? undefined
                     },
                     select: {
                         id: true,
-                        userid: true,
-                        thingid: true,
+                        userId: true,
+                        lotId: true,
                     }
                 }
             }
         });
 
-        const mappedThings = allThings.map(thing => ({
-            ...thing,
-            isInFavoriteList: thing.Favorite.length > 0
+        const mappedThings = allLots.map(lot => ({
+            ...lot,
+            isInFavoriteList: lot.Favorite.length > 0
         }));
 
         return mappedThings
 
     } catch (error) {
-        throw new Error(`Failed to fetch all things: ${error}`);
+        throw new Error(`Failed to fetch all lots: ${error}`);
     }
 }
 
@@ -100,23 +99,22 @@ export const getFavorites = async (userId: string) => {
     try {
         const data = await prisma.favorite.findMany({
             where: {
-                userid: userId
+                userId: userId
             },
             select: {
                 id: true,
-                userid: true,
-                thingid: true,
-                createdat: true,
-                Thing: {
+                userId: true,
+                lotId: true,
+                createdAt: true,
+                Lot: {
                     select: {
                         id: true,
                         name: true,
                         description: true,
                         country: true,
                         city: true,
-                        photothing: true,
-                        youneed: true,
-                        photoyouneed: true,
+                        photolot: true,
+                        exchangeOffer: true,
                         Favorite: true
                     }
                 }

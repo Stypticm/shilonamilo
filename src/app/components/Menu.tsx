@@ -2,13 +2,13 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { User } from '@/lib/interfaces'
-import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { initAuthState, handleLogout } from '@/lib/firebase/auth/authInitialState'
-import { createNewThing } from '../actions'
+import { createNewLot } from '../actions'
+import { AlignJustify, MenuIcon } from 'lucide-react'
 
 const Menu: React.FC = () => {
 
@@ -22,8 +22,8 @@ const Menu: React.FC = () => {
 
   const memoizedUser = useMemo(() => user, [user]);
 
-  const createThingId = useCallback(() => {
-    return createNewThing({ userId: memoizedUser?.uid as string });
+  const createLot = useCallback(() => {
+    return createNewLot({ userId: memoizedUser?.uid as string });
   }, [memoizedUser]);
 
   const authorization = () => {
@@ -39,7 +39,7 @@ const Menu: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div className="rounded-full border px-2 py-2 lg:px-4 lg:py-2 flex items-center gap-x-3">
-          <MenuIcon className='w-6 h-6 lg:w-5 lg:h-5' />
+          <MenuIcon className='w-8 h-8 md:w-12 md:h-7' />
           <Image src={
             memoizedUser?.photoURL || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
           }
@@ -47,7 +47,7 @@ const Menu: React.FC = () => {
             className='rounded-full h-8 w-8 hidden md:block'
             width={32}
             height={32}
-            priority={true} />
+            priority />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[200px] bg-slate-400'>
@@ -55,7 +55,7 @@ const Menu: React.FC = () => {
           user ? (
             <>
               <DropdownMenuItem>
-                <form action={createThingId} className='w-full'>
+                <form action={createLot} className='w-full'>
                   <button type='submit' className='w-full text-start'>
                     Add a new lot
                   </button>

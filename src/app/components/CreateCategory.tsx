@@ -6,13 +6,13 @@ import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 
-const CreateCategory = ({ thingId, onCategoryCreated }: { thingId: string, onCategoryCreated: () => void }) => {
+const CreateCategory = ({ lotId, onCategoryCreated }: { lotId: string, onCategoryCreated: () => void }) => {
     const { pending } = useFormStatus()
     const [categoryName, setCategoryName] = React.useState<string | undefined>('')
 
     const createCategory = () => {
         const formData = new FormData()
-        formData.append('thingId', thingId)
+        formData.append('lotId', lotId)
         formData.append('categoryName', categoryName as string)
 
         setCategoryName('')
@@ -32,7 +32,7 @@ const CreateCategory = ({ thingId, onCategoryCreated }: { thingId: string, onCat
                     className='w-full border border-slate-500 rounded-md p-2'
                     onChange={(e) => setCategoryName(e.target.value)}
                 />
-                <input type="hidden" name="thingId" value={thingId} />
+                <input type="hidden" name="lotId" value={lotId} />
                 {
                     pending ? (
                         <Button disabled size='lg'>

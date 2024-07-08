@@ -5,31 +5,35 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const id = req.nextUrl.pathname.split('/').pop();
 
     try {
-        const data = await prisma.thing.findUnique({
+        const data = await prisma.lot.findUnique({
             where: {
                 id: id as string
             },
             select: {
                 id: true,
-                userid: true,
+                userId: true,
                 name: true,
                 description: true,
                 category: true,
                 country: true,
                 city: true,
-                photothing: true,
-                youneed: true,
-                photoyouneed: true
+                photolot: true,
+                exchangeOffer: true,
+                Favorite: {
+                    select: {
+                        id: true
+                    }
+                }
             }
         });
 
         if (!data) {
-            return NextResponse.json({ message: 'Thing not found' }, { status: 404 });
+            return NextResponse.json({ message: 'Lot not found' }, { status: 404 });
         }
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching thing:', error);
-        return NextResponse.json({ message: 'Error fetching thing' }, { status: 500 });
+        console.error('Error fetching lot:', error);
+        return NextResponse.json({ message: 'Error fetching lot' }, { status: 500 });
     }
 }

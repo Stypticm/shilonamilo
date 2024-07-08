@@ -32,7 +32,7 @@ const FavoriteRoute = ({ params }: { params: { id: string } }) => {
     }
 
     const handleClick = (id: string) => {
-        router.push(`/thing/${id}`)
+        router.push(`/lot/${id}`)
     }
 
     return (

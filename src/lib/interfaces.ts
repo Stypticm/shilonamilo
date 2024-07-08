@@ -1,7 +1,7 @@
 export interface Favorite {
   id: string;
-  userid: string | null;
-  thingid: string | null;
+  userId: string | null;
+  lotId: string | null;
   createdat: Date;
 }
 
@@ -13,39 +13,54 @@ export interface User {
   accessToken?: string | null;
 }
 
-export interface Thing {
+export interface Lot {
   id: string;
+  userId?: string | null;
   name?: string | null;
   description?: string | null;
+  exchangeOffer?: string | null
   country?: string | null;
   city?: string | null;
   category?: string | null;
-  youneed?: string | null;
-  photothing?: string | null;
-  photoyouneed?: string | null;
-  userid?: string | null;
+  photolot?: string | null;
+
   addedcategory?: boolean | null;
   addeddescription?: boolean | null;
   addedlocation?: boolean | null;
-  addedyouneed?: boolean | null;
+
+  createdAt?: string | Date | null;
+
   isInFavoriteList?: boolean | null;
-  createdat?: string | Date | null;
+
   Favorite?: Omit<Favorite, 'createdat'>[] | null;
+  favoriteId?: string | null;
+
+  Proposal?: Omit<Proposal, 'createdat' | 'updatedAt'>[] | null;
+  ReceivedProposal?: Omit<Proposal, 'createdat' | 'updatedAt'>[] | null;
+}
+
+export interface Proposal {
+  id: string;
+  lotId: string | null;
+  offeredLotId: string | null;
+  // status: string | null;
+  createdat?: Date | null;
+  updatedAt?: Date | null;
 }
 
 export interface ICard {
   id: string;
+  userId?: string | null;
   name?: string | null;
   description?: string | null;
   country?: string | null;
   city?: string | null;
-  photothing?: string | null;
-  photoyouneed?: string | null;
+  photolot?: string | null;
   isInFavoriteList?: boolean | null;
+
   handleClick?: (id: string) => void | undefined;
-  userId?: string | undefined;
-  thingId?: string;
-  favoriteId?: string;
+  lotId?: string;
+  favoriteId?: string | null;
   pathName?: string;
   updateFavorites?: () => void | undefined;
 }

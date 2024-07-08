@@ -6,38 +6,34 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma/db'
 import { revalidatePath } from 'next/cache';
 
-export async function createNewThing({ userId }: { userId: string }) {
-    const data = await prisma.thing.findFirst({
+export async function createNewLot({ userId }: { userId: string }) {
+    const data = await prisma.lot.findFirst({
         where: {
-            userid: userId
+            userId: userId
         },
         orderBy: {
-            createdat: 'desc'
+            createdAt: 'desc'
         }
     })
 
-    console.log(data)
-
     if (data === null) {
-        const data = await prisma.thing.create({
+        const data = await prisma.lot.create({
             data: {
-                userid: userId,
+                userId: userId,
             }
         })
 
         return redirect(`/create/${data.id}/structure`)
-    } else if (!data.addedcategory && !data.addeddescription && !data.addedyouneed && !data.addedlocation) {
+    } else if (!data.addedcategory && !data.addeddescription && !data.addedlocation) {
         return redirect(`/create/${data.id}/structure`)
-    } else if (data.addedcategory && !data.addeddescription && !data.addedyouneed && !data.addedlocation) {
+    } else if (data.addedcategory && !data.addeddescription && !data.addedlocation) {
         return redirect(`/create/${data.id}/description`)
-    } else if (data.addedcategory && data.addeddescription && !data.addedyouneed && !data.addedlocation) {
-        return redirect(`/create/${data.id}/ineed`)
-    } else if (data.addedcategory && data.addeddescription && data.addedyouneed && !data.addedlocation) {
+    } else if (!data.addedcategory && data.addeddescription && !data.addedlocation) {
         return redirect(`/create/${data.id}/location`)
-    } else if (data.addedcategory && data.addeddescription && data.addedyouneed && data.addedlocation) {
-        const data = await prisma.thing.create({
+    } else if (data.addedcategory && data.addeddescription && data.addedlocation) {
+        const data = await prisma.lot.create({
             data: {
-                userid: userId
+                userId: userId
             }
         })
         return redirect(`/create/${data.id}/structure`)
@@ -46,7 +42,7 @@ export async function createNewThing({ userId }: { userId: string }) {
 
 export async function createNewCategory(formData: FormData) {
     const categoryName = formData.get('categoryName')
-    await prisma.categories.create(
+    await prisma.category.create(
         {
             data: {
                 name: categoryName as string
@@ -56,13 +52,13 @@ export async function createNewCategory(formData: FormData) {
 }
 
 export async function createCategoryPage(formData: FormData) {
-    const thingId = formData.get('thingId') as string
+    const lotId = formData.get('lotId') as string
     const categoryName = formData.get('categoryName') as string
 
-    await prisma.thing.update(
+    await prisma.lot.update(
         {
             where: {
-                id: thingId
+                id: lotId
             },
             data: {
                 category: categoryName,
@@ -75,40 +71,41 @@ export async function createCategoryPage(formData: FormData) {
 }
 
 export async function createDescription(formData: FormData) {
-    const thingId = formData.get('thingId') as string;
+    const lotId = formData.get('lotId') as string;
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-    const photoThingFile = formData.get('photoThingFile') as File;
-    const photoThingURL = formData.get('photoThingURL') as string;
+    const photoLotFile = formData.get('photoLotFile') as File;
+    const photoLotURL = formData.get('photoLotURL') as string;
+    const exchange = formData.get('exchange') as string;
 
     if (!name || !description) {
         return { error: "Name and description fields must be filled" };
     }
 
     try {
-        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
+        const currentData = await prisma.lot.findUnique({ where: { id: lotId } });
 
         const currentName = currentData?.name;
         const currentDescription = currentData?.description;
-        const currentPhotoURL = currentData?.photothing;
+        const currentPhotoURL = currentData?.photolot;
 
         if (currentName === name && currentDescription === description && currentPhotoURL) {
             return { success: true, text: "Nothing changed" };
         } else if (currentName !== name || currentDescription !== description || currentPhotoURL) {
             let photoURL = currentPhotoURL;
 
-            if (photoThingFile) {
-                if (photoThingFile && !currentPhotoURL) {
-                    const mountainsRef = ref(storage, `${thingId}/${photoThingFile.name}`);
-                    await uploadBytes(mountainsRef, photoThingFile);
+            if (photoLotFile) {
+                if (photoLotFile && !currentPhotoURL) {
+                    const mountainsRef = ref(storage, `${lotId}/${photoLotFile.name}`);
+                    await uploadBytes(mountainsRef, photoLotFile);
                     photoURL = await getDownloadURL(mountainsRef);
                 }
-            } else if (photoThingURL) {
+            } else if (photoLotURL) {
                 try {
-                    const response = await fetch(photoThingURL);
+                    const response = await fetch(photoLotURL);
                     const blob = await response.blob();
                     const fileName = `externam-photo.${blob.type.split('/')[1]}`;
-                    const urlRef = ref(storage, `${thingId}/${fileName}`);
+                    const urlRef = ref(storage, `${lotId}/${fileName}`);
                     await uploadBytes(urlRef, blob);
                     photoURL = await getDownloadURL(urlRef);
                 } catch (error) {
@@ -117,14 +114,15 @@ export async function createDescription(formData: FormData) {
                 }
             }
 
-            await prisma.thing.update({
+            await prisma.lot.update({
                 where: {
-                    id: thingId
+                    id: lotId
                 },
                 data: {
                     name: name,
                     description: description,
-                    photothing: photoURL,
+                    photolot: photoURL,
+                    exchangeOffer: exchange,
                     addeddescription: true
                 }
             })
@@ -136,68 +134,68 @@ export async function createDescription(formData: FormData) {
     }
 }
 
-export async function createWhatYouNeed(formData: FormData) {
-    const thingId = formData.get('thingId') as string;
-    const name = formData.get('name') as string;
-    const photoYouNeedURL = formData.get('photoYouNeedURL') as string;
-    const photoYouNeedFile = formData.get('photoYouNeedFile') as File;
+// export async function createWhatYouNeed(formData: FormData) {
+//     const thingId = formData.get('thingId') as string;
+//     const name = formData.get('name') as string;
+//     const photoYouNeedURL = formData.get('photoYouNeedURL') as string;
+//     const photoYouNeedFile = formData.get('photoYouNeedFile') as File;
 
-    if (!name) {
-        return { error: "Name field must be filled" };
-    }
+//     if (!name) {
+//         return { error: "Name field must be filled" };
+//     }
 
-    try {
-        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
+//     try {
+//         const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
 
-        const currentName = currentData?.youneed;
-        const currentPhotoYouNeed = currentData?.photoyouneed;
+//         const currentName = currentData?.youneed;
+//         const currentPhotoYouNeed = currentData?.photoyouneed;
 
-        if (currentName === name && currentPhotoYouNeed) {
-            return { success: true, text: "Nothing changed" };
-        } else if (currentName !== name || currentPhotoYouNeed) {
-            let photoURL = currentPhotoYouNeed;
+//         if (currentName === name && currentPhotoYouNeed) {
+//             return { success: true, text: "Nothing changed" };
+//         } else if (currentName !== name || currentPhotoYouNeed) {
+//             let photoURL = currentPhotoYouNeed;
 
-            if (photoYouNeedFile) {
-                if (photoYouNeedFile && !currentPhotoYouNeed) {
-                    const mountainsRef = ref(storage, `${thingId}/${photoYouNeedFile.name}`);
-                    await uploadBytes(mountainsRef, photoYouNeedFile);
-                    photoURL = await getDownloadURL(mountainsRef);
-                }
-            } else if (photoYouNeedURL) {
-                try {
-                    const response = await fetch(photoYouNeedURL);
-                    const blob = await response.blob();
-                    const fileExptension = photoYouNeedURL.split('.').pop();
-                    const fileName = `externam-photo.${fileExptension}`;
-                    const urlRef = ref(storage, `${thingId}/${fileName}`);
-                    await uploadBytes(urlRef, blob as Blob);
-                    photoURL = await getDownloadURL(urlRef);
-                } catch (error) {
-                    console.log(error)
-                    return { error: "Error uploading photo" };
-                }
-            }
+//             if (photoYouNeedFile) {
+//                 if (photoYouNeedFile && !currentPhotoYouNeed) {
+//                     const mountainsRef = ref(storage, `${thingId}/${photoYouNeedFile.name}`);
+//                     await uploadBytes(mountainsRef, photoYouNeedFile);
+//                     photoURL = await getDownloadURL(mountainsRef);
+//                 }
+//             } else if (photoYouNeedURL) {
+//                 try {
+//                     const response = await fetch(photoYouNeedURL);
+//                     const blob = await response.blob();
+//                     const fileExptension = photoYouNeedURL.split('.').pop();
+//                     const fileName = `externam-photo.${fileExptension}`;
+//                     const urlRef = ref(storage, `${thingId}/${fileName}`);
+//                     await uploadBytes(urlRef, blob as Blob);
+//                     photoURL = await getDownloadURL(urlRef);
+//                 } catch (error) {
+//                     console.log(error)
+//                     return { error: "Error uploading photo" };
+//                 }
+//             }
 
-            await prisma.thing.update({
-                where: {
-                    id: thingId
-                },
-                data: {
-                    youneed: name,
-                    photoyouneed: photoURL,
-                    addedyouneed: true
-                }
-            })
-            return { success: true, redirect: true };
-        }
-    } catch (error) {
-        console.log(error)
-        return { error: "Error uploading photo" };
-    }
-}
+//             await prisma.thing.update({
+//                 where: {
+//                     id: thingId
+//                 },
+//                 data: {
+//                     youneed: name,
+//                     photoyouneed: photoURL,
+//                     addedyouneed: true
+//                 }
+//             })
+//             return { success: true, redirect: true };
+//         }
+//     } catch (error) {
+//         console.log(error)
+//         return { error: "Error uploading photo" };
+//     }
+// }
 
 export async function createLocation(formData: FormData) {
-    const thingId = formData.get('thingId') as string;
+    const lotId = formData.get('lotId') as string;
     const country = formData.get('country') as string;
     const city = formData.get('city') as string;
 
@@ -206,7 +204,7 @@ export async function createLocation(formData: FormData) {
     }
 
     try {
-        const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
+        const currentData = await prisma.lot.findUnique({ where: { id: lotId } });
 
         const currentCountry = currentData?.country;
         const currentCity = currentData?.city;
@@ -214,9 +212,9 @@ export async function createLocation(formData: FormData) {
         if (currentCountry === country && currentCity === city) {
             return { success: true, text: "Nothing changed" };
         } else if (currentCountry !== country || currentCity !== city) {
-            await prisma.thing.update({
+            await prisma.lot.update({
                 where: {
-                    id: thingId
+                    id: lotId
                 },
                 data: {
                     country: country,
@@ -233,15 +231,15 @@ export async function createLocation(formData: FormData) {
 }
 
 export async function addToFavorite(formData: FormData) {
-    const thingId = formData.get('thingId') as string;
+    const lotId = formData.get('lotId') as string;
     const userId = formData.get('userId') as string;
     const pathName = formData.get('pathName') as string;
 
     try {
         await prisma.favorite.create({
             data: {
-                thingid: thingId,
-                userid: userId
+                lotId: lotId,
+                userId: userId
             }
         })
 
@@ -253,15 +251,15 @@ export async function addToFavorite(formData: FormData) {
 }
 
 export async function removeFromFavorite(formData: FormData) {
-    const favoriteId = formData.get('favoriteId') as string;
+    const lotId = formData.get('lotId') as string;
     const userId = formData.get('userId') as string;
     const pathName = formData.get('pathName') as string;
 
     try {
-        await prisma.favorite.delete({
+        await prisma.favorite.deleteMany({
             where: {
-                id: favoriteId,
-                userid: userId
+                lotId: lotId,
+                userId: userId
             }
         })
 

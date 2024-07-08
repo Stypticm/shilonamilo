@@ -9,7 +9,7 @@ const SearchComponent = () => {
   return (
     <>
       <div className='w-2/4 mx-auto  flex justify-center items-center mb-5'>
-        <Input type="text" name="thing" placeholder="Search" className='rounded-full' startIcon={Search} />
+        <Input type="text" name="lot" placeholder="Search" className='rounded-full' startIcon={Search} />
       </div>
     </>
   )

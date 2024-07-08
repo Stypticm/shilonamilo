@@ -33,7 +33,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
     const handleChooseCategory = async () => {
         const formData = new FormData();
-        formData.append('thingId', params.id);
+        formData.append('lotId', params.id);
         formData.append('categoryName', selectedCategory as string);
 
         try {
@@ -58,7 +58,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
             </div>
 
             <form action={handleChooseCategory}>
-                <input type="hidden" name="thingId" value={params.id} />
+                <input type="hidden" name="lotId" value={params.id} />
                 <input type="hidden" name="categoryName" value={selectedCategory as string} />
 
                 <div className='w-3/5 mx-auto mt-2'>
@@ -80,7 +80,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
                 <CreationButtonBar />
             </form>
-            <CreateCategory onCategoryCreated={fetchCategories} thingId={params.id} />
+            <CreateCategory onCategoryCreated={fetchCategories} lotId={params.id} />
         </>
     )
 }
