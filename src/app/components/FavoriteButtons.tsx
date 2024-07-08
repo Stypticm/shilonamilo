@@ -1,14 +1,10 @@
 import { ICard } from '@/lib/interfaces'
 import React, { useState } from 'react'
-import Image from 'next/image'
 import { AddToFavoriteButton, DeleteFromFavoriteButton } from './SubmitButtons'
 import { addToFavorite, removeFromFavorite } from '../actions'
 
-const Card = ({
+const FavoriteButtons = ({
     id,
-    name,
-    country,
-    city,
     userId,
     isInFavoriteList,
     favoriteId,
@@ -37,7 +33,7 @@ const Card = ({
     const handleRemoveFromFavorite = async (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData();
-        formData.append('favoriteId', favoriteId as string);
+        formData.append('lotId', id);
         formData.append('userId', userId as string);
         formData.append('pathName', pathName as string);
 
@@ -49,9 +45,9 @@ const Card = ({
             console.error('Failed to remove from favorite:', error);
         }
     };
-    
+
     return (
-        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id}>
+        <section className='rounded-lgr releative flex flex-col cursor-pointer ml-10' key={id}>
             <div className='relative h-72'>
                 {
                     userId && (
@@ -59,7 +55,7 @@ const Card = ({
                             {
                                 isFavorite ? (
                                     <form onSubmit={handleRemoveFromFavorite}>
-                                        <input type="hidden" name="favoriteId" value={favoriteId} />
+                                        <input type="hidden" name="lotId" value={id} />
                                         <input type="hidden" name="userId" value={userId} />
                                         <input type="hidden" name="pathName" value={pathName} />
                                         <DeleteFromFavoriteButton />
@@ -77,10 +73,8 @@ const Card = ({
                     )
                 }
             </div>
-            <p className='text-xl font-bold'>{name}</p>
-            <p className='text-lg'>{country}, {city}</p>
         </section>
     )
 }
 
-export default Card
+export default FavoriteButtons

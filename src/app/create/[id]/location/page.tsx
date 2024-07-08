@@ -64,7 +64,7 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
   }
 
   const clientAction = async (formData: FormData) => {
-    formData.append('thingId', params.id)
+    formData.append('lotId', params.id)
     formData.append('country', country as string)
     formData.append('city', city as string)
 
@@ -91,7 +91,7 @@ const LocationRoute = ({ params }: { params: { id: string } }) => {
       </div>
 
       <form action={clientAction}>
-        <input type="hidden" name="thingId" value={params.id} />
+        <input type="hidden" name="lotId" value={params.id} />
         <div className='w-3/5 mx-auto mt-2 flex flex-col gap-4'>
           <Select onValueChange={setCountry} value={country as string}>
             <SelectTrigger>

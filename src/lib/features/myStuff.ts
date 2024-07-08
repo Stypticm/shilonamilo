@@ -3,34 +3,34 @@
 import prisma from '../prisma/db'
 
 export const getMyStuff = (id: string) => {
-    const data = prisma.thing.findMany({
+    const data = prisma.lot.findMany({
         where: {
-            userid: id
+            userId: id
         }
     })
 
     return data
 }
 
-export const findThingByUserIdAndThingId = async (userId: string, thingId: string) => {
+export const findLotByUserIdAndLotId = async (userId: string, lotId: string) => {
     try {
-        const data = await prisma.thing.findFirst({
+        const data = await prisma.lot.findFirst({
             where: {
-                id: thingId,
-                userid: userId,
+                id: lotId,
+                userId: userId,
             },
         });
 
         return data !== null;
     } catch (error) {
-        console.error('Error finding thing:', error);
+        console.error('Error finding lot:', error);
         return false;
     }
 };
 
-export const deleteThing = async (id: string) => {
+export const deleteLot = async (id: string) => {
     try {
-        await prisma.thing.delete({
+        await prisma.lot.delete({
             where: {
                 id: id
             }
@@ -44,7 +44,7 @@ export const deleteThing = async (id: string) => {
 
 export const getThingById = async (id: string) => {
     try {
-        const data = await prisma.thing.findUnique({
+        const data = await prisma.lot.findUnique({
             where: {
                 id: id
             }

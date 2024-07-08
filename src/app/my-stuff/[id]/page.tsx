@@ -1,7 +1,7 @@
 'use client'
 
 import { getMyStuff } from '@/lib/features/myStuff'
-import { Thing } from '@/lib/interfaces'
+import { Lot } from '@/lib/interfaces'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import NoItems from '@/app/components/NoItems'
@@ -21,7 +21,7 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
     
     const memoizedUser = useMemo(() => user, [user]);
 
-    const [myStuff, setMyStuff] = useState<Thing[]>([])
+    const [myStuff, setMyStuff] = useState<Lot[]>([])
 
     useEffect(() => {
         const fetchMyStuff = async () => {
@@ -36,14 +36,14 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
     }, [])
 
     const handleClick = (id: string) => {
-        router.push(`/thing/${id}`)
+        router.push(`/lot/${id}`)
     }
 
     return (
         <>
             <section className='w-[95%] h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center align-items-center'>
-                {myStuff.length > 0 && myStuff.map(thing => (
-                    <Card key={thing.id} userId={memoizedUser?.uid} {...thing} handleClick={handleClick}/>
+                {myStuff.length > 0 && myStuff.map(lot => (
+                    <Card key={lot.id} userId={memoizedUser?.uid} {...lot} handleClick={handleClick}/>
                 ))}
             </section>
 

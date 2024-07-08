@@ -1,13 +1,14 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getAllThings } from '@/lib/currentData'
-import { Thing } from '@/lib/interfaces'
+import { getAllLots } from '@/lib/currentData'
+import { Lot } from '@/lib/interfaces'
 import { User as CurrentUser } from '@/lib/interfaces'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { format, formatDate } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton'
 
 const MainContent = () => {
   const router = useRouter()
@@ -21,27 +22,40 @@ const MainContent = () => {
 
   const memoizedUser = useMemo(() => user, [user]);
 
-  const [allThings, setAllThings] = useState<Thing[]>([])
+  const [allLots, setAllLots] = useState<Lot[]>([])
 
-  const fetchThings = async () => {
+  const fetchLots = async () => {
     try {
-      const things = await getAllThings(memoizedUser?.uid)
-      console.log(things)
-      setAllThings(things as Thing[])
+      const lots = await getAllLots(memoizedUser?.uid)
+      setAllLots(lots as Lot[])
     } catch (error) {
-      console.error('Failed to fetch things:', error)
+      console.error('Failed to fetch lots:', error)
     }
   }
 
   useEffect(() => {
-    fetchThings()
+    fetchLots()
   }, [memoizedUser])
 
   const handleClick = (id: string) => {
-    router.push(`/thing/${id}`)
+    router.push(`/lot/${id}`)
   }
 
   // grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center align-items-center
+
+  if (!allLots) {
+    return (
+      <TableBody>
+        <TableRow>
+          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
+          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
+          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
+          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
+          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
+        </TableRow>
+      </TableBody>
+    )
+  }
 
   return (
     <div className='w-full h-full'>
@@ -56,23 +70,24 @@ const MainContent = () => {
             <TableHead className='text-center text-slate-900 font-bold'>Created at</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {
-
-            allThings.map((thing: Thing) => (
-              <TableRow key={thing.id} onClick={() => handleClick(thing.id)} className='cursor-pointer'>
-                <TableCell className='text-center capitalize'>{thing.name}</TableCell>
-                <TableCell className='text-center capitalize'>{thing.category}</TableCell>
-                <TableCell className='text-center capitalize'>{thing.youneed}</TableCell>
-                <TableCell className='text-center capitalize'>{thing.country}</TableCell>
-                <TableCell className='text-center capitalize'>{thing.city}</TableCell>
-                <TableCell className='text-center'>
-                  {thing.createdat ? format(new Date(thing.createdat), 'dd/MM/yyyy') : ''}
-                </TableCell>
-              </TableRow>
-            ))
-          }
-        </TableBody>
+        <Suspense fallback={<div>Loading...</div>}>
+          <TableBody>
+            {
+              allLots.map((lot: Lot) => (
+                <TableRow key={lot.id} onClick={() => handleClick(lot.id)} className='cursor-pointer'>
+                  <TableCell className='text-center capitalize'>{lot.name}</TableCell>
+                  <TableCell className='text-center capitalize'>{lot.category}</TableCell>
+                  <TableCell className='text-center capitalize'>{lot.exchangeOffer}</TableCell>
+                  <TableCell className='text-center capitalize'>{lot.country}</TableCell>
+                  <TableCell className='text-center capitalize'>{lot.city}</TableCell>
+                  <TableCell className='text-center'>
+                    {lot.createdAt ? format(new Date(lot.createdAt), 'dd/MM/yyyy') : ''}
+                  </TableCell>
+                </TableRow>
+              ))
+            }
+          </TableBody>
+        </Suspense>
       </Table>
     </div>
   )

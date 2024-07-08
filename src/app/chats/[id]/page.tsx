@@ -30,7 +30,7 @@ const ChatsRoute = () => {
                 </header>
                 <main className='mt-5'>
                     <section>
-                        <Input type="text" name="thing" placeholder="Search" className='rounded-full' startIcon={Search} />
+                        <Input type="text" name="lot" placeholder="Search" className='rounded-full' startIcon={Search} />
                     </section>
                     <ChatsUser userPhoto={memoizedUser?.photoURL as string}/>
                 </main>
