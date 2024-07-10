@@ -58,3 +58,20 @@ export const DeleteFromFavoriteButton = () => {
         </>
     )
 }
+
+export const EditSubmit = () => {
+    const { pending } = useFormStatus()
+
+    return (
+        <>
+            {pending ? (
+                <Button disabled size='lg'>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Please wait
+                </Button>
+            ) : (
+                <Button type='submit' variant='secondary' size='lg'>Save</Button>
+            )}
+        </>
+    )
+}
