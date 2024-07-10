@@ -1,5 +1,5 @@
-import { pool } from '@/lib/db';
 import { adminAuth } from '@/lib/firebase/firebase-admin';
+import prisma from '@/lib/prisma/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -22,20 +22,23 @@ export async function POST(req: NextRequest) {
 
         const { uid, name, picture } = decodedToken
 
-        const result = await pool.query('SELECT * FROM "User" WHERE id = $1', [uid])
+        const result = await prisma.user.findUnique({
+            where: {
+                id: uid
+            }
+        })
 
-        let dbUser = result.rows[0]
+        let dbUser = result
 
         if (!dbUser) {
-            const insertResult = await pool.query(
-                'INSERT INTO "User" (id, firstname, email, photourl) VALUES ($1, $2, $3, $4) RETURNING *',
-                [
-                    uid,
-                    name || body.name,
-                    body.email,
-                    picture || 'https://i.pinimg.com/474x/f1/da/a7/f1daa70c9e3343cebd66ac2342d5be3f.jpg'
-                ]
-            )
+            await prisma.user.create({
+                data: {
+                    id: uid,
+                    firstname: name || body.name,
+                    email: body.email,
+                    photourl: picture || 'https://i.pinimg.com/474x/f1/da/a7/f1daa70c9e3343cebd66ac2342d5be3f.jpg'
+                }
+            })
         }
         
         return NextResponse.redirect('http://localhost:3000');
@@ -64,17 +67,24 @@ export async function GET(req: NextRequest) {
 
         const { uid, email, name, picture } = decodedToken
 
-        const result = await pool.query('SELECT * FROM "User" WHERE id = $1', [uid])
+        const result = await prisma.user.findUnique({
+            where: {
+                id: uid
+            }
+        })
 
-        let dbUser = result.rows[0]
+        let dbUser = result
 
         if (!dbUser) {
-            const insertResult = await pool.query(
-                'INSERT INTO "User" (id, firstname, email, photourl) VALUES ($1, $2, $3, $4) RETURNING *',
-                [uid, name, email,
-                    picture || 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg'
-                ]
-            )
+
+            await prisma.user.create({
+                data: {
+                    id: uid,
+                    firstname: name as string,
+                    email: email as string,
+                    photourl: picture || 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg'
+                }
+            })
         }
 
         return NextResponse.redirect('http://localhost:3000/');

@@ -2,6 +2,7 @@
 
 import { createDescription } from '@/app/actions'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
+import TogglePhotoUrlFile from '@/app/components/TogglePhotoUrlFile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,8 +21,6 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
     const [exchangeOffer, setExchangeOffer] = useState<string>('')
     const [photoLotFile, setPhotoLotFile] = useState<string | null>(null)
     const [photoLotURL, setPhotoLotURL] = useState<string | null>(null)
-
-    const [toggleButton, setToggleButton] = useState<boolean>(false)
 
     const clientAction = async (formData: FormData) => {
         formData.append('lotId', params.id)
@@ -78,50 +77,17 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
                 <div className='w-3/5 flex flex-col mx-auto gap-4 mt-2'>
                     <div className='flex justify-around gap-4 w-full'>
                         <Label className='flex items-center justify-start w-2/12'>Name</Label>
-                        <Input name="name" type="text" placeholder="Name of your lot" value={name} onChange={(e) => setName(e.target.value)} className='flex ml-auto'/>
+                        <Input name="name" type="text" placeholder="Name of your lot" value={name} onChange={(e) => setName(e.target.value)} className='flex ml-auto' />
                     </div>
 
                     <div className='flex gap-4 w-full'>
                         <Label className='flex items-center justify-start w-2/12'>Description</Label>
-                        <Textarea placeholder="Try to describe your lot, and quality" value={description} onChange={(e) => setDescription(e.target.value)} className='flex ml-auto'/>
+                        <Textarea placeholder="Try to describe your lot, and quality" value={description} onChange={(e) => setDescription(e.target.value)} className='flex ml-auto' />
                     </div>
-                    <div className='flex w-full gap-4'>
-                        <Label className='flex items-center justify-start w-2/12'>Photo</Label>
-                        <div className='flex flex-row w-full gap-2'>
-                            {
-                                !toggleButton ?
-                                    <>
-                                        {
-                                            photoLotFile ?
-                                                <Input name="photoLotFile" type="file" disabled /> :
-                                                <Input name="photoLotFile" type="file" />
-                                        }
-                                    </> :
-                                    <>
-                                        {
-                                            photoLotURL ?
-                                                <Input name="photoLotURL" type="text" placeholder='Insert photo url' disabled /> :
-                                                <Input name="photoLotURL" type="text" placeholder='Insert photo url' />
-                                        }
-
-                                    </>
-                            }
-                            {
-                                photoLotURL &&
-                                <section className='flex gap-4 items-center'>
-                                    <img src={photoLotURL} alt="Photo lot" className='w-1/5' />
-                                </section>
-                            }
-                            <div className='text-center'>
-                                <Button variant="secondary" onClick={() => setToggleButton(!toggleButton)}>{
-                                    toggleButton ? 'Choose File' : 'Insert URL'
-                                }</Button>
-                            </div>
-                        </div>
-                    </div>
+                    <TogglePhotoUrlFile photoLotFile={photoLotFile} photoLotURL={photoLotURL} setPhotoLotFile={setPhotoLotFile} setPhotoLotURL={setPhotoLotURL} />
                     <div className='flex w-full gap-4'>
                         <Label className='flex items-center justify-start w-2/12'>Exchange</Label>
-                        <Input name="exchangeOffer" type="text" placeholder="Possible exchange offer" value={exchangeOffer} onChange={(e) => setExchangeOffer(e.target.value)} className='flex ml-auto'/>
+                        <Input name="exchangeOffer" type="text" placeholder="Possible exchange offer" value={exchangeOffer} onChange={(e) => setExchangeOffer(e.target.value)} className='flex ml-auto' />
                     </div>
                 </div>
 

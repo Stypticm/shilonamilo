@@ -42,7 +42,7 @@ export const deleteLot = async (id: string) => {
     }
 }
 
-export const getThingById = async (id: string) => {
+export const getLotById = async (id: string) => {
     try {
         const data = await prisma.lot.findUnique({
             where: {
