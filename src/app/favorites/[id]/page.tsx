@@ -45,11 +45,11 @@ const FavoriteRoute = ({ params }: { params: { id: string } }) => {
                         name={item.Thing?.name as string}
                         country={item.Thing?.country as string}
                         city={item.Thing?.city as string}
-                        photothing={item.Thing?.photothing as string}
+                        photolot={item.Thing?.photothing as string}
                         handleClick={handleClick}
                         userId={currentUser?.uid as string}
                         isInFavoriteList={!!item.Thing?.Favorite.length}
-                        thingId={item.thingId as string}
+                        lotId={item.thingId as string}
                         favoriteId={item.id as string}
                         pathName={`/favorites/${currentUser?.uid as string}`}
                         updateFavorites={updateFavorites}

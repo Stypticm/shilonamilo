@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { initAuthState, handleLogout } from '@/lib/firebase/auth/authInitialState'
 import { createNewLot } from '../actions'
-import { AlignJustify, MenuIcon } from 'lucide-react'
+import { MenuIcon } from 'lucide-react'
 
 const Menu: React.FC = () => {
 
@@ -69,6 +69,11 @@ const Menu: React.FC = () => {
               <DropdownMenuItem>
                 <Link href={`/favorites/${user.uid}`} className='w-full'>
                   Favorite lots
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/offers/${user.uid}`} className='w-full'>
+                  Offers
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>

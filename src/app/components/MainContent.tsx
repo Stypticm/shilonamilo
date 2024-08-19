@@ -64,7 +64,7 @@ const MainContent = () => {
           <TableRow>
             <TableHead className='text-center text-slate-900 font-bold'>Lot</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Category</TableHead>
-            <TableHead className='text-center text-slate-900 font-bold'>Posible variant for change</TableHead>
+            <TableHead className='text-center text-slate-900 font-bold'>Possible variant for change</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Country</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>City</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Created at</TableHead>
