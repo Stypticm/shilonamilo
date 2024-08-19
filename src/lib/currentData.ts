@@ -1,3 +1,4 @@
+import { getLotById } from './features/myStuff';
 'use server'
 
 import prisma from './prisma/db'
@@ -42,7 +43,7 @@ export const choosedDescription = async (id: string) => {
 //             id
 //         },
 //         select: {
-            
+
 //             photoyouneed: true
 //         }
 //     })
@@ -120,7 +121,7 @@ export const getFavorites = async (userId: string) => {
                 }
             }
         })
-    
+
         return data
     } catch (error) {
         throw new Error(`Failed to fetch favorites: ${error}`)

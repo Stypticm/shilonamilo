@@ -41,7 +41,7 @@ model Lot {
   addedlocation    Boolean?
 
   Favorite         Favorite[]
-  Poroposal        Proposal[] @relation("LotProposals")
+  Proposal         Proposal[] @relation("LotProposals")
   ReceivedProposal Proposal[] @relation("LotOffers")
   User             User?      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -62,8 +62,13 @@ model Proposal {
   updatedAt DateTime? @default(now()) @db.Timestamp(6)
 
   lotId String? @db.VarChar(255)
-  Lot   Lot?    @relation("LotProposals", fields: [lotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  lot   Lot?    @relation("LotProposals", fields: [lotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   offeredLotId String? @db.VarChar(255)
   offeredLot   Lot?    @relation("LotOffers", fields: [offeredLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  userId        String? @db.VarChar(255)
+  userIdOffered String? @db.VarChar(255)
+
+  status String? @db.VarChar(255)
 }
