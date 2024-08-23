@@ -1,3 +1,4 @@
+import { getLotById } from './features/myStuff';
 'use server'
 
 import prisma from './prisma/db'
@@ -42,7 +43,7 @@ export const choosedDescription = async (id: string) => {
 //             id
 //         },
 //         select: {
-            
+
 //             photoyouneed: true
 //         }
 //     })
@@ -62,32 +63,47 @@ export const citiesOfCountry = async (countryCode: string) => {
 export const getAllLots = async (userId?: string) => {
     noStore();
     try {
-        const allLots = await prisma.lot.findMany({
-            where: {
-                addedcategory: true,
-                addeddescription: true,
-                addedlocation: true,
-            },
-            include: {
-                Favorite: {
-                    where: {
-                        userId: userId ?? undefined
+        if (userId) {
+            const currentLots = await prisma.lot.findMany({
+                where: {
+                    userId: {
+                        not: userId
                     },
-                    select: {
-                        id: true,
-                        userId: true,
-                        lotId: true,
-                    }
+                    addedcategory: true,
+                    addeddescription: true,
+                    addedlocation: true,
                 }
-            }
-        });
 
-        const mappedThings = allLots.map(lot => ({
-            ...lot,
-            isInFavoriteList: lot.Favorite.length > 0
-        }));
+                // include: {
+                //     Favorite: {
+                //         where: {
+                //             userId: userId ?? undefined
+                //         },
+                //         select: {
+                //             id: true,
+                //             userId: true,
+                //             lotId: true,
+                //         }
+                //     }
+                // }
+            });
 
-        return mappedThings
+            // const mappedThings = allLots.map(lot => ({
+            //     ...lot,
+            //     isInFavoriteList: lot.Favorite.length > 0
+            // }));
+
+            return currentLots;
+        } else {
+            const allLots = await prisma.lot.findMany({
+                where: {
+                    addedcategory: true,
+                    addeddescription: true,
+                    addedlocation: true,
+                }
+            });
+            return allLots
+        }
 
     } catch (error) {
         throw new Error(`Failed to fetch all lots: ${error}`);
@@ -120,7 +136,7 @@ export const getFavorites = async (userId: string) => {
                 }
             }
         })
-    
+
         return data
     } catch (error) {
         throw new Error(`Failed to fetch favorites: ${error}`)

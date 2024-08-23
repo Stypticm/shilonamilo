@@ -13,7 +13,9 @@ const Card = ({
     isInFavoriteList,
     favoriteId,
     pathName,
-    updateFavorites
+    photolot,
+    updateFavorites,
+    handleClick
 }: ICard) => {
 
     const [isFavorite, setIsFavorite] = useState(isInFavoriteList);
@@ -49,9 +51,13 @@ const Card = ({
             console.error('Failed to remove from favorite:', error);
         }
     };
-    
+
+    const handleClickCard = (id: string) => {
+        if (handleClick) handleClick(id)
+    }
+
     return (
-        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id}>
+        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id} onClick={() => handleClickCard(id)}>
             <div className='relative h-72'>
                 {
                     userId && (
@@ -59,7 +65,7 @@ const Card = ({
                             {
                                 isFavorite ? (
                                     <form onSubmit={handleRemoveFromFavorite}>
-                                        <input type="hidden" name="favoriteId" value={favoriteId} />
+                                        <input type="hidden" name="lotId" value={id} />
                                         <input type="hidden" name="userId" value={userId} />
                                         <input type="hidden" name="pathName" value={pathName} />
                                         <DeleteFromFavoriteButton />
@@ -76,6 +82,14 @@ const Card = ({
                         </div>
                     )
                 }
+                <Image
+                    alt={photolot as string}
+                    src={photolot as string}
+                    className='rounded-lg h-full'
+                    fill
+                    priority
+                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                />
             </div>
             <p className='text-xl font-bold'>{name}</p>
             <p className='text-lg'>{country}, {city}</p>

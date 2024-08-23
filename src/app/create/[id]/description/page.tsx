@@ -87,7 +87,7 @@ const DescriptionRoute = ({ params }: { params: { id: string } }) => {
                     <TogglePhotoUrlFile photoLotFile={photoLotFile} photoLotURL={photoLotURL} setPhotoLotFile={setPhotoLotFile} setPhotoLotURL={setPhotoLotURL} />
                     <div className='flex w-full gap-4'>
                         <Label className='flex items-center justify-start w-2/12'>Exchange</Label>
-                        <Input name="exchangeOffer" type="text" placeholder="Possible exchange offer" value={exchangeOffer} onChange={(e) => setExchangeOffer(e.target.value)} className='flex ml-auto' />
+                        <Input name="exchangeOffer" type="text" placeholder="Possible exchange offer, enter short name" value={exchangeOffer} onChange={(e) => setExchangeOffer(e.target.value)} className='flex ml-auto' />
                     </div>
                 </div>
 

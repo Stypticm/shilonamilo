@@ -27,7 +27,7 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
         const fetchMyStuff = async () => {
             try {
                 const data = await getMyStuff(params.id)
-                setMyStuff(data)
+                setMyStuff(data as Lot[])
             } catch (error) {
                 console.error('Failed to fetch my stuff:', error)
             }

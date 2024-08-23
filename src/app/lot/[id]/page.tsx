@@ -10,13 +10,15 @@ import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import FavoriteButtons from '@/app/components/FavoriteButtons';
-import { fetchFavorites } from '@/lib/features/functionts';
+import { fetchFavorites } from '@/lib/features/functions';
 import TogglePhotoUrlFile from '@/app/components/TogglePhotoUrlFile';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import SaveButtonBar from '@/app/components/SaveButtonBar';
 import { updateLot } from '@/app/actions';
 import { toast } from '@/components/ui/use-toast';
+import ReceivedProposals from '@/app/components/ReceivedProposals';
+import MyLots from '@/app/components/MyLots';
 
 const LotRoute = ({ params }: { params: { id: string } }) => {
     const router = useRouter()
@@ -89,7 +91,7 @@ const LotRoute = ({ params }: { params: { id: string } }) => {
         } else if (result?.redirect) {
             router.push(`/lot/${params.id}`)
         }
-        
+
         setIsEditing(false);
         fetchData();
     };
@@ -237,6 +239,9 @@ const LotRoute = ({ params }: { params: { id: string } }) => {
                             </>
                         )}
                     </div>
+                    {
+                        isLotBelongsToUser ? <ReceivedProposals lotId={params.id as string}/> : <MyLots lotId={params.id as string}/>
+                    }
                 </div>
             </Suspense>
             {

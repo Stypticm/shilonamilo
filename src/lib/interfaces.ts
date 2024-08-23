@@ -35,17 +35,23 @@ export interface Lot {
   Favorite?: Omit<Favorite, 'createdat'>[] | null;
   favoriteId?: string | null;
 
-  Proposal?: Omit<Proposal, 'createdat' | 'updatedAt'>[] | null;
-  ReceivedProposal?: Omit<Proposal, 'createdat' | 'updatedAt'>[] | null;
+  Proposal?: Proposal[]
+  Offers?: Proposal[]
 }
 
 export interface Proposal {
   id: string;
   lotId: string | null;
   offeredLotId: string | null;
-  // status: string | null;
+  status: 'declined' | 'pending' | 'accepted' | 'done';
   createdat?: Date | null;
   updatedAt?: Date | null;
+
+  lot?: Lot;
+  offeredLot?: Lot;
+
+  ownerIdOfTheLot?: string | null;
+  userIdOfferedLot?: string | null;
 }
 
 export interface ICard {

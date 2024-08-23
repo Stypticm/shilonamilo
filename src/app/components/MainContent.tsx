@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getAllLots } from '@/lib/currentData'
 import { Lot } from '@/lib/interfaces'
@@ -14,6 +14,8 @@ const MainContent = () => {
   const router = useRouter()
 
   const [user, setUser] = useState<CurrentUser | null>(null);
+  const [allLots, setAllLots] = useState<Lot[]>([])
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = initAuthState(setUser);
@@ -22,19 +24,24 @@ const MainContent = () => {
 
   const memoizedUser = useMemo(() => user, [user]);
 
-  const [allLots, setAllLots] = useState<Lot[]>([])
 
-  const fetchLots = async () => {
+  const fetchLots = async (userId: string) => {
     try {
-      const lots = await getAllLots(memoizedUser?.uid)
+      const lots = await getAllLots(userId)
       setAllLots(lots as Lot[])
     } catch (error) {
       console.error('Failed to fetch lots:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchLots()
+    if (memoizedUser) {
+      fetchLots(memoizedUser?.uid)
+    } else {
+      fetchLots('')
+    }
   }, [memoizedUser])
 
   const handleClick = (id: string) => {
@@ -43,20 +50,6 @@ const MainContent = () => {
 
   // grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center align-items-center
 
-  if (!allLots) {
-    return (
-      <TableBody>
-        <TableRow>
-          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
-          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
-          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
-          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
-          <TableCell className='text-center text-slate-900 font-bold'><Skeleton className='w-full h-full' /></TableCell>
-        </TableRow>
-      </TableBody>
-    )
-  }
-
   return (
     <div className='w-full h-full'>
       <Table className='w-[95%] h-full mx-auto'>
@@ -64,16 +57,27 @@ const MainContent = () => {
           <TableRow>
             <TableHead className='text-center text-slate-900 font-bold'>Lot</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Category</TableHead>
-            <TableHead className='text-center text-slate-900 font-bold'>Posible variant for change</TableHead>
+            <TableHead className='text-center text-slate-900 font-bold'>Possible variant for change</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Country</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>City</TableHead>
             <TableHead className='text-center text-slate-900 font-bold'>Created at</TableHead>
           </TableRow>
         </TableHeader>
-        <Suspense fallback={<div>Loading...</div>}>
-          <TableBody>
-            {
-              allLots.map((lot: Lot) => (
+        {
+          isLoading ? (
+            <TableBody>
+              <TableRow>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+                <TableCell className='text-center'><Skeleton className='w-full h-8' /></TableCell>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {allLots.map((lot: Lot) => (
                 <TableRow key={lot.id} onClick={() => handleClick(lot.id)} className='cursor-pointer'>
                   <TableCell className='text-center capitalize'>{lot.name}</TableCell>
                   <TableCell className='text-center capitalize'>{lot.category}</TableCell>
@@ -84,12 +88,12 @@ const MainContent = () => {
                     {lot.createdAt ? format(new Date(lot.createdAt), 'dd/MM/yyyy') : ''}
                   </TableCell>
                 </TableRow>
-              ))
-            }
-          </TableBody>
-        </Suspense>
+              ))}
+            </TableBody>
+          )
+        }
       </Table>
-    </div>
+    </div >
   )
 }
 
