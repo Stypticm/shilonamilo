@@ -1,9 +1,9 @@
-import { createDescription, updateLot } from '@/app/actions'
-import { getFavorites } from '../currentData'
-import {User as CurrentUser} from '../interfaces'
+import { updateLot } from '@/app/actions'
+import { getAllLots, getFavorites } from '../currentData'
+import { User as CurrentUser } from '../interfaces'
 import { toast } from '@/components/ui/use-toast'
 
-export const fetchFavorites = async ( user: Pick<CurrentUser, 'uid'>, setFavorites: any) => {
+export const fetchFavorites = async (user: Pick<CurrentUser, 'uid'>, setFavorites: any) => {
     try {
         const data = await getFavorites(user?.uid as string)
         setFavorites(data)

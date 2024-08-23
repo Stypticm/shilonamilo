@@ -135,66 +135,6 @@ export async function createDescription(formData: FormData) {
     }
 }
 
-// export async function createWhatYouNeed(formData: FormData) {
-//     const thingId = formData.get('thingId') as string;
-//     const name = formData.get('name') as string;
-//     const photoYouNeedURL = formData.get('photoYouNeedURL') as string;
-//     const photoYouNeedFile = formData.get('photoYouNeedFile') as File;
-
-//     if (!name) {
-//         return { error: "Name field must be filled" };
-//     }
-
-//     try {
-//         const currentData = await prisma.thing.findUnique({ where: { id: thingId } });
-
-//         const currentName = currentData?.youneed;
-//         const currentPhotoYouNeed = currentData?.photoyouneed;
-
-//         if (currentName === name && currentPhotoYouNeed) {
-//             return { success: true, text: "Nothing changed" };
-//         } else if (currentName !== name || currentPhotoYouNeed) {
-//             let photoURL = currentPhotoYouNeed;
-
-//             if (photoYouNeedFile) {
-//                 if (photoYouNeedFile && !currentPhotoYouNeed) {
-//                     const mountainsRef = ref(storage, `${thingId}/${photoYouNeedFile.name}`);
-//                     await uploadBytes(mountainsRef, photoYouNeedFile);
-//                     photoURL = await getDownloadURL(mountainsRef);
-//                 }
-//             } else if (photoYouNeedURL) {
-//                 try {
-//                     const response = await fetch(photoYouNeedURL);
-//                     const blob = await response.blob();
-//                     const fileExptension = photoYouNeedURL.split('.').pop();
-//                     const fileName = `externam-photo.${fileExptension}`;
-//                     const urlRef = ref(storage, `${thingId}/${fileName}`);
-//                     await uploadBytes(urlRef, blob as Blob);
-//                     photoURL = await getDownloadURL(urlRef);
-//                 } catch (error) {
-//                     console.log(error)
-//                     return { error: "Error uploading photo" };
-//                 }
-//             }
-
-//             await prisma.thing.update({
-//                 where: {
-//                     id: thingId
-//                 },
-//                 data: {
-//                     youneed: name,
-//                     photoyouneed: photoURL,
-//                     addedyouneed: true
-//                 }
-//             })
-//             return { success: true, redirect: true };
-//         }
-//     } catch (error) {
-//         console.log(error)
-//         return { error: "Error uploading photo" };
-//     }
-// }
-
 export async function createLocation(formData: FormData) {
     const lotId = formData.get('lotId') as string;
     const country = formData.get('country') as string;

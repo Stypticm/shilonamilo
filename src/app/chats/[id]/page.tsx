@@ -10,7 +10,7 @@ import ChatMessages from '@/app/components/ChatMessages'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
 import { User as CurrentUser } from '@/lib/interfaces'
 
-const ChatsRoute = () => {
+const ChatIdRoute = () => {
 
     const [user, setUser] = useState<CurrentUser | null>(null);
 
@@ -60,4 +60,4 @@ const ChatsRoute = () => {
     )
 }
 
-export default ChatsRoute
+export default ChatIdRoute
