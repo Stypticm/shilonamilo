@@ -1,14 +1,14 @@
-const LotLayout = ({
+const LotAndChatLayout = ({
     children,
 }: {
     children: React.ReactNode,
-
 }) => {
     return (
-        <div>
+        <div className="">
             {children}
         </div>
+
     )
 }
 
-export default LotLayout
+export default LotAndChatLayout

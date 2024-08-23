@@ -3,22 +3,28 @@
 import prisma from '@/lib/prisma/db';
 import { unstable_noStore as noStore } from 'next/cache'
 
-export const getDataOffers = async (userId: string) => {
+export const getLotsWithOffers = async (userId: string) => {
     noStore();
 
-    const user = await prisma.user.findFirst({
-        where: {
-            id: userId
-        }
-    })
+    try {
+        const lots = await prisma.lot.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                Proposal: {
+                    include: {
+                        offeredLot: true
+                    }
+                }
+            }
+        })
 
-    // try {
-    //     const data = await prisma.proposal.findMany({
-    //         where: {
+        const lotsWithOffers = lots.filter((lot) => lot.Proposal.length > 0);
 
-    //         }
-    //     })
-    // } catch (error) {
-        
-    // }
+        return lotsWithOffers
+    } catch (error) {
+        throw new Error(`Failed to fetch favorites: ${error}`)
+    }
 }
+

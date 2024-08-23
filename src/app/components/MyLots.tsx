@@ -78,13 +78,13 @@ const MyLots = ({ lotId }: { lotId: string }) => {
                                         <TableCell className='text-center capitalize'>{lot.exchangeOffer}</TableCell>
                                         <TableCell className='text-center capitalize'>
                                             {
-                                                lot?.ReceivedProposal?.length === 0
+                                                lot?.Offers?.length === 0
                                                     ? 'Free to exchange'
-                                                    : lot?.ReceivedProposal && lot?.ReceivedProposal[0]?.status
+                                                    : lot?.Offers && lot?.Offers[0]?.status
                                             }
                                         </TableCell>
                                         <TableCell className='text-center'>
-                                            {lot.ReceivedProposal && lot.ReceivedProposal.length > 0 ? (
+                                            {lot.Offers && lot.Offers.length > 0 ? (
                                                 <Button
                                                     disabled
                                                     variant='secondary'
@@ -93,7 +93,7 @@ const MyLots = ({ lotId }: { lotId: string }) => {
                                                         e.stopPropagation();
                                                     }}>
                                                     {
-                                                        lot.ReceivedProposal && lot.ReceivedProposal[0]?.status
+                                                        lot.Offers && lot.Offers[0]?.status
                                                     }
                                                 </Button>
                                             ) : (

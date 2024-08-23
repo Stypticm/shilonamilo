@@ -40,10 +40,13 @@ model Lot {
   addeddescription Boolean?
   addedlocation    Boolean?
 
-  Favorite         Favorite[]
-  Proposal         Proposal[] @relation("LotProposals")
-  ReceivedProposal Proposal[] @relation("LotOffers")
-  User             User?      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Favorite Favorite[]
+  Proposal Proposal[] @relation("LotProposals")
+  Offers   Proposal[] @relation("LotOffers")
+  User     User?      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  MyChats      Chat[] @relation("MyLotChat")
+  PartnerChats Chat[] @relation("PartnerLotChat")
 }
 
 model User {
@@ -67,8 +70,36 @@ model Proposal {
   offeredLotId String? @db.VarChar(255)
   offeredLot   Lot?    @relation("LotOffers", fields: [offeredLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  userId        String? @db.VarChar(255)
-  userIdOffered String? @db.VarChar(255)
+  ownerIdOfTheLot  String? @db.VarChar(255)
+  userIdOfferedLot String? @db.VarChar(255)
 
   status String? @db.VarChar(255)
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+
+  myLotId String? @db.VarChar(255)
+  myLot   Lot?    @relation("MyLotChat", fields: [myLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  partnerLotId String? @db.VarChar(255)
+  partnerLot   Lot?    @relation("PartnerLotChat", fields: [partnerLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  messages Message[] @relation("ChatMessages")
+}
+
+model Message {
+  id        String    @id @default(uuid())
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+
+  chatId String? @db.VarChar(255)
+  chat   Chat?   @relation("ChatMessages", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  senderId String? @db.VarChar(255)
+  content  String? @db.VarChar(255)
+
+  timestamp DateTime? @default(now()) @db.Timestamp(6)
 }
