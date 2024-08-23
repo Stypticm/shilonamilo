@@ -14,7 +14,8 @@ const Card = ({
     favoriteId,
     pathName,
     photolot,
-    updateFavorites
+    updateFavorites,
+    handleClick
 }: ICard) => {
 
     const [isFavorite, setIsFavorite] = useState(isInFavoriteList);
@@ -51,8 +52,12 @@ const Card = ({
         }
     };
 
+    const handleClickCard = (id: string) => {
+        if (handleClick) handleClick(id)
+    }
+
     return (
-        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id}>
+        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id} onClick={() => handleClickCard(id)}>
             <div className='relative h-72'>
                 {
                     userId && (

@@ -82,12 +82,12 @@ export const getLotsById = async (userId: string) => {
             },
             include: {
                 Proposal: true,
-                ReceivedProposal: true
+                Offers: true
             }
         })
 
         const lotsWithoutProposals = lots.filter((lot) => {
-            return lot.Proposal.length === 0
+            return lot.Offers.length === 0
         })
 
         return lotsWithoutProposals
@@ -122,8 +122,8 @@ export const addProposal = async (lotId: string, myLotId: string) => {
                 lotId,
                 offeredLotId: myLotId,
                 status: 'pending',
-                userId: itemUserId?.userId,
-                userIdOffered: logginedUserId?.userId
+                ownerIdOfTheLot: itemUserId?.userId,
+                userIdOfferedLot: logginedUserId?.userId
             }
         })
 
@@ -146,7 +146,7 @@ export const addProposal = async (lotId: string, myLotId: string) => {
     }
 }
 
-export const getReceivedProposals = async (lotId: string) => {    
+export const getReceivedProposals = async (lotId: string) => {
     try {
         const proposals = await prisma.proposal.findMany({
             where: {
@@ -174,6 +174,18 @@ export const acceptProposal = async (proposalId: string) => {
                 status: 'accepted'
             }
         })
+
+        await prisma.proposal.updateMany({
+            where: {
+                id: {
+                    not: proposalId
+                }
+            },
+            data: {
+                status: 'declined'
+            }
+        })
+
     } catch (error) {
         console.error('Error accepting proposal:', error)
     }

@@ -61,8 +61,8 @@ const FavoriteRoute = ({ params }: { params: { id: string } }) => {
                 {favorites.length === 0 && (
                     <>
                         <NoItems
-                            description='Please add a new thing to see them here...'
-                            name='Hey you dont have any favorites things in your list'
+                            name='Hey you dont have any favorites lots in your list'
+                            description='Please add a new lot to see them here...'
                         />
                     </>
                 )}

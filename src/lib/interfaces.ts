@@ -36,7 +36,7 @@ export interface Lot {
   favoriteId?: string | null;
 
   Proposal?: Proposal[]
-  ReceivedProposal?: Proposal[]
+  Offers?: Proposal[]
 }
 
 export interface Proposal {
@@ -49,6 +49,9 @@ export interface Proposal {
 
   lot?: Lot;
   offeredLot?: Lot;
+
+  ownerIdOfTheLot?: string | null;
+  userIdOfferedLot?: string | null;
 }
 
 export interface ICard {
