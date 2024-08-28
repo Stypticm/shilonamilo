@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { deleteLot, findLotByUserIdAndLotId } from '@/lib/features/myStuff';
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
-import { User as CurrentUser, Lot } from '@/lib/interfaces'
+import { User as CurrentUser, ILot } from '@/lib/interfaces'
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,12 +19,13 @@ import { updateLot } from '@/app/actions';
 import { toast } from '@/components/ui/use-toast';
 import ReceivedProposals from '@/app/components/ReceivedProposals';
 import MyLots from '@/app/components/MyLots';
+import Lot from '@/app/components/Lot';
 
 const LotRoute = ({ params }: { params: { id: string } }) => {
     const router = useRouter()
 
     const [user, setUser] = useState<CurrentUser | null>(null);
-    const [data, setData] = useState<Lot | null>(null);
+    const [data, setData] = useState<ILot | null>(null);
     const [isLotBelongsToUser, setIsLotBelongsToUser] = useState<boolean>(false);
     const [favorites, setFavorites] = useState<any[]>([])
     const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -198,36 +199,7 @@ const LotRoute = ({ params }: { params: { id: string } }) => {
                             </form>
                         ) : (
                             <>
-                                <section className='flex flex-row gap-2 w-full'>
-                                    <div className='relative h-[250px] w-[250px] flex justify-center'>
-                                        {data.photolot ? (
-                                            <Image
-                                                alt={data.name as string}
-                                                src={data.photolot as string}
-                                                className='rounded-lg h-full object-cover'
-                                                fill
-                                                priority
-                                                sizes='(max-width: 768px) 100vw,
-                                        (max-width: 1200px) 50vw,
-                                        33vw'
-                                            />
-                                        ) : null}
-                                    </div>
-                                    <div className='flex flex-col ml-10'>
-                                        <div className='gap-2 flex items-center justify-start'>
-                                            <Label className='font-bold'>Lot's name: </Label>
-                                            <span className='font-sans'>{data?.name}</span>
-                                        </div>
-                                        <div className='gap-2 flex items-center justify-start'>
-                                            <Label className='font-bold'>Description: </Label>
-                                            <p className='font-sans'>{data?.description}</p>
-                                        </div>
-                                        <div className='gap-2 flex items-center justify-start'>
-                                            <Label className='font-bold'>Possible variant for change: </Label>
-                                            <p className='font-sans'>{data?.exchangeOffer}</p>
-                                        </div>
-                                    </div>
-                                </section>
+                                <Lot data={data} />
                                 <FavoriteButtons
                                     id={data.id}
                                     userId={user?.uid}

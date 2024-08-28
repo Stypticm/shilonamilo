@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getAllLots } from '@/lib/currentData'
-import { Lot } from '@/lib/interfaces'
+import { ILot } from '@/lib/interfaces'
 import { User as CurrentUser } from '@/lib/interfaces'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -14,7 +14,7 @@ const MainContent = () => {
   const router = useRouter()
 
   const [user, setUser] = useState<CurrentUser | null>(null);
-  const [allLots, setAllLots] = useState<Lot[]>([])
+  const [allLots, setAllLots] = useState<ILot[]>([])
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const MainContent = () => {
   const fetchLots = async (userId: string) => {
     try {
       const lots = await getAllLots(userId)
-      setAllLots(lots as Lot[])
+      setAllLots(lots as ILot[])
     } catch (error) {
       console.error('Failed to fetch lots:', error)
     } finally {
@@ -38,7 +38,7 @@ const MainContent = () => {
 
   useEffect(() => {
     if (memoizedUser) {
-      fetchLots(memoizedUser?.uid)
+      fetchLots(memoizedUser?.uid as string)
     } else {
       fetchLots('')
     }
@@ -77,7 +77,7 @@ const MainContent = () => {
             </TableBody>
           ) : (
             <TableBody>
-              {allLots.map((lot: Lot) => (
+              {allLots.map((lot: ILot) => (
                 <TableRow key={lot.id} onClick={() => handleClick(lot.id)} className='cursor-pointer'>
                   <TableCell className='text-center capitalize'>{lot.name}</TableCell>
                   <TableCell className='text-center capitalize'>{lot.category}</TableCell>

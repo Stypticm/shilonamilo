@@ -1,4 +1,3 @@
-import { getLotById } from './features/myStuff';
 'use server'
 
 import prisma from './prisma/db'
