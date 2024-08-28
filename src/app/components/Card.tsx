@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { AddToFavoriteButton, DeleteFromFavoriteButton } from './SubmitButtons'
 import { addToFavorite, removeFromFavorite } from '../actions'
+import FavoriteButtons from './FavoriteButtons'
 
 const Card = ({
     id,
@@ -20,79 +21,34 @@ const Card = ({
 
     const [isFavorite, setIsFavorite] = useState(isInFavoriteList);
 
-    const handleAddToFavorite = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('lotId', id);
-        formData.append('userId', userId as string);
-        formData.append('pathName', pathName as string);
-
-        try {
-            await addToFavorite(formData);
-            setIsFavorite(true);
-            if (updateFavorites) updateFavorites()
-        } catch (error) {
-            console.error('Failed to add to favorite:', error);
-        }
-    };
-
-    const handleRemoveFromFavorite = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('favoriteId', favoriteId as string);
-        formData.append('userId', userId as string);
-        formData.append('pathName', pathName as string);
-
-        try {
-            await removeFromFavorite(formData);
-            setIsFavorite(false);
-            if (updateFavorites) updateFavorites()
-        } catch (error) {
-            console.error('Failed to remove from favorite:', error);
-        }
-    };
-
     const handleClickCard = (id: string) => {
         if (handleClick) handleClick(id)
     }
 
     return (
-        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer' key={id} onClick={() => handleClickCard(id)}>
+        <section className=' rounded-lg releative h-80 w-72 flex flex-col cursor-pointer shadow-lg' key={id} onClick={() => handleClickCard(id)}>
             <div className='relative h-72'>
-                {
-                    userId && (
-                        <div className='z-10 absolute top-1 right-1'>
-                            {
-                                isFavorite ? (
-                                    <form onSubmit={handleRemoveFromFavorite}>
-                                        <input type="hidden" name="lotId" value={id} />
-                                        <input type="hidden" name="userId" value={userId} />
-                                        <input type="hidden" name="pathName" value={pathName} />
-                                        <DeleteFromFavoriteButton />
-                                    </form>
-                                ) : (
-                                    <form onSubmit={handleAddToFavorite}>
-                                        <input type="hidden" name="lotId" value={id} />
-                                        <input type="hidden" name="userId" value={userId} />
-                                        <input type="hidden" name="pathName" value={pathName} />
-                                        <AddToFavoriteButton />
-                                    </form>
-                                )
-                            }
-                        </div>
-                    )
-                }
-                <Image
+                <FavoriteButtons
+                    id={id}
+                    userId={userId}
+                    isInFavoriteList={isFavorite}
+                    favoriteId={favoriteId}
+                    pathName={pathName}
+                    updateFavorites={updateFavorites}
+                />
+                {photolot ? (<Image
                     alt={photolot as string}
                     src={photolot as string}
-                    className='rounded-lg h-full'
+                    className='rounded-lg h-full object-cover'
                     fill
                     priority
                     sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                />
+                />) : null}
             </div>
-            <p className='text-xl font-bold'>{name}</p>
-            <p className='text-lg'>{country}, {city}</p>
+            <section className='p-2'>
+                <p className='text-xl font-bold'>{name}</p>
+                <p className='text-lg'>{country}, {city}</p>
+            </section>
         </section>
     )
 }

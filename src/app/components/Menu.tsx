@@ -31,8 +31,7 @@ const Menu: React.FC = () => {
   }
 
   const logout = async () => {
-    await handleLogout(setUser)
-    router.push('/')
+    await handleLogout(setUser).then(() => router.push('/'))
   }
 
   return (
@@ -62,7 +61,7 @@ const Menu: React.FC = () => {
                 </form>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={`/chats/${user.uid}`} className='w-full'>
+                <Link href={`/chats`} className='w-full'>
                   Chats
                 </Link>
               </DropdownMenuItem>
