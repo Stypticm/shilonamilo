@@ -6,14 +6,14 @@ export interface Favorite {
 }
 
 export interface User {
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
-  uid: string;
+  displayName?: string | null;
+  email?: string | null;
+  photoURL?: string | null;
+  uid?: string;
   accessToken?: string | null;
 }
 
-export interface Lot {
+export interface ILot {
   id: string;
   userId?: string | null;
   name?: string | null;
@@ -35,8 +35,8 @@ export interface Lot {
   Favorite?: Omit<Favorite, 'createdat'>[] | null;
   favoriteId?: string | null;
 
-  Proposal?: Proposal[]
-  Offers?: Proposal[]
+  Proposal?: Proposal[];
+  Offers?: Proposal[];
 }
 
 export interface Proposal {
@@ -47,8 +47,8 @@ export interface Proposal {
   createdat?: Date | null;
   updatedAt?: Date | null;
 
-  lot?: Lot;
-  offeredLot?: Lot;
+  lot?: ILot;
+  offeredLot?: ILot;
 
   ownerIdOfTheLot?: string | null;
   userIdOfferedLot?: string | null;
@@ -69,4 +69,34 @@ export interface ICard {
   favoriteId?: string | null;
   pathName?: string;
   updateFavorites?: () => void | undefined;
+}
+
+export interface IChats {
+  id: string;
+}
+
+export interface IChat {
+  id: string;
+  lot1Id: string;
+  lot2Id: string;
+
+  createdat?: Date | null;
+  updatedAt?: Date | null;
+}
+
+export interface IChatMessage {
+  id: string;
+  chatId: string;
+  senderId: string;
+  content: string;
+  createdat?: Date | null;
+  updatedAt?: Date | null;
+}
+
+export interface ICardFavorite {
+  id: string;
+  userId?: string | null;
+  lotId?: string | null;
+
+  Lot: ILot;
 }

@@ -45,15 +45,15 @@ model Lot {
   Offers   Proposal[] @relation("LotOffers")
   User     User?      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  MyChats      Chat[] @relation("MyLotChat")
-  PartnerChats Chat[] @relation("PartnerLotChat")
+  Lot1Chats Chat[] @relation("Lot1Chat")
+  Lot2Chats Chat[] @relation("Lot2Chat")
 }
 
 model User {
   id        String     @id @unique
   email     String     @db.VarChar(255)
   firstname String     @db.VarChar(255)
-  photourl  String?    @db.VarChar(255)
+  photoURL  String?    @db.VarChar(255)
   createdAt DateTime?  @default(now()) @db.Timestamp(6)
   Favorite  Favorite[]
   Lot       Lot[]
@@ -81,11 +81,11 @@ model Chat {
   createdAt DateTime? @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @default(now()) @db.Timestamp(6)
 
-  myLotId String? @db.VarChar(255)
-  myLot   Lot?    @relation("MyLotChat", fields: [myLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  lot1Id String? @db.VarChar(255)
+  lot1   Lot?    @relation("Lot1Chat", fields: [lot1Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  partnerLotId String? @db.VarChar(255)
-  partnerLot   Lot?    @relation("PartnerLotChat", fields: [partnerLotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  lot2Id String? @db.VarChar(255)
+  lot2   Lot?    @relation("Lot2Chat", fields: [lot2Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   messages Message[] @relation("ChatMessages")
 }

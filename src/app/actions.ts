@@ -195,6 +195,7 @@ export async function removeFromFavorite(formData: FormData) {
     const lotId = formData.get('lotId') as string;
     const userId = formData.get('userId') as string;
     const pathName = formData.get('pathName') as string;
+    console.log(pathName)
 
     try {
         await prisma.favorite.deleteMany({
