@@ -1,7 +1,7 @@
 'use client'
 
 import { getMyStuff } from '@/lib/features/myStuff'
-import { Lot } from '@/lib/interfaces'
+import { ICard, ILot } from '@/lib/interfaces'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import NoItems from '@/app/components/NoItems'
@@ -13,21 +13,21 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
     const router = useRouter()
 
     const [user, setUser] = useState<CurrentUser | null>(null);
-  
+
     useEffect(() => {
-      const unsubscribe = initAuthState(setUser);
-      return () => unsubscribe();
+        const unsubscribe = initAuthState(setUser);
+        return () => unsubscribe();
     }, []);
-    
+
     const memoizedUser = useMemo(() => user, [user]);
 
-    const [myStuff, setMyStuff] = useState<Lot[]>([])
+    const [myStuff, setMyStuff] = useState<ICard[]>([])
 
     useEffect(() => {
         const fetchMyStuff = async () => {
             try {
                 const data = await getMyStuff(params.id)
-                setMyStuff(data as Lot[])
+                setMyStuff(data as ICard[])
             } catch (error) {
                 console.error('Failed to fetch my stuff:', error)
             }
@@ -42,8 +42,11 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
     return (
         <>
             <section className='w-[95%] h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center align-items-center'>
-                {myStuff.length > 0 && myStuff.map(lot => (
-                    <Card key={lot.id} userId={memoizedUser?.uid} {...lot} handleClick={handleClick}/>
+                {myStuff.length > 0 && myStuff.map((lot: ICard) => (
+                    <Card
+                        key={lot.id}
+                        {...lot}
+                    />
                 ))}
             </section>
 

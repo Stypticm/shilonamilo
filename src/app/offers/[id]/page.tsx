@@ -1,7 +1,7 @@
 'use client'
 
 import NoItems from '@/app/components/NoItems'
-import { Lot, Proposal } from '@/lib/interfaces'
+import { ILot, Proposal } from '@/lib/interfaces'
 import { FormEvent, Suspense, useEffect, useState } from 'react'
 import { getLotsWithOffers } from '../dataForOffers'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -14,14 +14,14 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
 
     const router = useRouter()
 
-    const [acceptedLots, setAcceptedLots] = useState<Lot[]>([])
+    const [acceptedLots, setAcceptedLots] = useState<ILot[]>([])
     const [isAccetped, setIsAccepted] = useState(false)
 
     const fetchAcceptedLots = async () => {
         try {
             const data = await getLotsWithOffers(params.id as string)
             console.log(data)
-            setAcceptedLots(data as Lot[])
+            setAcceptedLots(data as ILot[])
         } catch (error) {
             console.error('Failed to fetch accepted lots:', error)
         }
@@ -38,10 +38,11 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
 
     const handleChat = async (e: React.FormEvent<HTMLFormElement>, myLotId: string, partnerLotId: string) => {
         e.stopPropagation()
-        console.log(myLotId, partnerLotId, params.id)
+        // console.log(myLotId, partnerLotId, params.id)
 
         try {
             const chat = await createChat(myLotId, partnerLotId, params.id)
+
             if (chat?.id) {
                 router.push(`/chats/${chat.id}`)
             } else {
@@ -82,7 +83,7 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
 
                     <TableBody>
                         {
-                            acceptedLots.map((lot: Lot) => (
+                            acceptedLots.map((lot: ILot) => (
                                 lot.Proposal?.map((proposal: Proposal, index: number) => (
                                     <TableRow key={proposal.id} onClick={() => handleClick(proposal?.offeredLot?.id as string)} className='cursor-pointer'>
                                         {index === 0 && (
