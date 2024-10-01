@@ -1,6 +1,7 @@
 import { User } from '@/lib/interfaces';
 import { onAuthStateChanged, User as FirebaseUser, signOut } from '@firebase/auth';
 import { auth } from '../firebase';
+import { chatSocket, proposalSocket } from '@/socket';
 
 export const initAuthState = (setUser: React.Dispatch<React.SetStateAction<User | null>>) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser: FirebaseUser | null) => {

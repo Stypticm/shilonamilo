@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
                     id: uid,
                     firstname: name || body.name,
                     email: body.email,
-                    photourl: picture || 'https://i.pinimg.com/474x/f1/da/a7/f1daa70c9e3343cebd66ac2342d5be3f.jpg'
+                    photoURL: picture || 'https://i.pinimg.com/474x/f1/da/a7/f1daa70c9e3343cebd66ac2342d5be3f.jpg'
                 }
             })
         }

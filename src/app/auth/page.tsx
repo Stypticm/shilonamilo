@@ -22,7 +22,7 @@ const AuthPage = () => {
         setTitle(title === 'Sign In' ? 'Sign up' : 'Sign In')
     }
 
-    const gogoleAuthClick = async () => {
+    const googleAuthClick = async () => {
         await googleProviderAuth({ setUser })
         router.push('/')
     }
@@ -43,7 +43,7 @@ const AuthPage = () => {
             <Separator />
             <span className='text-center'>Or you can use</span>
             <main className='flex flex-col gap-4 items-center'>
-                <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={gogoleAuthClick}>
+                <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={googleAuthClick}>
                     Sign In with Google
                     <Icons.google className='w-5 h-5' />
                 </Button>

@@ -3,7 +3,6 @@
 import prisma from './prisma/db'
 import countryList from 'react-select-country-list'
 import { City } from 'country-state-city'
-import { unstable_noStore as noStore } from 'next/cache'
 
 export const allCategories = async () => {
     const data = await prisma.category.findMany()
@@ -60,7 +59,6 @@ export const citiesOfCountry = async (countryCode: string) => {
 }
 
 export const getAllLots = async (userId?: string) => {
-    noStore();
     try {
         if (userId) {
             const currentLots = await prisma.lot.findMany({
@@ -110,7 +108,6 @@ export const getAllLots = async (userId?: string) => {
 }
 
 export const getFavorites = async (userId: string) => {
-    noStore();
     try {
         const data = await prisma.favorite.findMany({
             where: {

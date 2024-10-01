@@ -2,6 +2,7 @@ import { getAuth, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/
 import { User } from '@/lib/interfaces';
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
+import { chatSocket, proposalSocket } from '@/socket';
 
 const auth = getAuth(firebase_app);
 const googleProvider = new GoogleAuthProvider();
@@ -10,7 +11,10 @@ const googleAuthSignUp = (setUser: React.Dispatch<React.SetStateAction<User | nu
 
 export const handleGoogleAuth = async (setUser: React.Dispatch<React.SetStateAction<User | null>>, provider: any) => {
     try {
-        const result = await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider).catch((error) => {
+            console.error('Error during Google Sign Up:', error);
+            throw error;
+        });
 
         const token = await result.user.getIdToken(true).then((token) => {
             return token
@@ -24,6 +28,8 @@ export const handleGoogleAuth = async (setUser: React.Dispatch<React.SetStateAct
             displayName: currentUser.displayName || '',
             uid: currentUser.uid,
         });
+
+        proposalSocket.emit('subscribeToNotifications', currentUser.uid);
 
         const response = await fetch('/api/auth/creation', {
             method: 'GET',
@@ -68,4 +74,4 @@ export const googleProviderAuth = async ({ setUser, closeModal }: { setUser: Rea
         console.error(`Error during Google Sign Up:`, error)
         throw error
     }
-}
+};
