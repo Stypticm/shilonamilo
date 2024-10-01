@@ -33,7 +33,7 @@ const ChatSection = ({
             <section className='w-full h-full rounded-lg p-2 max-h-[550px] overflow-y-auto'>
                 <main className='mt-5'>
                     <ChatMessages companion={companion as CurrentUser} messages={messages} />
-                    <div ref={endOfMessagesRef} />
+                    <div ref={endOfMessagesRef} className='sticky'/>
                 </main>
             </section>
             <section className='w-full h-full rounded-lg p-2 mt-10'>

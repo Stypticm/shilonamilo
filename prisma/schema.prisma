@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["prismaSchemaFolder", "relationJoins"]
 }
 
 datasource db {
@@ -26,7 +27,9 @@ model Favorite {
 model Lot {
   id String @id @default(uuid())
 
-  userId        String?   @db.VarChar(255)
+  userId String? @db.VarChar(255)
+  User   User?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
   name          String?   @db.VarChar(255)
   category      String?   @db.VarChar(255)
   description   String?   @db.VarChar(255)
@@ -43,10 +46,11 @@ model Lot {
   Favorite Favorite[]
   Proposal Proposal[] @relation("LotProposals")
   Offers   Proposal[] @relation("LotOffers")
-  User     User?      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   Lot1Chats Chat[] @relation("Lot1Chat")
   Lot2Chats Chat[] @relation("Lot2Chat")
+
+  Feedback Feedback[] @relation("Feedbacks")
 }
 
 model User {
@@ -57,6 +61,7 @@ model User {
   createdAt DateTime?  @default(now()) @db.Timestamp(6)
   Favorite  Favorite[]
   Lot       Lot[]
+  Feedback  Feedback[] @relation("Feedbacks")
 }
 
 model Proposal {
@@ -73,7 +78,11 @@ model Proposal {
   ownerIdOfTheLot  String? @db.VarChar(255)
   userIdOfferedLot String? @db.VarChar(255)
 
-  status String? @db.VarChar(255)
+  status String?   @db.VarChar(255)
+  timer  DateTime?
+
+  isOwnerConfirmedExchange Boolean @default(false)
+  isUserConfirmedExchange  Boolean @default(false)
 }
 
 model Chat {
@@ -96,10 +105,27 @@ model Message {
   updatedAt DateTime? @default(now()) @db.Timestamp(6)
 
   chatId String? @db.VarChar(255)
-  chat   Chat?   @relation("ChatMessages", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  chat   Chat?   @relation("ChatMessages", fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   senderId String? @db.VarChar(255)
   content  String? @db.VarChar(255)
 
   timestamp DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model Feedback {
+  id     String  @id @default(uuid())
+  userId String? @db.VarChar(255)
+  user   User?   @relation("Feedbacks", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  role String? @db.VarChar(255)
+
+  rating  Int?    @default(0)
+  comment String? @db.VarChar(255)
+
+  lotId String? @db.VarChar(255)
+  lot   Lot?    @relation("Feedbacks", fields: [lotId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { acceptProposal, declineProposal, getReceivedProposals } from '@/lib/features/myStuff';
-import { Lot, Proposal } from '@/lib/interfaces';
+import { ILot, Proposal } from '@/lib/interfaces';
 import React, { Suspense, useEffect, useState } from 'react'
 import { User as CurrentUser } from '@/lib/interfaces'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';

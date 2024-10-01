@@ -1,10 +1,8 @@
 'use server'
 
 import prisma from '@/lib/prisma/db';
-import { unstable_noStore as noStore } from 'next/cache'
 
 export const getLotsWithOffers = async (userId: string) => {
-    noStore();
 
     try {
         const lots = await prisma.lot.findMany({

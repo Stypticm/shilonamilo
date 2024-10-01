@@ -19,10 +19,6 @@ const ChatMessages = ({ companion, messages }: { companion: User, messages: ICha
 
     const memoizedUser = useMemo(() => user, [user]);
 
-    console.log(user)
-    console.log(companion)
-    console.log(messages)
-
     return (
         <div className='w-full h-full mt-5'>
             {messages.map((message: IChatMessage) => (

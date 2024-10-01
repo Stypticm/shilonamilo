@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { githubProviderAuth } from '@/lib/firebase/auth/authGithubLogic'
 import { googleProviderAuth } from '@/lib/firebase/auth/authGoogleLogic'
 import { User } from '@/lib/interfaces'
+import { chatSocket, proposalSocket } from '@/socket'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -30,6 +31,17 @@ const AuthModalPage = () => {
         }
     }
 
+    const gogoleAuthClick = async () => {
+        await googleProviderAuth({ setUser, closeModal })
+        router.push('/')
+    }
+
+    const githubAuthClick = async () => {
+        await githubProviderAuth({ setUser, closeModal })
+        router.push('/')
+    }
+
+
     const toggleTitle = () => {
         setTitle(title === 'Sign In' ? 'Sign up' : 'Sign In')
     }
@@ -49,7 +61,7 @@ const AuthModalPage = () => {
                     <Separator />
                     <span className='text-center'>Or you can use</span>
                     <div className='flex flex-col gap-4 items-center'>
-                        <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={() => googleProviderAuth({ setUser, closeModal })}>
+                        <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={gogoleAuthClick}>
                             Sign In with Google
                             <Icons.google className='w-5 h-5' />
                         </Button>
@@ -57,7 +69,7 @@ const AuthModalPage = () => {
                             Sign In with Facebook
                             <Icons.facebook className='w-5 h-5' />
                         </Button> */}
-                        <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={() => githubProviderAuth({ setUser, closeModal})}>
+                        <Button className='w-2/3 flex justify-between rounded-full bg-slate-500 hover:bg-slate-600' onClick={githubAuthClick}>
                             Sign In with GitHub
                             <Icons.github className='w-5 h-5' />
                         </Button>

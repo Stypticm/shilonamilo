@@ -1,7 +1,8 @@
-import { getAuth,  signOut, signInWithPopup, GithubAuthProvider } from 'firebase/auth';
+import { getAuth, signOut, signInWithPopup, GithubAuthProvider } from 'firebase/auth';
 import { User } from '@/lib/interfaces';
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
+import { chatSocket, proposalSocket } from '@/socket';
 
 const auth = getAuth(firebase_app);
 const githubProvider = new GithubAuthProvider();
@@ -27,12 +28,14 @@ export const handleGithubAuth = async (setUser: React.Dispatch<React.SetStateAct
             uid: currentUser.uid,
         });
 
+        proposalSocket.emit('subscribeToNotifications', currentUser.uid);
+
         const response = await fetch('/api/auth/creation', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify({email: currentUser.providerData[0].email})
+            body: JSON.stringify({ email: currentUser.providerData[0].email })
         });
 
         if (!response.ok) {

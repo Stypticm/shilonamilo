@@ -8,11 +8,14 @@
         "skipLibCheck": true,
         "baseUrl": "./",
         "paths": {
-            "@/*": [ "../src/*" ]
+            "@/*": [
+                "../src/*"
+            ]
         }
     },
     "include": [
-        "./**/*.ts"
+        "./**/*.ts",
+        "socketServer.ts"
     ],
     "exclude": [
         "node_modules"

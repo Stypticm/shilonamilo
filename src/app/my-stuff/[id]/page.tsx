@@ -46,6 +46,7 @@ const MyStuffRoute = ({ params }: { params: { id: string } }) => {
                     <Card
                         key={lot.id}
                         {...lot}
+                        handleClick={() => handleClick(lot.id)}
                     />
                 ))}
             </section>

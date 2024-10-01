@@ -32,6 +32,16 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
     }, [])
 
     const handleChooseCategory = async () => {
+
+        if (!selectedCategory) {
+            toast({
+                description: 'Please select a category',
+                title: 'Error',
+                variant: 'destructive',
+            })
+            return;
+        }
+
         const formData = new FormData();
         formData.append('lotId', params.id);
         formData.append('categoryName', selectedCategory as string);
@@ -59,7 +69,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
 
             <form action={handleChooseCategory}>
                 <input type="hidden" name="lotId" value={params.id} />
-                <input type="hidden" name="categoryName" value={selectedCategory as string} />
+                <input type="hidden" name="categoryName" value={selectedCategory as string ?? ''} />
 
                 <div className='w-3/5 mx-auto mt-2'>
                     <Select onValueChange={setSelectedCategory} value={selectedCategory as string}>

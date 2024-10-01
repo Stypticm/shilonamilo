@@ -1,18 +1,20 @@
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { addProposal, getLotsById, getMyStuff } from '@/lib/features/myStuff'
-import { Lot } from '@/lib/interfaces'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { getLotsById } from '@/lib/features/myStuff'
+import { ILot } from '@/lib/interfaces'
+import { useRouter } from 'next/navigation'
 import React, { Suspense, useEffect, useState } from 'react'
 import { User as CurrentUser } from '@/lib/interfaces'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
+import { offProposal, onProposalReceived, onSendProposal } from '@/lib/features/websockets/proposalHandler'
 
 const MyLots = ({ lotId }: { lotId: string }) => {
 
     const router = useRouter()
-    const [myLots, setMyLots] = useState<Lot[]>([])
+    const [myLots, setMyLots] = useState<ILot[]>([])
     const [user, setUser] = useState<CurrentUser | null>(null);
+    const [proposals, setProposals] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const unsubscribe = initAuthState(setUser);
@@ -22,8 +24,7 @@ const MyLots = ({ lotId }: { lotId: string }) => {
     const fetchMyLots = async () => {
         if (user?.uid) {
             const data = await getLotsById(user.uid);
-            console.log(data)
-            setMyLots(data as Lot[]);
+            setMyLots(data as ILot[]);
         }
     };
 
@@ -31,7 +32,7 @@ const MyLots = ({ lotId }: { lotId: string }) => {
         if (user) {
             fetchMyLots();
         }
-    }, [user]);
+    }, [user, lotId]);
 
 
     const handleLotClick = (id: string) => {
@@ -39,8 +40,11 @@ const MyLots = ({ lotId }: { lotId: string }) => {
     }
 
     const handleExchangeProposal = async (myLotId: string) => {
-        await addProposal(lotId, myLotId)
-        await fetchMyLots()
+        if (!proposals[myLotId]) {
+            await onSendProposal(lotId, myLotId)
+            setProposals(prev => ({ ...prev, [myLotId]: true }))
+            await fetchMyLots()
+        }
     }
 
     if (!myLots) {
@@ -72,7 +76,7 @@ const MyLots = ({ lotId }: { lotId: string }) => {
                     <Suspense fallback={<div>Loading...</div>}>
                         <TableBody className='w-full'>
                             {
-                                myLots.map((lot: Lot) => (
+                                myLots.map((lot: ILot) => (
                                     <TableRow key={lot.id as string} className='cursor-pointer' onClick={() => handleLotClick(lot.id as string)}>
                                         <TableCell className='text-center capitalize'>{lot.name}</TableCell>
                                         <TableCell className='text-center capitalize'>{lot.exchangeOffer}</TableCell>
@@ -102,9 +106,11 @@ const MyLots = ({ lotId }: { lotId: string }) => {
                                                     className='hover:bg-slate-900 hover:text-slate-200'
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleExchangeProposal(lot.id);
-                                                    }}>
-                                                    Offer for exchange
+                                                        handleExchangeProposal(lot.id as string);
+                                                    }}
+                                                    disabled={proposals[lot.id as string] || false}
+                                                >
+                                                    {proposals[lot.id as string] ? 'Proposal sent' : 'Offer for exchange'}
                                                 </Button>
                                             )}
                                         </TableCell>
