@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Shilo na Milo",
+  title: "Quid pro quo",
   description: "Created by Spirin and Volodin"
 };
 
@@ -23,12 +23,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("bg-[#4A5C6A]", inter.className)}>
         <Navbar />
-
         {authModal}
-
-        <>
-          {children}
-        </>
+        <> {children} </>
         <Toaster />
       </body>
     </html>

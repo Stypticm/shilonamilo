@@ -1,55 +1,29 @@
 import http from 'http';
 import express from 'express';
 import { Server } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
-import { IChatMessage } from '@/lib/interfaces';
 import cors from 'cors';
+
+import { initializeProposalNamespace } from '../src/lib/features/websockets/proposalHandler';
+// import { initializeChatNamespace } from '../src/lib/features/websockets/chatHandler';
 
 const app = express();
 const server = http.createServer(app);
-const prisma = new PrismaClient();
 
-app.use(cors({
+const corsObj = {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
     credentials: true
-}));
+}
 
-const io = new Server(server, {
-    cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST'],
-        credentials: true
-    }
+app.use(cors(corsObj));
+
+app.get('/', (req, res) => {
+    res.send('WebSocket server is running');
 });
 
-io.on('connection', (socket) => {
-    console.log('New client connected');
+const io = new Server(server, { cors: corsObj });
 
-    socket.on('sendMessage', async ({ chatId, senderId, content }: IChatMessage) => {
-        try {
-            const message = await prisma.message.create({
-                data: {
-                    chatId,
-                    senderId,
-                    content
-                }
-            });
-
-            io.to(chatId).emit('message', message)
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    })
-
-    socket.on('joinChat', (chatId: string) => {
-        socket.join(chatId)
-        console.log(`User joined chat: ${chatId}`);
-    })
-
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    })
-})
+// initializeChatNamespace(io);
+initializeProposalNamespace(io);
 
 server.listen(4000, () => console.log('Server running on port 4000'));

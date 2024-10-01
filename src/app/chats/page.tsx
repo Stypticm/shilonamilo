@@ -5,6 +5,7 @@ import { User as CurrentUser, IChats } from '@/lib/interfaces'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
 import { getAllMyChats } from './chatActions';
 import { useRouter } from 'next/navigation';
+import NoItems from '../components/NoItems';
 
 const ChatsRoute = () => {
 
@@ -20,18 +21,18 @@ const ChatsRoute = () => {
 
   const memoizedUser = useMemo(() => user, [user]);
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const chat = getAllMyChats(memoizedUser?.uid as string)
-        chat.then((data) => {
-          setChats(data as [])
-        })
-      } catch (error) {
-        console.error('Error fetching chats:', error);
-      }
-    }
+  const fetchChats = async () => {
+    try {
+      const chat = await getAllMyChats(memoizedUser?.uid as string)
 
+      setChats(chat as IChats[])
+
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+    }
+  }
+
+  useEffect(() => {
     fetchChats();
   }, [memoizedUser?.uid]);
 
@@ -41,14 +42,20 @@ const ChatsRoute = () => {
 
   return (
     <>
-      <section>
-        {chats.map((chat) => (
-          <div className='w-[200px] bg-slate-300 cursor-pointer shadow-xl rounded-lg' key={chat.id} onClick={() => handleClickChat(chat.id as string)}>
-            <h1>{chat.id}</h1>
-          </div>
+      {
+        chats.length === 0 ? (
+          <NoItems name='Chats' description='You have no chats' />
+        ) : (
+          <section>
+            {chats.map((chat) => (
+              <div className='w-[200px] bg-slate-300 cursor-pointer shadow-xl rounded-lg' key={chat.id} onClick={() => handleClickChat(chat.id as string)}>
+                <h1>{chat.id}</h1>
+              </div>
+            )
+            )}
+          </section >
         )
-        )}
-      </section>
+      }
     </>
   )
 }
