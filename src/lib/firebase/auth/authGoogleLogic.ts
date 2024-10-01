@@ -2,7 +2,7 @@ import { getAuth, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/
 import { User } from '@/lib/interfaces';
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
-import { chatSocket, proposalSocket } from '@/socket';
+import { proposalSocket } from '@/socket';
 
 const auth = getAuth(firebase_app);
 const googleProvider = new GoogleAuthProvider();
