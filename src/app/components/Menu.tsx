@@ -4,16 +4,22 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { User } from '@/lib/interfaces'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { use, useCallback, useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { initAuthState, handleLogout } from '@/lib/firebase/auth/authInitialState'
 import { createNewLot } from '../actions'
 import { MenuIcon } from 'lucide-react'
+import { toast } from '@/components/ui/use-toast'
+import { useChatNotifications, useProposalNotifications } from './menuFunctionsNotification/useNotifications'
 
 const Menu: React.FC = () => {
 
   const router = useRouter()
+  const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null);
+  const [hasChatNotifications, setHasChatNotifications] = useState<boolean>(false);
+  const [hasProposalNotifications, setHasProposalNotifications] = useState<boolean>(false);
+  const [lastReadMessage, setLastReadMessage] = useState<number>(0);
 
   useEffect(() => {
     const unsubscribe = initAuthState(setUser);
@@ -21,6 +27,41 @@ const Menu: React.FC = () => {
   }, []);
 
   const memoizedUser = useMemo(() => user, [user]);
+
+  const isChatPage = useMemo(() => pathname.includes('/chats'), [pathname]);
+
+  const isOffersPage = useMemo(() => pathname.includes(`/offers/${memoizedUser?.uid}`), [pathname]);
+
+  useEffect(() => {
+    if (!isChatPage) {
+      setHasChatNotifications(prev => prev || false);
+    } else {
+      setHasChatNotifications(false);
+    }
+  }, [isChatPage])
+
+  useEffect(() => {
+    if (!isOffersPage) {
+      setHasProposalNotifications(prev => prev || false);
+    } else {
+      setHasProposalNotifications(false);
+    }
+  }, [isOffersPage])
+
+
+  useChatNotifications({
+    userId: memoizedUser?.uid as string || null,
+    isChatPage,
+    lastReadMessage,
+    setLastReadMessage,
+    setHasChatNotifications
+  })
+
+  useProposalNotifications({
+    userId: memoizedUser?.uid as string || null,
+    isOffersPage,
+    setHasProposalNotifications
+  })
 
   const createLot = useCallback(() => {
     return createNewLot({ userId: memoizedUser?.uid as string });
@@ -61,8 +102,13 @@ const Menu: React.FC = () => {
                 </form>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href={`/chats`} className='w-full'>
+                <Link href={`/chats`} className='w-full flex items-center justify-between'>
                   Chats
+                  {
+                    hasChatNotifications && !isChatPage && (
+                      <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                    )
+                  }
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -73,6 +119,11 @@ const Menu: React.FC = () => {
               <DropdownMenuItem>
                 <Link href={`/offers/${user.uid}`} className='w-full'>
                   Offers
+                  {
+                    hasProposalNotifications && !isOffersPage && (
+                      <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                    )
+                  }
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>

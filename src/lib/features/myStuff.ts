@@ -1,11 +1,21 @@
 'use server'
 
 import prisma from '../prisma/db'
+import { ILot } from '../interfaces';
 
 export const getMyStuff = (id: string) => {
     const data = prisma.lot.findMany({
         where: {
-            userId: id
+            userId: id,
+            AND: [
+                {name: {not: null}},
+                {category: {not: null}},
+                {description: {not: null}},
+                {exchangeOffer: {not: null}},
+                {photolot: {not: null}},
+                {country: {not: null}},
+                {city: {not: null}},
+            ]
         },
         select: {
             id: true,
@@ -59,26 +69,14 @@ export const deleteLot = async (id: string) => {
     }
 }
 
-export const getLotById = async (id: string) => {
+export const getLotById = async (lotId: string): Promise<
+    ILot | null
+> => {
+
     try {
-        const data = await prisma.lot.findUnique({
+        const lot = await prisma.lot.findUnique({
             where: {
-                id: id
-            }
-        })
-
-        return data
-    } catch (error) {
-        console.error('Error fetching thing:', error);
-    }
-
-}
-
-export const getLotsById = async (userId: string) => {
-    try {
-        const lots = await prisma.lot.findMany({
-            where: {
-                userId: userId
+                id: lotId
             },
             include: {
                 Proposal: true,
@@ -86,14 +84,12 @@ export const getLotsById = async (userId: string) => {
             }
         })
 
-        const lotsWithoutProposals = lots.filter((lot) => {
-            return lot.Offers.length === 0
-        })
-
-        return lotsWithoutProposals
+        return lot as ILot
     } catch (error) {
-        console.error('Error fetching lots by userId', error)
+        console.error('Error fetching thing:', error);
+        return null
     }
+
 }
 
 export const addProposal = async (lotId: string, myLotId: string) => {
@@ -143,6 +139,37 @@ export const addProposal = async (lotId: string, myLotId: string) => {
         return data
     } catch (error) {
         console.error('Error adding proposal:', error)
+    }
+}
+
+export const getLotsById = async (userId: string) => {
+    try {
+        const lots = await prisma.lot.findMany({
+            where: {
+                userId: userId,
+                AND: [
+                    {name: {not: null}},
+                    {category: {not: null}},
+                    {description: {not: null}},
+                    {exchangeOffer: {not: null}},
+                    {photolot: {not: null}},
+                    {country: {not: null}},
+                    {city: {not: null}},
+                ]
+            },
+            include: {
+                Proposal: true,
+                Offers: true
+            }
+        })
+
+        const lotsWithoutProposals = lots.filter((lot) => {
+            return lot.Offers.length === 0
+        })
+
+        return lotsWithoutProposals
+    } catch (error) {
+        console.error('Error fetching lots by userId', error)
     }
 }
 

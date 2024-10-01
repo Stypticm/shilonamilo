@@ -8,8 +8,9 @@ const Navbar = () => {
     return (
         <>
             <section className='flex justify-between font-medium w-full h-24 mb-5'>
-                <Link href='/' className='text-3xl font-bold flex items-center justify-center ml-5'>
-                    <span>ShiloNaMilo</span>
+                <Link href='/' className='text-3xl font-bold m-5'>
+                    <span className='text-nowrap italic'>Quid pro quo</span>
+                    {/* <span>Shilo na milo</span> */}
                 </Link>
 
                 <Title />

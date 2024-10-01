@@ -7,6 +7,7 @@ import prisma from '@/lib/prisma/db'
 import { revalidatePath } from 'next/cache';
 
 export async function createNewLot({ userId }: { userId: string }) {
+
     const data = await prisma.lot.findFirst({
         where: {
             userId: userId
@@ -55,19 +56,27 @@ export async function createCategoryPage(formData: FormData) {
     const lotId = formData.get('lotId') as string
     const categoryName = formData.get('categoryName') as string
 
-    await prisma.lot.update(
-        {
-            where: {
-                id: lotId
-            },
-            data: {
-                category: categoryName,
-                addedcategory: true
-            }
-        }
-    )
+    console.log(lotId, categoryName)
 
-    return { success: true, redirect: true };
+    if (!categoryName) {
+        return { error: "Category name and Lot ID must be filled" }
+    } else {
+
+        await prisma.lot.update(
+            {
+                where: {
+                    id: lotId
+                },
+                data: {
+                    category: categoryName,
+                    addedcategory: true
+                }
+            }
+        )
+
+        return { success: true, redirect: true };
+    }
+
 }
 
 export async function createDescription(formData: FormData) {
@@ -270,5 +279,62 @@ export async function updateLot(formData: FormData, lotId: string) {
     } catch (error) {
         console.log(error)
         return { error: "Error uploading photo" };
+    }
+}
+
+export async function updateOwnerConfirmedStatus(proposalId: string, confirmed: boolean) {
+    try {
+        const updatedProposal = await prisma.proposal.update({
+            where: { id: proposalId },
+            data: {
+                isOwnerConfirmedExchange: confirmed,
+            },
+        });
+
+        return updatedProposal;
+
+    } catch (error) {
+        console.error('Error updating proposal status:', error);
+        throw new Error('Could not update proposal status');
+    }
+}
+
+export async function declineTheOffer(lotId: string, chatId: string) {
+    try {
+        await prisma.proposal.updateMany({
+            where: { lotId },
+            data: {
+                status: 'pending'
+            }
+        })
+
+        await prisma.message.deleteMany({
+            where: { chatId }
+        })
+
+        await prisma.chat.delete({
+            where: { id: chatId }
+        })
+
+        return { success: true, redirect: true };
+
+    } catch (error) {
+        console.error('Error updating proposal status:', error);
+        throw new Error(`Could not update proposal status: ${error}`);
+    }
+}
+
+export async function updateUserConfirmedStatus(proposalId: string, confirmed: boolean) {
+    try {
+        const updatedProposal = await prisma.proposal.update({
+            where: { id: proposalId },
+            data: {
+                isUserConfirmedExchange: confirmed,
+            },
+        });
+        return updatedProposal;
+    } catch (error) {
+        console.error('Error updating proposal status:', error);
+        throw new Error('Could not update proposal status');
     }
 }

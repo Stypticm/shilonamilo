@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { acceptProposal, declineProposal } from '@/lib/features/myStuff'
-import { createChat } from '@/app/chats/chatActions'
+import { chatSocket } from '@/socket'
+import { offChatCreated, onChatCreated } from '@/lib/features/websockets/chatHandler'
 
 const OffersRoute = ({ params }: { params: { id: string } }) => {
 
@@ -20,7 +21,6 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
     const fetchAcceptedLots = async () => {
         try {
             const data = await getLotsWithOffers(params.id as string)
-            console.log(data)
             setAcceptedLots(data as ILot[])
         } catch (error) {
             console.error('Failed to fetch accepted lots:', error)
@@ -31,23 +31,45 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
         fetchAcceptedLots()
     }, [acceptedLots.length])
 
+    useEffect(() => {
+        onChatCreated((chatId: string) => {
+            router.push(`/chats/${chatId}`)
+        })
+
+        return () => {
+            offChatCreated()
+        }
+    }, [])
+
     const handleClick = (id: string) => {
         //router.push(`/offers/${id}/proposal`) - this is for the proposal modal
         router.push(`/lot/${id}`)
     }
 
-    const handleChat = async (e: React.FormEvent<HTMLFormElement>, myLotId: string, partnerLotId: string) => {
+    const handleChat = async (e: React.FormEvent<HTMLFormElement>,
+        myLotId: string,
+        partnerLotId: string,
+        user1Id: string,
+        user2Id: string
+    ) => {
         e.stopPropagation()
-        // console.log(myLotId, partnerLotId, params.id)
 
         try {
-            const chat = await createChat(myLotId, partnerLotId, params.id)
+            // const chat = await createChat(myLotId, partnerLotId, params.id)
 
-            if (chat?.id) {
-                router.push(`/chats/${chat.id}`)
-            } else {
-                console.error('Chat Id not found')
-            }
+            // if (chat?.id) {
+            //     router.push(`/chats/${chat.id}`)
+            // } else {
+            //     console.error('Chat Id not found')
+            // }
+
+            chatSocket.emit('createChat', {
+                user1Id,
+                user2Id,
+                lot1Id: myLotId,
+                lot2Id: partnerLotId
+            })
+
         } catch (error) {
             console.error('Error creating chat:', error)
         }
@@ -123,7 +145,13 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
                                                     <Button
                                                         variant='secondary'
                                                         className='hover:bg-slate-900 hover:text-slate-200 w-24'
-                                                        onClick={(e: any) => handleChat(e as React.FormEvent<HTMLFormElement>, proposal?.lotId as string, proposal?.offeredLot?.id as string)}>
+                                                        onClick={(e: any) => handleChat(
+                                                            e as React.FormEvent<HTMLFormElement>,
+                                                            proposal?.lotId as string,
+                                                            proposal?.offeredLot?.id as string,
+                                                            proposal?.ownerIdOfTheLot as string,
+                                                            proposal?.userIdOfferedLot as string
+                                                        )}>
                                                         Chat
                                                     </Button>
                                                 )

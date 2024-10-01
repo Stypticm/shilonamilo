@@ -1,18 +1,19 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { initAuthState } from '@/lib/firebase/auth/authInitialState'
-import { socket } from '@/socket'
-
-import { getLotIds } from '../functions'
-import { getChatbyUserIdChatId, getParnerUserObj } from '../chatActions'
-import { getLotById } from '@/lib/features/myStuff'
 
 import LotSection from '@/app/components/lotComponents/LotSection'
 import ChatSection from '@/app/components/chatComponents/ChatSection'
 
-import { User as CurrentUser, IChat, IChatMessage, ILot } from '@/lib/interfaces'
+import { User as CurrentUser, IChatMessage, ILot } from '@/lib/interfaces'
+import ExchangeStatusSection from '@/app/components/lotComponents/ExchangeStatusSection'
+import FeedbackSection from '@/app/components/feedbackComponents/FeedbackSection'
+import { isFeedBackAdded } from '../functions'
+import { toast } from '@/components/ui/use-toast'
+import { joinChat, offMessage, onMessageRecieved, onSendMessage } from '@/lib/features/websockets/chatHandler'
+import { chatSocket } from '@/socket'
 
 const ChatIdRoute = ({ params }: { params: { id: string } }) => {
 
@@ -27,6 +28,10 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
     const [messages, setMessages] = useState<IChatMessage[]>([]);
     const [inputMessage, setInputMessage] = useState<string>('');
 
+    const [owner, setOwner] = useState<string | null>(null);
+
+    const [isShowFeedback, setIsShowFeedback] = useState<boolean>(false);
+
     useEffect(() => {
         const unsubscribe = initAuthState(setUser);
         return () => unsubscribe();
@@ -34,47 +39,44 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
 
     const memoizedUser = useMemo(() => user, [user]);
 
-    useEffect(() => {
-        const fetchChatData = async () => {
-            const chat = await getChatbyUserIdChatId(params.id as string)
-            if (chat) {
-                const { myLotId, partnerLotId } = await getLotIds(chat as IChat, memoizedUser?.uid as string)
+    const fetchData = useCallback(async () => {
+        if (memoizedUser?.uid) {
+            try {
+                const response = await fetch(`/api/fetchChatData?chatId=${params.id}&userId=${memoizedUser?.uid}`);
+                const data = await response.json();
 
-                if (myLotId && partnerLotId) {
-                    // get data
-                    const myLotData = await getLotById(myLotId)
-                    const partnerLotData = await getLotById(partnerLotId)
-                    const partnerUserObj = await getParnerUserObj(partnerLotData?.userId as string)
+                setMyLot(data.myLot),
+                    setPartnerLot(data.partnerLot),
+                    setPartnerUser(data.partnerUser),
+                    setMessages(data.messages),
+                    setOwner(data.owner)
 
-                    setMyLot(myLotData as ILot)
-                    setPartnerLot(partnerLotData as ILot)
-
-                    setPartnerUser(partnerUserObj as CurrentUser)
-
-                    setMessages(chat.messages as IChatMessage[])
-                }
+            } catch (error) {
+                console.error('Error fetching chat data:', error);
             }
         }
-
-        fetchChatData()
     }, [params.id, memoizedUser?.uid])
 
     useEffect(() => {
-        socket.emit("joinChat", params.id);
+        fetchData();
+    }, [fetchData])
 
-        socket.on("message", (data) => {
-            setMessages((prevMessages) => [...prevMessages, data]);
-        });
+    useEffect(() => {
+        joinChat(params.id)
+
+        onMessageRecieved((data) => {
+            setMessages((prevMessages) => [...prevMessages, data])
+        })
 
         return () => {
-            socket.off("message");
+            offMessage();
         }
 
     }, [params.id])
 
-    const sendMessage = () => {
+    const handleSendMessage = () => {
         if (inputMessage.trim()) {
-            socket.emit("sendMessage", { chatId: params.id, content: inputMessage, senderId: memoizedUser?.uid as string });
+            onSendMessage(params.id, inputMessage, memoizedUser?.uid as string)
             setInputMessage('');
         }
     }
@@ -83,24 +85,66 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
         router.push(`/lot/${id}`)
     }
 
+    const isOwner = owner === memoizedUser?.uid;
+    const role = isOwner ? 'participant' : 'owner'
+
+    const handleShowFeedback = async (shouldShow: boolean) => {
+        const existingFeedBack = await isFeedBackAdded(partnerLot?.id as string, memoizedUser?.uid as string, role)
+
+        if (existingFeedBack.success) {
+            toast({
+                description: existingFeedBack.message,
+                variant: 'destructive',
+                className: 'bg-green-600'
+            })
+            setIsShowFeedback(false)
+        } else {
+            setIsShowFeedback(shouldShow)
+        }
+    }
+
+    const closeFeedback = () => {
+        setIsShowFeedback(false)
+    }
+
     return (
         <>
             <section className='w-full flex flex-col justify-around items-center md:flex-row p-2'>
                 <section className='md:w-1/2 sm:w-full h-full mx-auto rounded-lg flex flex-col justify-around space-y-10 mr-0 md:mr-5'>
-                    <LotSection title='My Lot' lot={myLot} onClick={handleClickLot} />
-                    <LotSection title='Partner Lot' lot={partnerLot} onClick={handleClickLot} />
+                    <LotSection title={isOwner ? 'My Lot' : 'Your offer'} lot={myLot} onClick={handleClickLot} />
+
+                    <ExchangeStatusSection
+                        lot1={myLot}
+                        lot2={partnerLot}
+                        isOwner={isOwner}
+                        fetchData={fetchData}
+                        handleShowFeedback={(shouldShow) => handleShowFeedback(shouldShow)}
+                        isShowFeedback={isShowFeedback}
+                        chatId={params.id}
+                    />
+
+                    {
+                        isShowFeedback ? (
+                            <FeedbackSection
+                                closeFeedback={closeFeedback}
+                                lotId={partnerLot?.id as string}
+                                userId={memoizedUser?.uid as string}
+                                role={role}
+                            />
+                        ) : (
+                            <LotSection title={isOwner ? 'Partner Lot' : 'Owner of the lot'} lot={partnerLot} onClick={handleClickLot} />
+                        )
+                    }
                 </section>
                 <ChatSection
-                    messages={messages}
+                    messages={messages ?? []}
                     companion={partnerUser}
-                    onMessageSend={sendMessage}
+                    onMessageSend={handleSendMessage}
                     inputMessage={inputMessage}
                     onInputChange={(e) => setInputMessage(e.target.value)}
                 />
             </section>
-            <section className='w-full text-center m-5'>
-                Cofirm Trade
-            </section>
+
         </>
     )
 }

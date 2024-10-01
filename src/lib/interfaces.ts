@@ -43,7 +43,10 @@ export interface Proposal {
   id: string;
   lotId: string | null;
   offeredLotId: string | null;
+
   status: 'declined' | 'pending' | 'accepted' | 'done';
+  timer?: Date | null;
+
   createdat?: Date | null;
   updatedAt?: Date | null;
 
@@ -52,6 +55,9 @@ export interface Proposal {
 
   ownerIdOfTheLot?: string | null;
   userIdOfferedLot?: string | null;
+
+  isOwnerConfirmedExchange?: boolean | null;
+  isUserConfirmedExchange?: boolean | null;
 }
 
 export interface ICard {
@@ -99,4 +105,17 @@ export interface ICardFavorite {
   lotId?: string | null;
 
   Lot: ILot;
+}
+
+export interface IFeedback {
+  id: string;
+  userId: string;
+
+  comment?: string;
+
+  rating?: number;
+  lotId?: string;
+
+  createdat?: Date | null;
+  updatedAt?: Date | null;
 }
