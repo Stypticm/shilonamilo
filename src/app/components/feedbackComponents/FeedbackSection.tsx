@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addRating } from '@/app/chats/functions';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/lib/hooks/useToast';
 
 interface IFeedbackSectionProps {
     closeFeedback: () => void,
@@ -24,6 +24,7 @@ const FeedbackSection: React.FC<IFeedbackSectionProps> = ({
     userId,
     role
 }) => {
+    const { toast } = useToast();
 
     const [rating, setRating] = React.useState(0);
     const [comment, setComment] = React.useState('');

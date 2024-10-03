@@ -4,7 +4,7 @@ import { createCategoryPage } from '@/app/actions'
 import CreateCategory from '@/app/components/CreateCategory'
 import CreationButtonBar from '@/app/components/CreationButtonBar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { toast } from '@/components/ui/use-toast'
+import { toast } from '@/lib/hooks/useToast'
 import { allCategories, choosedCategory } from '@/lib/currentData'
 import { useRouter } from 'next/navigation'
 

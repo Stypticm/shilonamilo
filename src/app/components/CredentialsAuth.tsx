@@ -5,7 +5,7 @@ import { useFormStatus } from 'react-dom'
 import { Loader2 } from 'lucide-react'
 import { User } from '@/lib/interfaces'
 import { handleLogin, handleReg } from '@/lib/firebase/auth/credentialsAuthLogic'
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/lib/hooks/useToast'
 import { useRouter } from 'next/navigation'
 
 

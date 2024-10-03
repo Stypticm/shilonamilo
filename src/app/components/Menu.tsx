@@ -9,8 +9,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { initAuthState, handleLogout } from '@/lib/firebase/auth/authInitialState'
 import { createNewLot } from '../actions'
 import { MenuIcon } from 'lucide-react'
-import { toast } from '@/components/ui/use-toast'
+import { toast } from '@/lib/hooks/useToast'
 import { useChatNotifications, useProposalNotifications } from './menuFunctionsNotification/useNotifications'
+import { chatSocket } from '@/socket'
 
 const Menu: React.FC = () => {
 
@@ -47,6 +48,29 @@ const Menu: React.FC = () => {
       setHasProposalNotifications(false);
     }
   }, [isOffersPage])
+
+  useEffect(() => {
+    if (memoizedUser) {
+      const handleNewNotification = (notification: any) => {
+        if (notification.type === 'chat') {
+          toast({
+            title: 'New notification',
+            description: notification.data.message,
+            onClick: () => {
+              router.push(`/chats/${notification.data.chatId}`);
+            },
+            className: 'cursor-pointer',
+          });
+        }
+      };
+
+      chatSocket.on('newNotification', handleNewNotification);
+
+      return () => {
+        chatSocket.off('newNotification', handleNewNotification);
+      };
+    }
+  }, [memoizedUser, router]);
 
 
   useChatNotifications({
@@ -87,8 +111,20 @@ const Menu: React.FC = () => {
             className='rounded-full h-8 w-8 hidden md:block'
             width={32}
             height={32}
-            priority />
+            priority
+          />
+          {
+            hasChatNotifications || hasProposalNotifications ? (
+              <div className='flex items-center justify-center'>
+                <span className="inline-block w-4 h-4 rounded-full bg-yellow-500" />
+              </div>
+            ) : (
+              null
+            )
+          }
         </div>
+
+
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[200px] bg-slate-400'>
         {

@@ -96,7 +96,8 @@ model Chat {
   lot2Id String? @db.VarChar(255)
   lot2   Lot?    @relation("Lot2Chat", fields: [lot2Id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  messages Message[] @relation("ChatMessages")
+  messages           Message[] @relation("ChatMessages")
+  isNotificationSent Boolean   @default(false)
 }
 
 model Message {

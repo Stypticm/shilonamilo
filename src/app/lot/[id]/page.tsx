@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import SaveButtonBar from '@/app/components/SaveButtonBar';
 import { updateLot } from '@/app/actions';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/lib/hooks/useToast';
 import ReceivedProposals from '@/app/components/ReceivedProposals';
 import MyLots from '@/app/components/MyLots';
 import Lot from '@/app/components/Lot';
