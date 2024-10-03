@@ -1,15 +1,15 @@
 import { Server, Socket } from 'socket.io';
-import { addProposal } from '../myStuff';
 import { proposalSocket } from '../../../socket';
+import { addProposal } from '../myStuff';
 
 export const initializeProposalNamespace = (io: Server) => {
     const proposalNamespace = io.of('/proposal');
 
     proposalNamespace.on('connection', (socket: Socket) => {
-        console.log(`${socket.id} connected to notifications namespace`);
+        console.log(`${socket.id} connected to proposal namespace`);
 
         socket.on('joinRoom', ({ userId }) => {
-            console.log(`User joined room: ${userId}`);
+            console.log(`User joined proposal room: ${userId}`);
             socket.join(userId);
         })
 
@@ -27,7 +27,6 @@ export const initializeProposalNamespace = (io: Server) => {
                 // // Notificate the other user
                 proposalNamespace.to(proposal?.userIdOfferedLot as string).emit('proposalReceived', proposal);
 
-                // // Notificate the owner of the lot
                 proposalNamespace.to(proposal?.ownerIdOfTheLot as string).emit('newNotification', {
                     type: 'proposal',
                     data: proposal
@@ -43,8 +42,9 @@ export const initializeProposalNamespace = (io: Server) => {
             socket.join(userId);
         })
 
-        socket.on('disconect', () => {
+        socket.on('disconect', ({ userId }) => {
             console.log('Client disconnected from notifications namespace');
+            socket.leave(userId);
         })
     })
 }
@@ -66,3 +66,7 @@ export const onProposalReceived = (callback: (data: any) => void) => {
 export const offProposal = () => {
     proposalSocket.off('proposalReceived');
 };
+
+export const offProposalNotification = ( userId: string) => {
+    proposalSocket.emit('disconect', { userId })
+}

@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, si
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
 import { User } from '@/lib/interfaces';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/lib/hooks/useToast';
 
 const auth = getAuth(firebase_app);
 

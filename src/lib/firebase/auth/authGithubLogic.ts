@@ -29,6 +29,7 @@ export const handleGithubAuth = async (setUser: React.Dispatch<React.SetStateAct
         });
 
         proposalSocket.emit('subscribeToNotifications', currentUser.uid);
+        chatSocket.emit('subscribeToNotifications', currentUser.uid);
 
         const response = await fetch('/api/auth/creation', {
             method: 'POST',

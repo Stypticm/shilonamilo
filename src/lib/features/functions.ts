@@ -1,7 +1,7 @@
 import { updateLot } from '@/app/actions'
 import { getAllLots, getFavorites } from '../currentData'
 import { User as CurrentUser } from '../interfaces'
-import { toast } from '@/components/ui/use-toast'
+import { toast } from '@/lib/hooks/useToast'
 
 export const fetchFavorites = async (user: Pick<CurrentUser, 'uid'>, setFavorites: any) => {
     try {

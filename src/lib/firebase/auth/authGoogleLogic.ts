@@ -2,7 +2,7 @@ import { getAuth, signOut, signInWithPopup, GoogleAuthProvider } from 'firebase/
 import { User } from '@/lib/interfaces';
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
-import { proposalSocket } from '@/socket';
+import { chatSocket, proposalSocket } from '@/socket';
 
 const auth = getAuth(firebase_app);
 const googleProvider = new GoogleAuthProvider();
@@ -30,6 +30,7 @@ export const handleGoogleAuth = async (setUser: React.Dispatch<React.SetStateAct
         });
 
         proposalSocket.emit('subscribeToNotifications', currentUser.uid);
+        chatSocket.emit('subscribeToNotifications', currentUser.uid);
 
         const response = await fetch('/api/auth/creation', {
             method: 'GET',

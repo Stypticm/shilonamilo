@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 
 import { initializeProposalNamespace } from '../src/lib/features/websockets/proposalHandler';
-// import { initializeChatNamespace } from '../src/lib/features/websockets/chatHandler';
+import { initializeChatNamespace } from '../src/lib/features/websockets/chatHandler';
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 const io = new Server(server, { cors: corsObj });
 
-// initializeChatNamespace(io);
+initializeChatNamespace(io);
 initializeProposalNamespace(io);
 
 server.listen(4000, () => console.log('Server running on port 4000'));

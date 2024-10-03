@@ -1,8 +1,12 @@
+'use client'
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/components/ui/use-toast';
-import { offMessage, onMessageRecieved, joinChat } from '@/lib/features/websockets/chatHandler';
+
+import { offMessage, onMessageRecieved, onJoinChat } from '@/lib/features/websockets/chatHandler';
 import { joinRoom, onProposalReceived, offProposal } from '@/lib/features/websockets/proposalHandler';
+import { ToastAction, ToastClose } from '@/components/ui/toast';
+import { useToast } from '@/lib/hooks/useToast';
 
 interface UseChatNotificationProps {
     userId: string | null;
@@ -26,10 +30,11 @@ export const useChatNotifications = ({
     setHasChatNotifications
 }: UseChatNotificationProps) => {
     const router = useRouter();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (userId) {
-            joinChat(userId);
+            onJoinChat(userId);
 
             const handleChatNotification = (data: any) => {
                 const { type, senderId, timestamp, chatId } = data
@@ -44,18 +49,21 @@ export const useChatNotifications = ({
 
                 if (notificationTimestamp > lastReadMessageTimestamp && !isChatPage) {
                     setHasChatNotifications(true);
-                    const notificationId = toast({
+                    toast({
                         title: 'New notification',
                         description: 'You got a new message',
-                        variant: 'default',
-                        onClick: () => {
-                            router.push(`/chats/${chatId}`),
-                                notificationId.dismiss()
-                        },
-                        className: 'cursor-pointer'
-                    })
+                        className: 'cursor-pointer',
+                        action:
+                            <ToastAction
+                                className='bg-slate-400 hover:bg-slate-600'
+                                altText='Open chat'
+                                onClick={() => router.push(`/chats/${chatId}`)}>
+                                Open chat
+                            </ToastAction>,
+                    });
                 }
             }
+
 
             onMessageRecieved(handleChatNotification);
 
@@ -72,6 +80,7 @@ export const useProposalNotifications = ({
     setHasProposalNotifications
 }: UseProposalNotificationProps) => {
     const router = useRouter();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (userId) {
@@ -86,15 +95,18 @@ export const useProposalNotifications = ({
                     if (!isOffersPage && senderId !== userId) {
 
                         setHasProposalNotifications(true);
-                        const notificationId = toast({
+                        toast({
                             title: 'New notification',
                             description: 'You got a new proposal',
                             variant: 'default',
-                            onClick: () => {
-                                notificationId.dismiss();
-                                router.push(`/offers/${userId}`)
-                            },
-                            className: 'cursor-pointer'
+                            className: 'cursor-pointer',
+                            action:
+                                <ToastAction
+                                    altText='View proposal'
+                                    className='bg-slate-400 hover:bg-slate-600'
+                                    onClick={() => router.push(`/offers/${data.id}`)}>
+                                    View proposal
+                                </ToastAction>
                         });
                     }
                 }

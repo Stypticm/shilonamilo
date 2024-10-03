@@ -33,12 +33,12 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
 
     useEffect(() => {
         onChatCreated((chatId: string) => {
-            router.push(`/chats/${chatId}`)
-        })
+            router.push(`/chats/${chatId}`);
+        });
 
         return () => {
-            offChatCreated()
-        }
+            offChatCreated();
+        };
     }, [])
 
     const handleClick = (id: string) => {
@@ -46,7 +46,8 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
         router.push(`/lot/${id}`)
     }
 
-    const handleChat = async (e: React.FormEvent<HTMLFormElement>,
+    const handleChat = async (
+        e: React.FormEvent<HTMLFormElement>,
         myLotId: string,
         partnerLotId: string,
         user1Id: string,
@@ -55,21 +56,12 @@ const OffersRoute = ({ params }: { params: { id: string } }) => {
         e.stopPropagation()
 
         try {
-            // const chat = await createChat(myLotId, partnerLotId, params.id)
-
-            // if (chat?.id) {
-            //     router.push(`/chats/${chat.id}`)
-            // } else {
-            //     console.error('Chat Id not found')
-            // }
-
             chatSocket.emit('createChat', {
                 user1Id,
                 user2Id,
                 lot1Id: myLotId,
                 lot2Id: partnerLotId
             })
-
         } catch (error) {
             console.error('Error creating chat:', error)
         }

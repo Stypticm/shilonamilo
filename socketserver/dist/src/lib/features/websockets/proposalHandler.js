@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.offProposal = exports.onProposalReceived = exports.onSendProposal = exports.joinRoom = exports.initializeProposalNamespace = void 0;
-const myStuff_1 = require("../myStuff");
+exports.offProposalNotification = exports.offProposal = exports.onProposalReceived = exports.onSendProposal = exports.joinRoom = exports.initializeProposalNamespace = void 0;
 const socket_1 = require("../../../socket");
+const myStuff_1 = require("../myStuff");
 const initializeProposalNamespace = (io) => {
     const proposalNamespace = io.of('/proposal');
     proposalNamespace.on('connection', (socket) => {
-        console.log(`${socket.id} connected to notifications namespace`);
+        console.log(`${socket.id} connected to proposal namespace`);
         socket.on('joinRoom', ({ userId }) => {
-            console.log(`User joined room: ${userId}`);
+            console.log(`User joined proposal room: ${userId}`);
             socket.join(userId);
         });
         socket.on('addProposal', (_a) => __awaiter(void 0, [_a], void 0, function* ({ lotId, myLotId }) {
@@ -30,7 +30,6 @@ const initializeProposalNamespace = (io) => {
                 proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.ownerIdOfTheLot).emit('proposalReceived', proposal);
                 // // Notificate the other user
                 proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.userIdOfferedLot).emit('proposalReceived', proposal);
-                // // Notificate the owner of the lot
                 proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.ownerIdOfTheLot).emit('newNotification', {
                     type: 'proposal',
                     data: proposal
@@ -44,8 +43,9 @@ const initializeProposalNamespace = (io) => {
             console.log(`User subscribed to notifications: ${userId}`);
             socket.join(userId);
         });
-        socket.on('disconect', () => {
+        socket.on('disconect', ({ userId }) => {
             console.log('Client disconnected from notifications namespace');
+            socket.leave(userId);
         });
     });
 };
@@ -68,3 +68,7 @@ const offProposal = () => {
     socket_1.proposalSocket.off('proposalReceived');
 };
 exports.offProposal = offProposal;
+const offProposalNotification = (userId) => {
+    socket_1.proposalSocket.emit('disconect', { userId });
+};
+exports.offProposalNotification = offProposalNotification;

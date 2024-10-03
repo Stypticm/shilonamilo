@@ -11,9 +11,8 @@ import { User as CurrentUser, IChatMessage, ILot } from '@/lib/interfaces'
 import ExchangeStatusSection from '@/app/components/lotComponents/ExchangeStatusSection'
 import FeedbackSection from '@/app/components/feedbackComponents/FeedbackSection'
 import { isFeedBackAdded } from '../functions'
-import { toast } from '@/components/ui/use-toast'
-import { joinChat, offMessage, onMessageRecieved, onSendMessage } from '@/lib/features/websockets/chatHandler'
-import { chatSocket } from '@/socket'
+import { toast } from '@/lib/hooks/useToast'
+import { onJoinChat, offMessage, onMessageRecieved, onSendMessage } from '@/lib/features/websockets/chatHandler'
 
 const ChatIdRoute = ({ params }: { params: { id: string } }) => {
 
@@ -62,7 +61,7 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
     }, [fetchData])
 
     useEffect(() => {
-        joinChat(params.id)
+        onJoinChat(params.id)
 
         onMessageRecieved((data) => {
             setMessages((prevMessages) => [...prevMessages, data])

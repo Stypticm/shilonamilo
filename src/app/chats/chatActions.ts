@@ -1,54 +1,55 @@
 'use server'
 
-import prisma from '@/lib/prisma/db';
-import { IChat, User } from '@/lib/interfaces';
+import prisma from '../../lib/prisma/db';
+import { IChat, User } from '../../lib/interfaces';
 
-// export const createChat = async (myLotId: string, partnerLotId: string, userId: string) => {
+export const createChat = async (myLotId: string, partnerLotId: string, user1Id: string) => {
 
-//     let lot1Id = myLotId
-//     let lot2Id = partnerLotId
+    let lot1Id = myLotId
+    let lot2Id = partnerLotId
 
-//     try {
-//         // check availability of chat
-//         let chat = await prisma.chat.findFirst({
-//             where: {
-//                 OR: [
-//                     {
-//                         lot1Id,
-//                         lot2Id
-//                     },
-//                     {
-//                         lot1Id: partnerLotId,
-//                         lot2Id: myLotId
-//                     }
-//                 ]
-//             }
-//         });
+    try {
+        // check availability of chat
+        let chat = await prisma.chat.findFirst({
+            where: {
+                OR: [
+                    {
+                        lot1Id,
+                        lot2Id
+                    },
+                    {
+                        lot1Id: partnerLotId,
+                        lot2Id: myLotId
+                    }
+                ]
+            }
+        });
 
-//         if (!chat) {
-//             chat = await prisma.chat.create({
-//                 data: {
-//                     lot1Id,
-//                     lot2Id,
-//                     messages: {
-//                         create: {
-//                             content: "Chat started",
-//                             senderId: userId
-//                         }
-//                     }
-//                 },
-//                 include: {
-//                     messages: true
-//                 }
-//             });
-//         }
+        if (!chat) {
+            chat = await prisma.chat.create({
+                data: {
+                    lot1Id,
+                    lot2Id,
+                    messages: {
+                        create: {
+                            content: "Chat started",
+                            senderId: user1Id
+                        }
+                    },
+                    isNotificationSent: false
+                },
+                include: {
+                    messages: true
+                }
+            });
+        }
 
-//         return chat
+        return chat
 
-//     } catch (error) {
-//         console.error('Error creating chat:', error);
-//     }
-// }
+    } catch (error) {
+        console.error('Error creating chat:', error);
+    }
+}
 
 export const getChatbyUserIdChatId = async (chatId: string) => {
     try {
@@ -115,6 +116,24 @@ export const getParnerUserObj = async (userId: string): Promise<
         return data as User
     } catch (error) {
         console.error('Error getting user:', error);
+        return null
+    }
+}
+
+export const createChatMessage = async (chatId: string, userId: string, content: string) => {
+
+    try {
+        const message = await prisma.message.create({
+            data: {
+                chatId,
+                senderId: userId,
+                content
+            }
+        })
+
+        return message
+    } catch (error) {
+        console.error('Error creating message:', error);
         return null
     }
 }
