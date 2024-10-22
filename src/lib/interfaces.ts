@@ -18,7 +18,7 @@ export interface ILot {
   userId?: string | null;
   name?: string | null;
   description?: string | null;
-  exchangeOffer?: string | null
+  exchangeOffer?: string | null;
   country?: string | null;
   city?: string | null;
   category?: string | null;

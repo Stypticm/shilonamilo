@@ -4,7 +4,7 @@ const IdLayout = ({
   children,
   // offersModal,
 }: {
-  children: React.ReactNode,
+  children: React.ReactNode;
   // offersModal: React.ReactNode,
 }) => {
   return (

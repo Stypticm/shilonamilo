@@ -16,6 +16,7 @@ exports.onSendMessage = exports.offMessage = exports.onMessageRecieved = exports
 const socket_1 = require("../../../socket");
 const chatActions_1 = require("../../../app/chats/chatActions");
 const db_1 = __importDefault(require("../../../lib/prisma/db"));
+const telegram_1 = require("../bot/telegram");
 const initializeChatNamespace = (io) => {
     const chatNamespace = io.of('/chat');
     chatNamespace.on('connection', (socket) => {
@@ -61,6 +62,14 @@ const initializeChatNamespace = (io) => {
                     type: 'message',
                     data: message
                 });
+                const updates = yield (0, telegram_1.getUpdates)();
+                if (updates && updates.result.length > 0) {
+                    const chatIdTelegram = updates.result[0].message.chat.id;
+                    yield (0, telegram_1.sendTelegramMessage)(chatIdTelegram, `New message: ${content}`);
+                }
+                else {
+                    console.log('No updates found or updates are empty.');
+                }
             }
             catch (error) {
                 console.error('Error sending message:', error);

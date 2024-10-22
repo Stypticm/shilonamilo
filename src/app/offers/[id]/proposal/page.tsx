@@ -1,12 +1,12 @@
-import OffersComponent from '@/app/components/OffersComponent'
-import React from 'react'
+import OffersComponent from '@/app/components/OffersComponent';
+import React from 'react';
 
 const OffersPage = () => {
-    return (
-        <>
-            <OffersComponent/>
-        </>
-    )
-}
+  return (
+    <>
+      <OffersComponent />
+    </>
+  );
+};
 
-export default OffersPage
+export default OffersPage;

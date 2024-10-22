@@ -10,15 +10,15 @@ const app = express();
 const server = http.createServer(app);
 
 const corsObj = {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    credentials: true
-}
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
 
 app.use(cors(corsObj));
 
 app.get('/', (req, res) => {
-    res.send('WebSocket server is running');
+  res.send('WebSocket server is running');
 });
 
 const io = new Server(server, { cors: corsObj });

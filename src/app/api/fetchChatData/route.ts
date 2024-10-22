@@ -6,13 +6,12 @@ import { getChatbyUserIdChatId, getParnerUserObj } from '@/app/chats/chatActions
 import { getLotIds, getLotOwner } from '@/app/chats/functions';
 
 export async function GET(req: NextRequest) {
-
   const { searchParams } = new URL(req.url);
   const chatId = searchParams.get('chatId');
   const userId = searchParams.get('userId');
 
   if (!chatId || !userId) {
-    return NextResponse.json({error: 'Invalid query parameters'}, { status: 400 });
+    return NextResponse.json({ error: 'Invalid query parameters' }, { status: 400 });
   }
 
   try {
@@ -31,7 +30,7 @@ export async function GET(req: NextRequest) {
           partnerLot: partnerLotData as ILot,
           partnerUser: partnerUserObj as CurrentUser,
           messages: chat.messages as IChatMessage[],
-          owner: ownerLot as string
+          owner: ownerLot as string,
         };
 
         return NextResponse.json(chatData);
@@ -39,7 +38,6 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Chat not found' }, { status: 404 });
-
   } catch (error) {
     console.error('Error fetching chat data:', error);
     return NextResponse.json({ error: 'Error fetching chat data' }, { status: 500 });
