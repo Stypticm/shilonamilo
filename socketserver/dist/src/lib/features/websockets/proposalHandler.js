@@ -27,12 +27,16 @@ const initializeProposalNamespace = (io) => {
                 // console.log(`User: ${proposal?.userIdOfferedLot}`);
                 // console.log(`Proposal: ${JSON.stringify(proposal)}`);
                 // // Notificate the owner of the lot
-                proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.ownerIdOfTheLot).emit('proposalReceived', proposal);
+                proposalNamespace
+                    .to(proposal === null || proposal === void 0 ? void 0 : proposal.ownerIdOfTheLot)
+                    .emit('proposalReceived', proposal);
                 // // Notificate the other user
-                proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.userIdOfferedLot).emit('proposalReceived', proposal);
+                proposalNamespace
+                    .to(proposal === null || proposal === void 0 ? void 0 : proposal.userIdOfferedLot)
+                    .emit('proposalReceived', proposal);
                 proposalNamespace.to(proposal === null || proposal === void 0 ? void 0 : proposal.ownerIdOfTheLot).emit('newNotification', {
                     type: 'proposal',
-                    data: proposal
+                    data: proposal,
                 });
             }
             catch (error) {
@@ -55,11 +59,15 @@ const joinRoom = (userId) => {
 };
 exports.joinRoom = joinRoom;
 const onSendProposal = (lotId, myLotId) => {
-    socket_1.proposalSocket.emit('addProposal', { lotId, myLotId });
+    socket_1.proposalSocket.emit('addProposal', {
+        lotId,
+        myLotId,
+    });
 };
 exports.onSendProposal = onSendProposal;
 const onProposalReceived = (callback) => {
     socket_1.proposalSocket.on('proposalReceived', (data) => {
+        console.log('data onProposalReceived: ', data);
         callback(data);
     });
 };

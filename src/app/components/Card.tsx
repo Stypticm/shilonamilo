@@ -1,8 +1,6 @@
 import { ICard } from '@/lib/interfaces';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { AddToFavoriteButton, DeleteFromFavoriteButton } from './SubmitButtons';
-import { addToFavorite, removeFromFavorite } from '../actions';
 import FavoriteButtons from './FavoriteButtons';
 
 const Card = ({
@@ -18,9 +16,11 @@ const Card = ({
   updateFavorites,
   handleClick,
 }: ICard) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isFavorite, setIsFavorite] = useState(isInFavoriteList);
 
   const handleClickCard = (id: string) => {
+    setIsFavorite((prev) => !prev);
     if (handleClick) handleClick(id);
   };
 
@@ -34,7 +34,7 @@ const Card = ({
         <FavoriteButtons
           id={id}
           userId={userId}
-          isInFavoriteList={isFavorite}
+          isInFavoriteList={isInFavoriteList}
           favoriteId={favoriteId}
           pathName={pathName}
           updateFavorites={updateFavorites}

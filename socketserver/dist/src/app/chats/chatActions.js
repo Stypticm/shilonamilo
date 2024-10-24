@@ -25,14 +25,14 @@ const createChat = (myLotId, partnerLotId, user1Id) => __awaiter(void 0, void 0,
                 OR: [
                     {
                         lot1Id,
-                        lot2Id
+                        lot2Id,
                     },
                     {
                         lot1Id: partnerLotId,
-                        lot2Id: myLotId
-                    }
-                ]
-            }
+                        lot2Id: myLotId,
+                    },
+                ],
+            },
         });
         if (!chat) {
             chat = yield db_1.default.chat.create({
@@ -41,15 +41,15 @@ const createChat = (myLotId, partnerLotId, user1Id) => __awaiter(void 0, void 0,
                     lot2Id,
                     messages: {
                         create: {
-                            content: "Chat started",
-                            senderId: user1Id
-                        }
+                            content: 'Chat started',
+                            senderId: user1Id,
+                        },
                     },
-                    isNotificationSent: false
+                    isNotificationSent: false,
                 },
                 include: {
-                    messages: true
-                }
+                    messages: true,
+                },
             });
         }
         return chat;
@@ -66,8 +66,8 @@ const getChatbyUserIdChatId = (chatId) => __awaiter(void 0, void 0, void 0, func
                 id: chatId,
             },
             include: {
-                messages: true
-            }
+                messages: true,
+            },
         });
         return chat;
     }
@@ -83,13 +83,10 @@ const getAllMyChats = (userId) => __awaiter(void 0, void 0, void 0, function* ()
             select: { id: true },
         });
         console.log(userLots);
-        const lotIds = userLots.map(lot => lot.id);
+        const lotIds = userLots.map((lot) => lot.id);
         const chats = yield db_1.default.chat.findMany({
             where: {
-                OR: [
-                    { lot1Id: { in: lotIds } },
-                    { lot2Id: { in: lotIds } }
-                ]
+                OR: [{ lot1Id: { in: lotIds } }, { lot2Id: { in: lotIds } }],
             },
         });
         return chats;
@@ -104,14 +101,14 @@ const getParnerUserObj = (userId) => __awaiter(void 0, void 0, void 0, function*
     try {
         const data = yield db_1.default.user.findUnique({
             where: {
-                id: userId
+                id: userId,
             },
             select: {
                 id: true,
                 firstname: true,
                 photoURL: true,
-                email: true
-            }
+                email: true,
+            },
         });
         return data;
     }
@@ -127,8 +124,8 @@ const createChatMessage = (chatId, userId, content) => __awaiter(void 0, void 0,
             data: {
                 chatId,
                 senderId: userId,
-                content
-            }
+                content,
+            },
         });
         return message;
     }

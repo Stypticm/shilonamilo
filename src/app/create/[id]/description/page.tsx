@@ -3,7 +3,6 @@
 import { createDescription } from '@/app/actions';
 import CreationButtonBar from '@/app/components/CreationButtonBar';
 import TogglePhotoUrlFile from '@/app/components/TogglePhotoUrlFile';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';

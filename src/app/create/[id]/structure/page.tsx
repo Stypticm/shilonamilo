@@ -58,7 +58,7 @@ const StructureRoute = ({ params }: { params: { id: string } }) => {
       }
     } catch (error) {
       toast({
-        description: 'An error occurred while adding the category',
+        description: `An ${error} occurred while adding the category`,
         title: 'Error',
         variant: 'destructive',
       });

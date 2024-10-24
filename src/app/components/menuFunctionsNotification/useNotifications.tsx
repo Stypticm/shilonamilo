@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -28,10 +27,10 @@ interface UseProposalNotificationProps {
 }
 
 interface IhandleChatNotification {
-  type: string;
-  senderId: string;
-  timestamp: number;
-  chatId: string;
+  type: string | null;
+  senderId: string | null;
+  timestamp: number | null;
+  chatId: string | null;
 }
 
 export const useChatNotifications = ({
@@ -51,11 +50,11 @@ export const useChatNotifications = ({
       const handleChatNotification = (data: IhandleChatNotification) => {
         const { type, senderId, timestamp, chatId } = data;
 
-        const notificationTimestamp = new Date(timestamp).getTime();
+        const notificationTimestamp = new Date(timestamp as number).getTime();
         const lastReadMessageTimestamp = new Date(lastReadMessage).getTime();
 
         if (type === 'message' && (isChatPage || senderId === userId)) {
-          setLastReadMessage(timestamp);
+          setLastReadMessage(timestamp as number);
           return;
         }
 

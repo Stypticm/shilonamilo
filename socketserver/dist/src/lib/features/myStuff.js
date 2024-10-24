@@ -27,7 +27,7 @@ const getMyStuff = (id) => {
                 { photolot: { not: null } },
                 { country: { not: null } },
                 { city: { not: null } },
-            ]
+            ],
         },
         select: {
             id: true,
@@ -42,10 +42,10 @@ const getMyStuff = (id) => {
             Proposal: {
                 select: {
                     id: true,
-                    status: true
-                }
-            }
-        }
+                    status: true,
+                },
+            },
+        },
     });
     return data;
 };
@@ -70,8 +70,8 @@ const deleteLot = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield db_1.default.lot.delete({
             where: {
-                id: id
-            }
+                id: id,
+            },
         });
         return true;
     }
@@ -84,12 +84,12 @@ const getLotById = (lotId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const lot = yield db_1.default.lot.findUnique({
             where: {
-                id: lotId
+                id: lotId,
             },
             include: {
                 Proposal: true,
-                Offers: true
-            }
+                Offers: true,
+            },
         });
         return lot;
     }
@@ -105,13 +105,13 @@ const addProposal = (lotId, myLotId) => __awaiter(void 0, void 0, void 0, functi
     try {
         logginedUserId = yield db_1.default.lot.findUnique({
             where: {
-                id: myLotId
-            }
+                id: myLotId,
+            },
         });
         itemUserId = yield db_1.default.lot.findUnique({
             where: {
-                id: lotId
-            }
+                id: lotId,
+            },
         });
     }
     catch (error) {
@@ -124,20 +124,20 @@ const addProposal = (lotId, myLotId) => __awaiter(void 0, void 0, void 0, functi
                 offeredLotId: myLotId,
                 status: 'pending',
                 ownerIdOfTheLot: itemUserId === null || itemUserId === void 0 ? void 0 : itemUserId.userId,
-                userIdOfferedLot: logginedUserId === null || logginedUserId === void 0 ? void 0 : logginedUserId.userId
-            }
+                userIdOfferedLot: logginedUserId === null || logginedUserId === void 0 ? void 0 : logginedUserId.userId,
+            },
         });
         yield db_1.default.lot.update({
             where: {
-                id: lotId
+                id: lotId,
             },
             data: {
                 Proposal: {
                     connect: {
-                        id: data.id
-                    }
-                }
-            }
+                        id: data.id,
+                    },
+                },
+            },
         });
         return data;
     }
@@ -159,12 +159,12 @@ const getLotsById = (userId) => __awaiter(void 0, void 0, void 0, function* () {
                     { photolot: { not: null } },
                     { country: { not: null } },
                     { city: { not: null } },
-                ]
+                ],
             },
             include: {
                 Proposal: true,
-                Offers: true
-            }
+                Offers: true,
+            },
         });
         const lotsWithoutProposals = lots.filter((lot) => {
             return lot.Offers.length === 0;
@@ -180,11 +180,11 @@ const getReceivedProposals = (lotId) => __awaiter(void 0, void 0, void 0, functi
     try {
         const proposals = yield db_1.default.proposal.findMany({
             where: {
-                lotId
+                lotId,
             },
             include: {
-                offeredLot: true
-            }
+                offeredLot: true,
+            },
         });
         return proposals;
     }
@@ -198,21 +198,21 @@ const acceptProposal = (proposalId) => __awaiter(void 0, void 0, void 0, functio
     try {
         yield db_1.default.proposal.update({
             where: {
-                id: proposalId
+                id: proposalId,
             },
             data: {
-                status: 'accepted'
-            }
+                status: 'accepted',
+            },
         });
         yield db_1.default.proposal.updateMany({
             where: {
                 id: {
-                    not: proposalId
-                }
+                    not: proposalId,
+                },
             },
             data: {
-                status: 'declined'
-            }
+                status: 'declined',
+            },
         });
     }
     catch (error) {
@@ -224,11 +224,11 @@ const declineProposal = (proposalId) => __awaiter(void 0, void 0, void 0, functi
     try {
         yield db_1.default.proposal.update({
             where: {
-                id: proposalId
+                id: proposalId,
             },
             data: {
-                status: 'declined'
-            }
+                status: 'declined',
+            },
         });
     }
     catch (error) {

@@ -1,7 +1,7 @@
 'use server';
 
 import { storage } from '@/lib/firebase/firebase';
-import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma/db';
 import { revalidatePath } from 'next/cache';
@@ -56,7 +56,9 @@ export async function createCategoryPage(formData: FormData) {
   console.log(lotId, categoryName);
 
   if (!categoryName) {
-    return { error: 'Category name and Lot ID must be filled' };
+    return {
+      error: 'Category name and Lot ID must be filled',
+    };
   } else {
     await prisma.lot.update({
       where: {
@@ -81,11 +83,15 @@ export async function createDescription(formData: FormData) {
   const exchange = formData.get('exchange') as string;
 
   if (!name || !description) {
-    return { error: 'Name and description fields must be filled' };
+    return {
+      error: 'Name and description fields must be filled',
+    };
   }
 
   try {
-    const currentData = await prisma.lot.findUnique({ where: { id: lotId } });
+    const currentData = await prisma.lot.findUnique({
+      where: { id: lotId },
+    });
 
     const currentName = currentData?.name;
     const currentDescription = currentData?.description;
@@ -98,7 +104,10 @@ export async function createDescription(formData: FormData) {
       currentPhotoURL === currentPhotoURL &&
       currentExchangeOffer === exchange
     ) {
-      return { success: true, text: 'Nothing changed' };
+      return {
+        success: true,
+        text: 'Nothing changed',
+      };
     } else if (
       currentName !== name ||
       currentDescription !== description ||
@@ -123,7 +132,9 @@ export async function createDescription(formData: FormData) {
           photoURL = await getDownloadURL(urlRef);
         } catch (error) {
           console.log(error);
-          return { error: 'Error uploading photo' };
+          return {
+            error: 'Error uploading photo',
+          };
         }
       }
 
@@ -153,17 +164,24 @@ export async function createLocation(formData: FormData) {
   const city = formData.get('city') as string;
 
   if (!country && !city) {
-    return { error: 'Country and city fields must be filled' };
+    return {
+      error: 'Country and city fields must be filled',
+    };
   }
 
   try {
-    const currentData = await prisma.lot.findUnique({ where: { id: lotId } });
+    const currentData = await prisma.lot.findUnique({
+      where: { id: lotId },
+    });
 
     const currentCountry = currentData?.country;
     const currentCity = currentData?.city;
 
     if (currentCountry === country && currentCity === city) {
-      return { success: true, text: 'Nothing changed' };
+      return {
+        success: true,
+        text: 'Nothing changed',
+      };
     } else if (currentCountry !== country || currentCity !== city) {
       await prisma.lot.update({
         where: {
@@ -217,7 +235,9 @@ export async function removeFromFavorite(formData: FormData) {
     });
   } catch (error) {
     console.log(error);
-    return { error: 'Error removing from favorite' };
+    return {
+      error: 'Error removing from favorite',
+    };
   }
   revalidatePath(pathName);
 }
@@ -230,7 +250,9 @@ export async function updateLot(formData: FormData, lotId: string) {
   const exchangeOffer = formData.get('exchangeOffer') as string;
 
   try {
-    const currentData = await prisma.lot.findUnique({ where: { id: lotId } });
+    const currentData = await prisma.lot.findUnique({
+      where: { id: lotId },
+    });
 
     const currentName = currentData?.name;
     const currentDescription = currentData?.description;
@@ -243,7 +265,10 @@ export async function updateLot(formData: FormData, lotId: string) {
       currentPhotoURL === currentPhotoURL &&
       currentExchangeOffer === exchangeOffer
     ) {
-      return { success: true, text: 'Nothing changed' };
+      return {
+        success: true,
+        text: 'Nothing changed',
+      };
     } else if (
       currentName !== name ||
       currentDescription !== description ||
@@ -268,7 +293,9 @@ export async function updateLot(formData: FormData, lotId: string) {
           photoURL = await getDownloadURL(urlRef);
         } catch (error) {
           console.log(error);
-          return { error: 'Error uploading photo' };
+          return {
+            error: 'Error uploading photo',
+          };
         }
       }
 

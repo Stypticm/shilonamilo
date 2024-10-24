@@ -16,7 +16,7 @@ exports.onSendMessage = exports.offMessage = exports.onMessageRecieved = exports
 const socket_1 = require("../../../socket");
 const chatActions_1 = require("../../../app/chats/chatActions");
 const db_1 = __importDefault(require("../../../lib/prisma/db"));
-const telegram_1 = require("../bot/telegram");
+// import { getUpdates, sendTelegramMessage } from '../bot/telegram';
 const initializeChatNamespace = (io) => {
     const chatNamespace = io.of('/chat');
     chatNamespace.on('connection', (socket) => {
@@ -37,15 +37,15 @@ const initializeChatNamespace = (io) => {
                     yield db_1.default.chat.update({
                         where: { id: chatId },
                         data: {
-                            isNotificationSent: true
-                        }
+                            isNotificationSent: true,
+                        },
                     });
                     chatNamespace.to(user2Id).emit('newNotification', {
                         type: 'chat',
                         data: {
                             chatId,
-                            message: 'You added a new chat'
-                        }
+                            message: 'You added a new chat',
+                        },
                     });
                 }
                 socket.emit('chatCreated', chatId);
@@ -60,16 +60,15 @@ const initializeChatNamespace = (io) => {
                 chatNamespace.to(chatId).emit('messageReceived', message);
                 chatNamespace.to(chatId).emit('newNotification', {
                     type: 'message',
-                    data: message
+                    data: message,
                 });
-                const updates = yield (0, telegram_1.getUpdates)();
-                if (updates && updates.result.length > 0) {
-                    const chatIdTelegram = updates.result[0].message.chat.id;
-                    yield (0, telegram_1.sendTelegramMessage)(chatIdTelegram, `New message: ${content}`);
-                }
-                else {
-                    console.log('No updates found or updates are empty.');
-                }
+                // const updates = await getUpdates();
+                // if (updates && updates.result.length > 0) {
+                //   const chatIdTelegram = updates.result[0].message.chat.id;
+                //   await sendTelegramMessage(chatIdTelegram, `New message: ${content}`);
+                // } else {
+                //   console.log('No updates found or updates are empty.');
+                // }
             }
             catch (error) {
                 console.error('Error sending message:', error);
@@ -98,6 +97,7 @@ const offChatCreated = () => {
 exports.offChatCreated = offChatCreated;
 const onMessageRecieved = (callback) => {
     socket_1.chatSocket.on('messageReceived', (data) => {
+        console.log('data onMessageRecieved: ', data);
         callback(data);
     });
 };
@@ -107,6 +107,10 @@ const offMessage = () => {
 };
 exports.offMessage = offMessage;
 const onSendMessage = (chatId, content, senderId) => {
-    socket_1.chatSocket.emit('sendMessage', { chatId, content, senderId });
+    socket_1.chatSocket.emit('sendMessage', {
+        chatId,
+        content,
+        senderId,
+    });
 };
 exports.onSendMessage = onSendMessage;

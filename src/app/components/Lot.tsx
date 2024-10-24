@@ -38,7 +38,7 @@ const Lot = ({ data }: { data: ILot }) => {
       </div>
       <div className="flex flex-col ml-10">
         <div className="gap-2 flex items-center justify-start">
-          <Label className="font-bold">Lot's name: </Label>
+          <Label className="font-bold">Lot&apos;s name: </Label>
           <span className="font-sans">{data?.name}</span>
         </div>
         <div className="gap-2 flex items-center justify-start">

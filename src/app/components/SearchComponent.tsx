@@ -1,9 +1,8 @@
 'use client';
 
+import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Search } from 'lucide-react';
-import React, { useState } from 'react';
 
 const SearchComponent = () => {
   return (

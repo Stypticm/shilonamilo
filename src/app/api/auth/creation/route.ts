@@ -8,13 +8,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     if (!authHeader) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse('Unauthorized', {
+        status: 401,
+      });
     }
 
     const token = authHeader.split(' ')[1];
 
     if (!token) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse('Unauthorized', {
+        status: 401,
+      });
     }
 
     const decodedToken = await adminAuth.verifyIdToken(token);
@@ -44,7 +48,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect('http://localhost:3000');
   } catch (error) {
     console.error('Error in /api/auth/creation:', error);
-    return NextResponse.json({ error: 'Authentication failed', message: error }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Authentication failed',
+        message: error,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -53,13 +63,17 @@ export async function GET(req: NextRequest) {
     const authHeader = req.headers.get('Authorization');
 
     if (!authHeader) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse('Unauthorized', {
+        status: 401,
+      });
     }
 
     const token = authHeader.split(' ')[1];
 
     if (!token) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse('Unauthorized', {
+        status: 401,
+      });
     }
 
     const decodedToken = await adminAuth.verifyIdToken(token);
@@ -90,6 +104,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect('http://localhost:3000/');
   } catch (error) {
     console.error('Error in /api/auth/creation:', error);
-    return NextResponse.json({ error: 'Authentication failed', message: error }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Authentication failed',
+        message: error,
+      },
+      { status: 500 },
+    );
   }
 }

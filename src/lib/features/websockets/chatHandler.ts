@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { chatSocket } from '../../../socket';
 import { createChat, createChatMessage } from '../../../app/chats/chatActions';
 import prisma from '../../../lib/prisma/db';
-import { getUpdates, sendTelegramMessage } from '../bot/telegram';
+// import { getUpdates, sendTelegramMessage } from '../bot/telegram';
 
 export const initializeChatNamespace = (io: Server) => {
   const chatNamespace = io.of('/chat');
@@ -59,14 +59,14 @@ export const initializeChatNamespace = (io: Server) => {
           data: message,
         });
 
-        const updates = await getUpdates();
+        // const updates = await getUpdates();
 
-        if (updates && updates.result.length > 0) {
-          const chatIdTelegram = updates.result[0].message.chat.id;
-          await sendTelegramMessage(chatIdTelegram, `New message: ${content}`);
-        } else {
-          console.log('No updates found or updates are empty.');
-        }
+        // if (updates && updates.result.length > 0) {
+        //   const chatIdTelegram = updates.result[0].message.chat.id;
+        //   await sendTelegramMessage(chatIdTelegram, `New message: ${content}`);
+        // } else {
+        //   console.log('No updates found or updates are empty.');
+        // }
       } catch (error) {
         console.error('Error sending message:', error);
       }
@@ -95,6 +95,7 @@ export const offChatCreated = () => {
 
 export const onMessageRecieved = (callback: (data: any) => void) => {
   chatSocket.on('messageReceived', (data: any) => {
+    console.log('data onMessageRecieved: ', data);
     callback(data);
   });
 };
@@ -104,5 +105,9 @@ export const offMessage = () => {
 };
 
 export const onSendMessage = (chatId: string, content: string, senderId: string) => {
-  chatSocket.emit('sendMessage', { chatId, content, senderId });
+  chatSocket.emit('sendMessage', {
+    chatId,
+    content,
+    senderId,
+  });
 };

@@ -20,7 +20,9 @@ const MyLots = ({ lotId }: { lotId: string }) => {
   const router = useRouter();
   const [myLots, setMyLots] = useState<ILot[]>([]);
   const [user, setUser] = useState<CurrentUser | null>(null);
-  const [proposals, setProposals] = useState<{ [key: string]: boolean }>({});
+  const [proposals, setProposals] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   useEffect(() => {
     const unsubscribe = initAuthState(setUser);
@@ -47,7 +49,10 @@ const MyLots = ({ lotId }: { lotId: string }) => {
   const handleExchangeProposal = async (myLotId: string) => {
     if (!proposals[myLotId]) {
       await onSendProposal(lotId, myLotId);
-      setProposals((prev) => ({ ...prev, [myLotId]: true }));
+      setProposals((prev) => ({
+        ...prev,
+        [myLotId]: true,
+      }));
       await fetchMyLots();
     }
   };

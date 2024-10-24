@@ -1,11 +1,11 @@
 'use client';
 
-import React, { Suspense, use, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { deleteLot, findLotByUserIdAndLotId } from '@/lib/features/myStuff';
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
-import { User as CurrentUser, ILot } from '@/lib/interfaces';
+import { User as CurrentUser, ICard, ILot } from '@/lib/interfaces';
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,7 +27,7 @@ const LotRoute = ({ params }: { params: { id: string } }) => {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [data, setData] = useState<ILot | null>(null);
   const [isLotBelongsToUser, setIsLotBelongsToUser] = useState<boolean>(false);
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<ICard[]>([]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const [name, setName] = useState<string>('');
