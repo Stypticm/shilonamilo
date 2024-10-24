@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import NoItems from '@/app/components/NoItems';
 import { ILot, Proposal } from '@/lib/interfaces';
 import { Suspense, useEffect, useState } from 'react';

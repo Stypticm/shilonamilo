@@ -14,7 +14,7 @@ const server = http_1.default.createServer(app);
 const corsObj = {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],
-    credentials: true
+    credentials: true,
 };
 app.use((0, cors_1.default)(corsObj));
 app.get('/', (req, res) => {

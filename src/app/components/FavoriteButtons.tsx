@@ -3,14 +3,7 @@ import React, { useState } from 'react';
 import { AddToFavoriteButton, DeleteFromFavoriteButton } from './SubmitButtons';
 import { addToFavorite, removeFromFavorite } from '../actions';
 
-const FavoriteButtons = ({
-  id,
-  userId,
-  isInFavoriteList,
-  favoriteId,
-  pathName,
-  updateFavorites,
-}: ICard) => {
+const FavoriteButtons = ({ id, userId, isInFavoriteList, pathName, updateFavorites }: ICard) => {
   const [isFavorite, setIsFavorite] = useState(isInFavoriteList);
 
   const handleAddToFavorite = async (e: React.FormEvent) => {

@@ -50,12 +50,18 @@ export const choosedDescription = async (id: string) => {
 
 export const allCountries = async () => {
   const data = countryList().getData();
-  return data.map((country) => ({ value: country.value, label: country.label }));
+  return data.map((country) => ({
+    value: country.value,
+    label: country.label,
+  }));
 };
 
 export const citiesOfCountry = async (countryCode: string) => {
   const data = City.getCitiesOfCountry(countryCode);
-  return data?.map((city) => ({ value: city.name, label: city.name }));
+  return data?.map((city) => ({
+    value: city.name,
+    label: city.name,
+  }));
 };
 
 export const getAllLots = async (userId?: string) => {

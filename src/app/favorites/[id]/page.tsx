@@ -2,7 +2,7 @@
 
 import NoItems from '@/app/components/NoItems';
 import Card from '@/app/components/Card';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getFavorites } from '@/lib/currentData';
 import { ICard, ICardFavorite, ILot } from '@/lib/interfaces';
@@ -44,7 +44,7 @@ const FavoriteRoute = ({ params }: { params: { id: string } }) => {
     fetchFavorites();
   }, [favorites.length]);
 
-  const handleClick = (id: string) => {
+  const handleClick = () => {
     router.push(`/favorites/${params.id}`);
   };
 

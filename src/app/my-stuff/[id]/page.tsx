@@ -1,25 +1,25 @@
 'use client';
 
 import { getMyStuff } from '@/lib/features/myStuff';
-import { ICard, ILot } from '@/lib/interfaces';
-import React, { useEffect, useMemo, useState } from 'react';
+import { ICard } from '@/lib/interfaces';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NoItems from '@/app/components/NoItems';
 import Card from '@/app/components/Card';
-import { User as CurrentUser } from '@/lib/interfaces';
-import { initAuthState } from '@/lib/firebase/auth/authInitialState';
+// import { User as CurrentUser } from '@/lib/interfaces';
+// import { initAuthState } from '@/lib/firebase/auth/authInitialState';
 
 const MyStuffRoute = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
 
-  const [user, setUser] = useState<CurrentUser | null>(null);
+  // const [user, setUser] = useState<CurrentUser | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = initAuthState(setUser);
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = initAuthState(setUser);
+  //   return () => unsubscribe();
+  // }, []);
 
-  const memoizedUser = useMemo(() => user, [user]);
+  // const memoizedUser = useMemo(() => user, [user]);
 
   const [myStuff, setMyStuff] = useState<ICard[]>([]);
 

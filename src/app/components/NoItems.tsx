@@ -1,4 +1,4 @@
-import { File, FileQuestion } from 'lucide-react';
+import { FileQuestion } from 'lucide-react';
 import React from 'react';
 
 interface IAppProps {

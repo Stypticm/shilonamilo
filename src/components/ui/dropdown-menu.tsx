@@ -97,7 +97,10 @@ DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & { className?: string }
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
+    className?: string;
+    checked?: string;
+  }
 >(({ className, children, checked, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
@@ -170,7 +173,9 @@ DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 const DropdownMenuShortcut = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement> & { className?: string }) => {
+}: React.HTMLAttributes<HTMLSpanElement> & {
+  className?: string;
+}) => {
   return (
     <span className={cn('ml-auto text-xs tracking-widest opacity-60', className)} {...props} />
   );

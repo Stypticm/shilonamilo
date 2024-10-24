@@ -5,17 +5,12 @@ import React, { useState } from 'react';
 
 interface TogglePhotoUrlFileProps {
   photoLotFile: string | null;
-  setPhotoLotFile: React.Dispatch<React.SetStateAction<string | null>>;
+  setPhotoLotFile?: React.Dispatch<React.SetStateAction<string | null>>;
   photoLotURL: string | null;
-  setPhotoLotURL: React.Dispatch<React.SetStateAction<string | null>>;
+  setPhotoLotURL?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const TogglePhotoUrlFile = ({
-  photoLotFile,
-  setPhotoLotFile,
-  photoLotURL,
-  setPhotoLotURL,
-}: TogglePhotoUrlFileProps) => {
+const TogglePhotoUrlFile = ({ photoLotFile, photoLotURL }: TogglePhotoUrlFileProps) => {
   const [toggleButton, setToggleButton] = useState<boolean>(false);
 
   const handleToggleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

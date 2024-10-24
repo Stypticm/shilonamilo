@@ -1,14 +1,7 @@
 'use client';
 
 import OffersComponent from '@/app/components/OffersComponent';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogOverlay,
-} from '@/components/ui/dialog';
-import { Lot } from '@/lib/interfaces';
+import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

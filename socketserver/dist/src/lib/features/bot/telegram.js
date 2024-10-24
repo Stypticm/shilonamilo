@@ -16,12 +16,13 @@ exports.getUpdates = exports.sendTelegramMessage = void 0;
 const axios_1 = __importDefault(require("axios"));
 const sendTelegramMessage = (chatId, message) => __awaiter(void 0, void 0, void 0, function* () {
     const token = process.env.NEXT_PUBLIC_TELEGRAM_TOKEN_API;
+    console.log(token);
     const url = `https://api.telegram.org/bot${token}/sendMessage`;
     try {
         yield axios_1.default.post(url, {
             chat_id: chatId,
             text: message,
-            parse_mode: 'Markdown'
+            parse_mode: 'Markdown',
         });
     }
     catch (error) {

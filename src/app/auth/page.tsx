@@ -15,6 +15,7 @@ import { useState } from 'react';
 const AuthPage = () => {
   const router = useRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [user, setUser] = useState<User | null>(null);
   const [title, setTitle] = useState<'Sign In' | 'Sign up'>('Sign In');
 

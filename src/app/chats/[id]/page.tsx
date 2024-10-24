@@ -50,11 +50,11 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
         );
         const data = await response.json();
 
-        setMyLot(data.myLot),
-          setPartnerLot(data.partnerLot),
-          setPartnerUser(data.partnerUser),
-          setMessages(data.messages),
-          setOwner(data.owner);
+        setMyLot(data.myLot);
+        setPartnerLot(data.partnerLot);
+        setPartnerUser(data.partnerUser);
+        setMessages(data.messages);
+        setOwner(data.owner);
       } catch (error) {
         console.error('Error fetching chat data:', error);
       }

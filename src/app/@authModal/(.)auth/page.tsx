@@ -15,7 +15,6 @@ import { Separator } from '@/components/ui/separator';
 import { githubProviderAuth } from '@/lib/firebase/auth/authGithubLogic';
 import { googleProviderAuth } from '@/lib/firebase/auth/authGoogleLogic';
 import { User } from '@/lib/interfaces';
-import { chatSocket, proposalSocket } from '@/socket';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -23,6 +22,7 @@ const AuthModalPage = () => {
   const router = useRouter();
 
   const [modalOpen, setModalOpen] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [user, setUser] = useState<User | null>(null);
   const [title, setTitle] = useState<'Sign In' | 'Sign up'>('Sign In');
 
@@ -38,12 +38,18 @@ const AuthModalPage = () => {
   };
 
   const gogoleAuthClick = async () => {
-    await googleProviderAuth({ setUser, closeModal });
+    await googleProviderAuth({
+      setUser,
+      closeModal,
+    });
     router.push('/');
   };
 
   const githubAuthClick = async () => {
-    await githubProviderAuth({ setUser, closeModal });
+    await githubProviderAuth({
+      setUser,
+      closeModal,
+    });
     router.push('/');
   };
 

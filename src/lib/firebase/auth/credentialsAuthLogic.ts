@@ -35,7 +35,9 @@ export const handleLogin = async (
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ email: currentUser.providerData[0].email }),
+    body: JSON.stringify({
+      email: currentUser.providerData[0].email,
+    }),
   });
 
   if (!response.ok) {

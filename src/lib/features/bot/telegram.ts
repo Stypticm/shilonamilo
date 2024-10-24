@@ -2,6 +2,7 @@ import axios from 'axios';
 
 export const sendTelegramMessage = async (chatId: string, message: string) => {
   const token = process.env.NEXT_PUBLIC_TELEGRAM_TOKEN_API;
+  console.log(token);
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
   try {

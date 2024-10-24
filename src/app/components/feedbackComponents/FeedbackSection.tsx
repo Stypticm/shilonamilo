@@ -30,14 +30,12 @@ const FeedbackSection: React.FC<IFeedbackSectionProps> = ({
   const [comment, setComment] = React.useState('');
 
   const FormSchema = z.object({
-    comment: z
-      .string()
-      .min(1, { message: 'Comment is required' })
-      .max(100, { message: 'Comment must be less than 100 characters' }),
-    rating: z
-      .number()
-      .min(1, { message: 'Rating is required' })
-      .max(5, { message: 'Rating must be less than 5' }),
+    comment: z.string().min(1, { message: 'Comment is required' }).max(100, {
+      message: 'Comment must be less than 100 characters',
+    }),
+    rating: z.number().min(1, { message: 'Rating is required' }).max(5, {
+      message: 'Rating must be less than 5',
+    }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

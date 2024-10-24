@@ -82,7 +82,10 @@ export const addRating = async (
       },
     });
 
-    return { succes: true, message: 'Thank you for your feedback' };
+    return {
+      succes: true,
+      message: 'Thank you for your feedback',
+    };
   } catch (error) {
     console.error('Error setting owner rating:', error);
     return { error: 'Failed to send feedback' };

@@ -10,7 +10,7 @@ import {
 import { User } from '@/lib/interfaces';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { use, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { initAuthState, handleLogout } from '@/lib/firebase/auth/authInitialState';
 import { createNewLot } from '../actions';
@@ -21,6 +21,16 @@ import {
   useProposalNotifications,
 } from './menuFunctionsNotification/useNotifications';
 import { chatSocket } from '@/socket';
+
+interface INotification {
+  type: string;
+  senderId: string;
+  timestamp: number;
+  data: {
+    chatId: string;
+    message: string;
+  };
+}
 
 const Menu: React.FC = () => {
   const router = useRouter();
@@ -59,7 +69,7 @@ const Menu: React.FC = () => {
 
   useEffect(() => {
     if (memoizedUser) {
-      const handleNewNotification = (notification: any) => {
+      const handleNewNotification = (notification: INotification) => {
         if (notification.type === 'chat') {
           toast({
             title: 'New notification',
@@ -95,7 +105,9 @@ const Menu: React.FC = () => {
   });
 
   const createLot = useCallback(() => {
-    return createNewLot({ userId: memoizedUser?.uid as string });
+    return createNewLot({
+      userId: memoizedUser?.uid as string,
+    });
   }, [memoizedUser]);
 
   const authorization = () => {
