@@ -37,3 +37,6 @@ next-env.d.ts
 *.exe
 *.out
 *.test
+
+# SQL requests
+*.pgsql
