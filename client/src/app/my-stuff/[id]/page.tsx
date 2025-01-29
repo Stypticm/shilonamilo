@@ -1,17 +1,17 @@
 'use client';
 
-import { getMyStuff } from '@/lib/features/myStuff';
+import { getMyLots } from '@/lib/features/server_requests/lots';
 import { ICard } from '@/lib/interfaces';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import NoItems from '@/app/components/NoItems';
-import Card from '@/app/components/Card';
+import NoItems from '@/components/NoItems';
+import Card from '@/components/Card';
 // import { User as CurrentUser } from '@/lib/interfaces';
 // import { initAuthState } from '@/lib/firebase/auth/authInitialState';
 
 const MyStuffRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   // const [user, setUser] = useState<CurrentUser | null>(null);
 
@@ -27,7 +27,7 @@ const MyStuffRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchMyStuff = async () => {
       try {
-        const data = await getMyStuff(id);
+        const data = await getMyLots(id);
         setMyStuff(data as ICard[]);
       } catch (error) {
         console.error('Failed to fetch my stuff:', error);

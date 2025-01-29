@@ -1,8 +1,7 @@
 'use client';
 
-import { createCategoryPage } from '@/app/actions';
-import CreateCategory from '@/app/components/CreateCategory';
-import CreationButtonBar from '@/app/components/CreationButtonBar';
+import { createCategoryPage } from '@/lib/features/server_requests/categories';
+import CreateCategory from '@/components/CreateCategory';
 import {
   Select,
   SelectContent,
@@ -10,15 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/lib/hooks/useToast';
-import { allCategories, choosedCategory } from '@/lib/currentData';
+import { toast } from '@/hooks/use-toast';
+import { allCategories, getCategoryById } from '@/lib/features/server_requests/categories';
 import { useRouter } from 'next/navigation';
 
 import React, { useEffect } from 'react';
 
 const StructureRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
   const [categories, setCategories] = React.useState<{ id: string; name: string }[]>([]);
@@ -29,7 +28,7 @@ const StructureRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   const currentCategoryName = async () => {
-    const data = await choosedCategory(id);
+    const data = await getCategoryById(id);
     setSelectedCategory(data || null);
   };
 

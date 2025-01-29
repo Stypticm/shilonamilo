@@ -1,8 +1,8 @@
 'use client';
 
-import NoItems from '@/app/components/NoItems';
+import NoItems from '@/components/NoItems';
 import { ILot, Proposal } from '@/lib/interfaces';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, use, useEffect, useState } from 'react';
 import { getLotsWithOffers } from '../dataForOffers';
 import {
   Table,
@@ -14,19 +14,20 @@ import {
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { acceptProposal, declineProposal } from '@/lib/features/myStuff';
+import { acceptProposal, declineProposal } from '@/lib/features/server_requests/proposals';
 import { chatSocket } from '@/socket';
 import { offChatCreated, onChatCreated } from '@/lib/features/websockets/chatHandler';
 
-const OffersRoute = ({ params }: { params: { id: string } }) => {
+const OffersRoute = ({ params } : { params: Promise<{ id: string }> }) => {
   const router = useRouter();
+  const {id} = use(params);
 
   const [acceptedLots, setAcceptedLots] = useState<ILot[]>([]);
   // const [isAccetped, setIsAccepted] = useState(false);
 
   const fetchAcceptedLots = async () => {
     try {
-      const data = await getLotsWithOffers(params.id as string);
+      const data = await getLotsWithOffers(id as string);
       setAcceptedLots(data as ILot[]);
     } catch (error) {
       console.error('Failed to fetch accepted lots:', error);

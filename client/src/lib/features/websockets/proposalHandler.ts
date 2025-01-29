@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { proposalSocket } from '../../../socket';
-import { addProposal } from '../myStuff';
+import { addProposal } from '../server_requests/lots';
 
 export const initializeProposalNamespace = (io: Server) => {
   const proposalNamespace = io.of('/proposal');

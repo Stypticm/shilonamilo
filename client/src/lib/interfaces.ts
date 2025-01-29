@@ -75,7 +75,7 @@ export interface ICard {
   lotId?: string;
   favoriteId?: string | null;
   pathName?: string;
-  updateFavorites?: () => void | undefined;
+  updateFavorites?: () => Promise<void> | undefined;
 }
 
 export interface IChats {

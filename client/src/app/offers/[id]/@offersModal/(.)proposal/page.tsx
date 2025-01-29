@@ -1,13 +1,13 @@
 'use client';
 
-import OffersComponent from '@/app/components/OffersComponent';
+import OffersComponent from '@/components/OffersComponent';
 import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const DialogForOffers = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   const [modalOpen, setModalOpen] = useState(true);
 

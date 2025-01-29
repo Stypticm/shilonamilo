@@ -1,15 +1,15 @@
 'use client';
 
-import NoItems from '@/app/components/NoItems';
-import Card from '@/app/components/Card';
+import NoItems from '@/components/NoItems';
+import Card from '@/components/Card';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getFavorites } from '@/lib/currentData';
 import { ICard, ICardFavorite, ILot } from '@/lib/interfaces';
+import { getFavorites } from '@/lib/features/server_requests/favorites';
 
 const FavoriteRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   const [favorites, setFavorites] = useState<ICard[]>([]);
 
@@ -35,7 +35,7 @@ const FavoriteRoute = ({ params }: { params: Promise<{ id: string }> }) => {
     try {
       const data = await getFavorites(id as string);
       const mappedData = mapFavoritesToCards(data as ICardFavorite[]);
-      setFavorites(mappedData);
+      setFavorites(mappedData as ICard[]);
     } catch (error) {
       console.error('Failed to fetch favorites:', error);
     }

@@ -5,7 +5,7 @@ import { User as CurrentUser, IChats } from '@/lib/interfaces';
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
 import { getAllMyChats } from './chatActions';
 import { useRouter } from 'next/navigation';
-import NoItems from '../components/NoItems';
+import NoItems from '../../components/NoItems';
 
 const ChatsRoute = () => {
   const router = useRouter();
