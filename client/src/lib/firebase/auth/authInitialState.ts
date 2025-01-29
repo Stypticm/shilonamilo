@@ -7,7 +7,7 @@ export const initAuthState = (setUser: React.Dispatch<React.SetStateAction<User 
     if (currentUser) {
       setUser({
         displayName: currentUser.displayName || '',
-        email: currentUser.email || '',
+        email: currentUser.providerData[0].email || '',
         photoURL: currentUser.photoURL || '',
         uid: currentUser.uid,
       });

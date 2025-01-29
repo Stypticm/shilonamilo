@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { use, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
 
-import LotSection from '@/app/components/lotComponents/LotSection';
-import ChatSection from '@/app/components/chatComponents/ChatSection';
+import LotSection from '@/components/lotComponents/LotSection';
+import ChatSection from '@/components/chatComponents/ChatSection';
 
 import { User as CurrentUser, IChatMessage, ILot } from '@/lib/interfaces';
-import ExchangeStatusSection from '@/app/components/lotComponents/ExchangeStatusSection';
-import FeedbackSection from '@/app/components/feedbackComponents/FeedbackSection';
+import ExchangeStatusSection from '@/components/lotComponents/ExchangeStatusSection';
+import FeedbackSection from '@/components/feedbackComponents/FeedbackSection';
 import { isFeedBackAdded } from '../functions';
-import { toast } from '@/lib/hooks/useToast';
+import { toast } from '@/hooks/use-toast';
 import {
   onJoinChat,
   offMessage,
@@ -19,8 +19,14 @@ import {
   onSendMessage,
 } from '@/lib/features/websockets/chatHandler';
 
-const ChatIdRoute = ({ params }: { params: { id: string } }) => {
+interface ChatIdRouteProps {
+  params: Promise<{ id: string }>;
+}
+
+const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
   const router = useRouter();
+
+  const {id} = use(params);
 
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [partnerUser, setPartnerUser] = useState<CurrentUser | null>(null);
@@ -46,7 +52,7 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
     if (memoizedUser?.uid) {
       try {
         const response = await fetch(
-          `/api/fetchChatData?chatId=${params.id}&userId=${memoizedUser?.uid}`,
+          `/api/fetchChatData?chatId=${id}&userId=${memoizedUser?.uid}`,
         );
         const data = await response.json();
 
@@ -59,14 +65,14 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
         console.error('Error fetching chat data:', error);
       }
     }
-  }, [params.id, memoizedUser?.uid]);
+  }, [id, memoizedUser?.uid]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   useEffect(() => {
-    onJoinChat(params.id);
+    onJoinChat(id);
 
     onMessageRecieved((data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
@@ -75,11 +81,11 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
     return () => {
       offMessage();
     };
-  }, [params.id]);
+  }, [id]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
-      onSendMessage(params.id, inputMessage, memoizedUser?.uid as string);
+      onSendMessage(id, inputMessage, memoizedUser?.uid as string);
       setInputMessage('');
     }
   };
@@ -131,7 +137,7 @@ const ChatIdRoute = ({ params }: { params: { id: string } }) => {
             fetchData={fetchData}
             handleShowFeedback={(shouldShow) => handleShowFeedback(shouldShow)}
             isShowFeedback={isShowFeedback}
-            chatId={params.id}
+            chatId={id}
           />
 
           {isShowFeedback ? (

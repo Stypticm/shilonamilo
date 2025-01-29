@@ -1,7 +1,7 @@
 'use client';
 
-import CredentialsAuth from '@/app/components/CredentialsAuth';
-import { Icons } from '@/app/components/Icons';
+import CredentialsAuth from '@/components/CredentialsAuth';
+import { Icons } from '@/components/Icons';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { githubProviderAuth } from '@/lib/firebase/auth/authGithubLogic';

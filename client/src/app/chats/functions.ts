@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma/db';
-import { getLotById } from '@/lib/features/myStuff';
+import { getLotById } from '@/lib/features/server_requests/lots';
 import { IChat } from '@/lib/interfaces';
 
 export const getLotIds = async (chat: IChat, userId: string) => {

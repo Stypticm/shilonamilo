@@ -1,19 +1,18 @@
 'use client';
 
-import { createDescription } from '@/app/actions';
-import CreationButtonBar from '@/app/components/CreationButtonBar';
-import TogglePhotoUrlFile from '@/app/components/TogglePhotoUrlFile';
+import { createDescription } from '@/lib/features/server_requests/description';
+import TogglePhotoUrlFile from '@/components/TogglePhotoUrlFile';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/lib/hooks/useToast';
-import { choosedDescription } from '@/lib/currentData';
+import { toast } from '@/hooks/use-toast';
+import { getDescriptionByLotId} from '@/lib/features/server_requests/description';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const DescriptionRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -53,7 +52,7 @@ const DescriptionRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   const fetchFilledFields = async () => {
-    const data = await choosedDescription(id);
+    const data = await getDescriptionByLotId(id);
     setName(data?.name || '');
     setDescription(data?.description || '');
     setPhotoLotURL(data?.photolot || null);
@@ -70,7 +69,7 @@ const DescriptionRoute = ({ params }: { params: Promise<{ id: string }> }) => {
         <h2>Add description about the lot</h2>
       </div>
 
-      <form action={clientAction} className='w-full'>
+      <form action={clientAction} className="w-full">
         <input type="hidden" name="lotId" value={id} />
 
         <div className="w-3/5 flex flex-col mx-auto gap-4 mt-2">

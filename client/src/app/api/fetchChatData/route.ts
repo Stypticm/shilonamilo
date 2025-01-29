@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getLotById } from '@/lib/features/myStuff';
+import { getLotById } from '@/lib/features/server_requests/lots';
 import { IChat, IChatMessage, ILot, User as CurrentUser } from '@/lib/interfaces';
 import { getChatbyUserIdChatId, getParnerUserObj } from '@/app/chats/chatActions';
 import { getLotIds, getLotOwner } from '@/app/chats/functions';

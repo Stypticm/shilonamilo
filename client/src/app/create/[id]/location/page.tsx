@@ -1,7 +1,6 @@
 'use client';
 
-import { createLocation } from '@/app/actions';
-import CreationButtonBar from '@/app/components/CreationButtonBar';
+import { createLocation } from '@/lib/features/server_requests/locations';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -10,15 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toast } from '@/lib/hooks/useToast';
-import { allCountries, citiesOfCountry } from '@/lib/currentData';
-import useDebounceValue from '@/lib/hooks/useDebounce';
+import { toast } from '@/hooks/use-toast';
+import { getAllCountries, citiesOfCountry } from '@/lib/features/server_requests/locations';
+import useDebounceValue from '@/hooks/useDebounce';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 const LocationRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
-  const { id } = React.use(params)
+  const { id } = React.use(params);
 
   const [countries, setCountries] = React.useState<{ value?: string; label: string }[]>([]);
   const [country, setCountry] = React.useState<string | null>('');
@@ -30,7 +29,7 @@ const LocationRoute = ({ params }: { params: Promise<{ id: string }> }) => {
 
   useEffect(() => {
     const fetchCountries = async () => {
-      const data = await allCountries();
+      const data = await getAllCountries();
       setCountries(data);
     };
     fetchCountries();

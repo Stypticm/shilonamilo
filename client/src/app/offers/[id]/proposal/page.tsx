@@ -1,4 +1,4 @@
-import OffersComponent from '@/app/components/OffersComponent';
+import OffersComponent from '@/components/OffersComponent';
 import React from 'react';
 
 const OffersPage = () => {

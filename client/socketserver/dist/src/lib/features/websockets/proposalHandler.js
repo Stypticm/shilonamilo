@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.offProposalNotification = exports.offProposal = exports.onProposalReceived = exports.onSendProposal = exports.joinRoom = exports.initializeProposalNamespace = void 0;
 const socket_1 = require("../../../socket");
-const myStuff_1 = require("../myStuff");
+const lots_1 = require("../server_requests/lots");
 const initializeProposalNamespace = (io) => {
     const proposalNamespace = io.of('/proposal');
     proposalNamespace.on('connection', (socket) => {
@@ -22,7 +22,7 @@ const initializeProposalNamespace = (io) => {
         });
         socket.on('addProposal', (_a) => __awaiter(void 0, [_a], void 0, function* ({ lotId, myLotId }) {
             try {
-                const proposal = yield (0, myStuff_1.addProposal)(lotId, myLotId);
+                const proposal = yield (0, lots_1.addProposal)(lotId, myLotId);
                 // console.log(`Owner: ${proposal?.ownerIdOfTheLot}`);
                 // console.log(`User: ${proposal?.userIdOfferedLot}`);
                 // console.log(`Proposal: ${JSON.stringify(proposal)}`);
