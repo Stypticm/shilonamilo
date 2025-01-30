@@ -11,6 +11,7 @@ import { useSearch } from './SearchContext';
 
 import './styles/mainContent.css';
 import { getAllLots } from '@/lib/features/server_requests/lots';
+import FilterMenu from './FilterMenu';
 
 const MainContent = () => {
   const router = useRouter();
@@ -20,6 +21,8 @@ const MainContent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { searchQuery } = useSearch();
+
+  const [choosedCategory, setChoosedCategory] = useState('All');
 
   useEffect(() => {
     const unsubscribe = initAuthState(setUser);
@@ -62,13 +65,20 @@ const MainContent = () => {
     router.push(`/lot/${id}`);
   };
 
-  const filteredLots = useMemo(() => {
+  const lotsNotBelongToUser = useMemo(() => {
     return allLots?.filter(
       (lot: ILot) =>
         lot?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lot?.description?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [searchQuery, allLots]);
+  }, [searchQuery, allLots, choosedCategory]);
+
+  const filteredLots = useMemo(() => {
+    if (choosedCategory === 'All') {
+      return lotsNotBelongToUser;
+    }
+    return allLots?.filter((lot: ILot) => lot.category === choosedCategory);
+  }, [choosedCategory, lotsNotBelongToUser]);
 
   if (!user) {
     return (
@@ -77,10 +87,10 @@ const MainContent = () => {
         <section>
           <header className="h-full mx-auto header_table">
             <div className="col-span-1">ID</div>
-            <div className="col-span-1">Name</div>
-            <div className="col-span-1 hidden sm:block">Description</div>
-            <div className="col-span-1 hidden md:block">Location</div>
-            <div className="col-span-1 hidden lg:block">Category</div>
+            <div className="col-span-1">Category</div>
+            <div className="col-span-1 hidden sm:block">Name</div>
+            <div className="col-span-1 hidden md:block">Description</div>
+            <div className="col-span-1 hidden lg:block">Location</div>
           </header>
           {
             !isLoading ? (
@@ -91,10 +101,10 @@ const MainContent = () => {
                   className="cursor-pointer hover:bg-slate-200 header_body"
                 >
                   <div className="text-center">{index + 1}</div>
-                  <div className="text-center capitalize">{lot.name}</div>
-                  <div className="text-center hidden sm:block">{lot.description}</div>
-                  <div className="text-center hidden md:block">{lot.location}</div>
-                  <div className="text-center hidden lg:block">{lot.category}</div>
+                  <div className="text-center ">{lot.category}</div>
+                  <div className="text-center hidden sm:block capitalize">{lot.name}</div>
+                  <div className="text-center hidden md:block">{lot.description}</div>
+                  <div className="text-center hidden lg:block">{lot.location}</div>
                 </main>
               ))
             ) : (
@@ -112,16 +122,37 @@ const MainContent = () => {
     <div className="w-full h-full px-16">
       <Title />
       <section>
-        <header className="h-full mx-auto header_table">
+        <header className="h-full mx-auto header_table flex items-center">
           <div className="col-span-1">ID</div>
-          <div className="col-span-1">Name</div>
-          <div className="col-span-1 hidden sm:block">Description</div>
-          <div className="col-span-1 hidden md:block">Location</div>
-          <div className="col-span-1 hidden lg:block">Category</div>
+          <div className="col-span-1 flex justify-center items-center gap-1">
+            <FilterMenu lots={lotsNotBelongToUser} setChoosedCategory={setChoosedCategory} choosedCategory={choosedCategory} />
+            Category
+          </div>
+          <div className="col-span-1 hidden sm:block">Name</div>
+          <div className="col-span-1 hidden md:block">Description</div>
+          <div className="col-span-1 hidden lg:block">Location</div>
         </header>
 
         {!isLoading ? (
-          filteredLots?.length > 0 ? (
+          !!searchQuery ? (
+            lotsNotBelongToUser?.length > 0 ? (
+              lotsNotBelongToUser?.map((lot: ILot, index) => (
+                <main
+                  key={lot.id}
+                  onClick={() => handleClick(lot.id)}
+                  className="cursor-pointer hover:bg-slate-200 header_body"
+                >
+                  <div className="text-center">{index + 1}</div>
+                  <div className="text-center ">{lot.category}</div>
+                  <div className="text-center hidden sm:block capitalize">{lot.name}</div>
+                  <div className="text-center hidden md:block">{lot.description}</div>
+                  <div className="text-center hidden lg:block">{lot.location}</div>
+                </main>
+              ))
+            ) : (
+              <p className="text-center mt-4">No results found.</p>
+            )
+          ) : (
             filteredLots?.map((lot: ILot, index) => (
               <main
                 key={lot.id}
@@ -129,14 +160,12 @@ const MainContent = () => {
                 className="cursor-pointer hover:bg-slate-200 header_body"
               >
                 <div className="text-center">{index + 1}</div>
-                <div className="text-center capitalize">{lot.name}</div>
-                <div className="text-center hidden sm:block">{lot.description}</div>
-                <div className="text-center hidden md:block">{lot.location}</div>
-                <div className="text-center hidden lg:block">{lot.category}</div>
+                <div className="text-center ">{lot.category}</div>
+                <div className="text-center hidden sm:block capitalize">{lot.name}</div>
+                <div className="text-center hidden md:block">{lot.description}</div>
+                <div className="text-center hidden lg:block">{lot.location}</div>
               </main>
             ))
-          ) : (
-            <p className="text-center mt-4">No results found.</p>
           )
         ) : (
           <Skeleton />
