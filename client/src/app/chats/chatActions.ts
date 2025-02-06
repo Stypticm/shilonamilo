@@ -1,7 +1,9 @@
 'use server';
 
 import prisma from '../../lib/prisma/db';
-import { IChat, User } from '../../lib/interfaces';
+import { User } from '../../lib/interfaces';
+import { getLotById } from '@/lib/features/server_requests/lots';
+import { getUserByUid } from '@/lib/features/server_requests/user';
 
 export const createChat = async (myLotId: string, partnerLotId: string, user1Id: string) => {
   let lot1Id = myLotId;
@@ -72,8 +74,6 @@ export const getAllMyChats = async (userId: string) => {
       select: { id: true },
     });
 
-    console.log(userLots);
-
     const lotIds = userLots.map((lot) => lot.id);
 
     const chats = await prisma.chat.findMany({
@@ -82,7 +82,29 @@ export const getAllMyChats = async (userId: string) => {
       },
     });
 
-    return chats as IChat[];
+    const messages = await prisma.message.findMany({
+      where: {
+        chatId: {
+          in: chats.map((chat) => chat.id),
+        },
+      },
+    });
+
+    const chatsWithCompanionLotId = chats.map(async (chat) => {
+      const companionLotId = chat.lot1Id === userId ? chat.lot2Id : chat.lot1Id;
+      const companionLotById = await getLotById(companionLotId as string);
+      const companionObj = await getUserByUid(companionLotById?.userId as string);
+      const messagesByChatId = messages.filter((message) => message.chatId === chat.id);
+
+      return {
+        ...chat,
+        companionLotById,
+        companionObj,
+        lastMessage: messagesByChatId.at(-1)?.content,
+      };
+    });
+
+    return Promise.all(chatsWithCompanionLotId);
   } catch (error) {
     console.error('Error getting chats:', error);
     return null;
