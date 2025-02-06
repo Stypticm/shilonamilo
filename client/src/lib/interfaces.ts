@@ -7,6 +7,7 @@ export interface Favorite {
 
 export interface User {
   displayName?: string | null;
+  firstname?: string | null;
   email?: string | null;
   photoURL?: string | null;
   uid?: string;
@@ -80,6 +81,9 @@ export interface ICard {
 
 export interface IChats {
   id: string;
+  companionLotById?: ILot;
+  companionObj?: User;
+  lastMessage?: string;
 }
 
 export interface IChat {

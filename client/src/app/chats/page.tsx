@@ -44,13 +44,40 @@ const ChatsRoute = () => {
         <NoItems name="Chats" description="You have no chats" />
       ) : (
         <section>
+          <header className='flex justify-center items-center mb-5'>
+            <h2 className="text-2xl font-bold">Chats</h2>
+          </header>
           {chats.map((chat) => (
             <div
-              className="w-[200px] bg-slate-300 cursor-pointer shadow-xl rounded-lg"
+              className="w-full flex flex-col justify-between bg-slate-500 cursor-pointer rounded-md p-2"
               key={chat.id}
               onClick={() => handleClickChat(chat.id as string)}
             >
-              <h1>{chat.id}</h1>
+              <section className='w-full justify-around flex flex-row'>
+                <section className='flex gap-1'>
+                  <h3 className='font-bold'>Chat with </h3>
+                  <span>{chat.companionObj?.firstname}</span>
+                </section>
+
+                <section className='flex gap-1'>
+                  <h3 className='font-bold'>Chat about </h3>
+                  <span>{chat.companionLotById?.name}</span>
+                </section>
+
+                <section className='flex gap-1'>
+                  <h3 className='font-bold'>Last message </h3>
+                  {
+                    chat.lastMessage ?
+                      <span>
+                        {
+                          chat.lastMessage.length > 10 ?
+                            chat.lastMessage.slice(0, 10) + '...' :
+                            chat.lastMessage
+                        }
+                      </span> : 'No messages yet'
+                  }
+                </section>
+              </section>
             </div>
           ))}
         </section>
