@@ -95,6 +95,7 @@ export const useProposalNotifications = ({
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!userId) return;
     if (userId) {
       joinRoom(userId);
 

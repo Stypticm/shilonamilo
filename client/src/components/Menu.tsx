@@ -19,7 +19,7 @@ import {
   useChatNotifications,
   useProposalNotifications,
 } from './menuFunctionsNotification/useNotifications';
-import { chatSocket } from '@/socket';
+import { chatSocket } from '@/lib/socket';
 import { createNewLot } from '@/lib/features/server_requests/lots';
 
 interface INotification {

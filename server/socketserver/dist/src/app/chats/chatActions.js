@@ -15,6 +15,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createChatMessage = exports.getParnerUserObj = exports.getAllMyChats = exports.getChatbyUserIdChatId = exports.createChat = void 0;
 const db_1 = __importDefault(require("../../lib/prisma/db"));
+const lots_1 = require("@/lib/features/server_requests/lots");
+const user_1 = require("@/lib/features/server_requests/user");
 const createChat = (myLotId, partnerLotId, user1Id) => __awaiter(void 0, void 0, void 0, function* () {
     let lot1Id = myLotId;
     let lot2Id = partnerLotId;
@@ -82,14 +84,29 @@ const getAllMyChats = (userId) => __awaiter(void 0, void 0, void 0, function* ()
             where: { userId: userId },
             select: { id: true },
         });
-        console.log(userLots);
         const lotIds = userLots.map((lot) => lot.id);
         const chats = yield db_1.default.chat.findMany({
             where: {
                 OR: [{ lot1Id: { in: lotIds } }, { lot2Id: { in: lotIds } }],
             },
         });
-        return chats;
+        const messages = yield db_1.default.message.findMany({
+            where: {
+                chatId: {
+                    in: chats.map((chat) => chat.id),
+                },
+            },
+        });
+        const chatsWithCompanionLotId = chats.map((chat) => __awaiter(void 0, void 0, void 0, function* () {
+            var _a;
+            const companionLotId = chat.lot1Id === userId ? chat.lot2Id : chat.lot1Id;
+            const companionLotById = yield (0, lots_1.getLotById)(companionLotId);
+            const companionObj = yield (0, user_1.getUserByUid)(companionLotById === null || companionLotById === void 0 ? void 0 : companionLotById.userId);
+            const messagesByChatId = messages.filter((message) => message.chatId === chat.id);
+            return Object.assign(Object.assign({}, chat), { companionLotById,
+                companionObj, lastMessage: (_a = messagesByChatId.at(-1)) === null || _a === void 0 ? void 0 : _a.content });
+        }));
+        return Promise.all(chatsWithCompanionLotId);
     }
     catch (error) {
         console.error('Error getting chats:', error);

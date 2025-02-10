@@ -5,11 +5,8 @@
   "scripts": {
     "postgres": "cd ./docker && docker-compose up -d",
     "server": "cd ../server && yarn dev",
-    "dev:next": "next dev",
-    "build:socket": "tsc -p ./socketserver/tsconfig.json",
-    "start:socket": "node ./socketserver/dist/socketserver/socketServer.js",
-    "dev:socket": "concurrently \"yarn build:socket\" \"yarn start:socket\"",
-    "dev": "concurrently \"yarn postgres\" \"yarn server\" \"yarn dev:next\" \"yarn dev:socket\"",
+    "dev:next": "next dev",    
+    "dev": "concurrently \"yarn postgres\" \"yarn server\" \"yarn dev:next\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

@@ -72,6 +72,8 @@ const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
   }, [fetchData]);
 
   useEffect(() => {
+    if (!id) return;
+    
     onJoinChat(id);
 
     onMessageRecieved((data) => {
