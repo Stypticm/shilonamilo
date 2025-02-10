@@ -115,3 +115,52 @@ export const declineProposal = async (proposalId: string) => {
     console.error('Error declining proposal:', error);
   }
 };
+
+export const addProposal = async (lotId: string, myLotId: string) => {
+  let logginedUserId;
+  let itemUserId;
+
+  try {
+    logginedUserId = await prisma.lot.findUnique({
+      where: {
+        id: myLotId,
+      },
+    });
+    itemUserId = await prisma.lot.findUnique({
+      where: {
+        id: lotId,
+      },
+    });
+  } catch (error) {
+    console.error('Error finding user:', error);
+  }
+
+  try {
+    const data = await prisma.proposal.create({
+      data: {
+        lotId,
+        offeredLotId: myLotId,
+        status: 'pending',
+        ownerIdOfTheLot: itemUserId?.userId,
+        userIdOfferedLot: logginedUserId?.userId,
+      },
+    });
+
+    await prisma.lot.update({
+      where: {
+        id: lotId,
+      },
+      data: {
+        Proposal: {
+          connect: {
+            id: data.id,
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('Error adding proposal:', error);
+  }
+};
