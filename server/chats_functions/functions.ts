@@ -1,60 +1,6 @@
 import { getLotById } from '../../client/src/lib/features/server_requests/lots'
 import { IChat } from '../../client/src/lib/interfaces'
 
-export const getLotIds = async (
-  chat: IChat,
-  userId: string
-) => {
-  const getLotOwner = async (lotId: string) => {
-    try {
-      const lot = await getLotById(lotId)
-      return lot?.userId === userId
-    } catch (error) {
-      console.error('Error fetching lot owner:', error)
-      return false
-    }
-  }
-
-  const isLot1User = await getLotOwner(chat.lot1Id)
-  const isLot2User = await getLotOwner(chat.lot2Id)
-
-  let myLotId: string
-  let partnerLotId: string
-
-  if (isLot1User) {
-    myLotId = chat.lot1Id
-    partnerLotId = chat.lot2Id
-  } else if (isLot2User) {
-    myLotId = chat.lot2Id
-    partnerLotId = chat.lot1Id
-  } else {
-    return { myLotId: null, partnerLotId: null }
-  }
-
-  return { myLotId, partnerLotId }
-}
-
-export const getLotOwner = async (
-  lotId: string,
-  userId: string
-): Promise<string | null> => {
-  try {
-    const proposal = await prisma.proposal.findFirst({
-      where: {
-        lotId,
-        ownerIdOfTheLot: userId,
-      },
-    })
-
-    if (!proposal) return null
-
-    return proposal.ownerIdOfTheLot
-  } catch (error) {
-    console.error('Error fetching lot owner:', error)
-    return null
-  }
-}
-
 export const addRating = async (
   role: 'owner' | 'participant',
   lotId: string,
