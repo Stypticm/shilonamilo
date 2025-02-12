@@ -18,7 +18,7 @@ import ReceivedProposals from '@/components/ReceivedProposals';
 import MyLots from '@/components/MyLots';
 import Lot from '@/components/Lot';
 import { fetchFavorites } from '@/lib/features/client_features/favorites_functions';
-import { deleteLot, findLotByUserIdAndLotId, updateLot } from '@/lib/features/server_requests/lots';
+import { deleteLot, getLotByUserIdLotId, updateLot } from '@/lib/features/server_requests/lots';
 
 const LotRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
@@ -140,7 +140,7 @@ const LotRoute = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const checkLotOwnership = async () => {
       if (data && user) {
-        const isLotBelongsToUser = await findLotByUserIdAndLotId(
+        const isLotBelongsToUser = await getLotByUserIdLotId(
           user?.uid as string,
           data?.id as string,
         );

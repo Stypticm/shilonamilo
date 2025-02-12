@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { getLotsByUserId } from '@/lib/features/server_requests/lots';
+import { getMyLots } from '@/lib/features/server_requests/lots';
 import { ILot } from '@/lib/interfaces';
 import { useRouter } from 'next/navigation';
 import React, { Suspense, useEffect, useState } from 'react';
@@ -32,7 +32,7 @@ const MyLots = ({ lotId }: { lotId: string }) => {
 
   const fetchMyLots = async () => {
     if (user?.uid) {
-      const data = await getLotsByUserId(user.uid);
+      const data = await getMyLots(user.uid);
       setMyLots(data as ILot[]);
     }
   };

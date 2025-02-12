@@ -97,6 +97,51 @@ export const createNewLot = async (userId: string) => {
   }
 };
 
+export const getLotById = async (lotId: string) => {
+  try {
+    const url = `http://localhost:8080/api/lots/${lotId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch lot');
+    }
+
+    const lot = await response.json();
+
+    return lot as ILot;
+  } catch (error) {
+    console.error('Error fetching thing:', error);
+    return null;
+  }
+};
+
+export const getLotByUserIdLotId = async (userId: string, lotId: string) => {
+  try {
+    const url = `http://localhost:8080/api/lots/lot-by-user-id-and-lot-id?userId=${userId}&lotId=${lotId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch lot');
+    }
+
+    const data = await response.json();
+    return data !== null;
+  } catch (error) {
+    console.error('Error getting lot:', error);
+    return false;
+  }
+};
+
 export async function updateLot(formData: FormData, lotId: string) {
   const name = formData.get('name') as string;
   const description = formData.get('description') as string;
@@ -105,14 +150,24 @@ export async function updateLot(formData: FormData, lotId: string) {
   const exchangeOffer = formData.get('exchangeOffer') as string;
 
   try {
-    const currentData = await prisma.lot.findUnique({
-      where: { id: lotId },
+    const currentData = `http://localhost:8080/api/lots/${lotId}`;
+    const response = await fetch(currentData, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    const currentName = currentData?.name;
-    const currentDescription = currentData?.description;
-    const currentPhotoURL = currentData?.photolot;
-    const currentExchangeOffer = currentData?.exchangeOffer;
+    if (!response.ok) {
+      throw new Error('Failed to fetch lot');
+    }
+
+    const data = await response.json();
+
+    const currentName = data?.name;
+    const currentDescription = data?.description;
+    const currentPhotoURL = data?.photolot;
+    const currentExchangeOffer = data?.exchangeOffer;
 
     if (
       currentName === name &&
@@ -154,18 +209,25 @@ export async function updateLot(formData: FormData, lotId: string) {
         }
       }
 
-      await prisma.lot.update({
-        where: {
-          id: lotId,
+      const updateUrl = `http://localhost:8080/api/lot/${lotId}`;
+
+      const updateResponse = await fetch(updateUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        data: {
-          name: name,
-          description: description,
-          photolot: photoURL,
-          exchangeOffer: exchangeOffer,
-          addeddescription: true,
-        },
+        body: JSON.stringify({
+          name,
+          description,
+          photoURL,
+          exchangeOffer,
+        }),
       });
+
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update lot');
+      }
+
       return { success: true, redirect: true };
     }
   } catch (error) {
@@ -176,80 +238,19 @@ export async function updateLot(formData: FormData, lotId: string) {
 
 export const deleteLot = async (id: string) => {
   try {
-    await prisma.lot.delete({
-      where: {
-        id: id,
+    const url = `http://localhost:8080/api/lot/${id}`;
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
       },
     });
 
-    return true;
+    if (response.ok) {
+      redirect('/');
+      return { success: true };
+    }
   } catch (error) {
     console.error('Error deleting thing:', error);
-  }
-};
-
-export const getLotById = async (lotId: string): Promise<ILot | null> => {
-  try {
-    const lot = await prisma.lot.findUnique({
-      where: {
-        id: lotId,
-      },
-      include: {
-        Proposal: true,
-        Offers: true,
-      },
-    });
-
-    return lot as ILot;
-  } catch (error) {
-    console.error('Error fetching thing:', error);
-    return null;
-  }
-};
-
-export const getLotsByUserId = async (userId: string) => {
-  try {
-    const lots = await prisma.lot.findMany({
-      where: {
-        userId: userId,
-        AND: [
-          { name: { not: null } },
-          { category: { not: null } },
-          { description: { not: null } },
-          { exchangeOffer: { not: null } },
-          { photolot: { not: null } },
-          { country: { not: null } },
-          { city: { not: null } },
-        ],
-      },
-      include: {
-        Proposal: true,
-        Offers: true,
-      },
-    });
-
-    const lotsWithoutProposals = lots.filter((lot) => {
-      return lot.Offers.length === 0;
-    });
-
-    return lotsWithoutProposals;
-  } catch (error) {
-    console.error('Error fetching lots by userId', error);
-  }
-};
-
-export const findLotByUserIdAndLotId = async (userId: string, lotId: string) => {
-  try {
-    const data = await prisma.lot.findFirst({
-      where: {
-        id: lotId,
-        userId: userId,
-      },
-    });
-
-    return data !== null;
-  } catch (error) {
-    console.error('Error finding lot:', error);
-    return false;
   }
 };
