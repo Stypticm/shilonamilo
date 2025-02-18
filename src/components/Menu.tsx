@@ -104,23 +104,18 @@ const Menu: React.FC = () => {
     setHasProposalNotifications,
   });
 
-  const createLot = async (formData: FormData) => {
-    if (!memoizedUser) {
-      return authorization();
-    }
+  const createLot = useCallback(() => {
+    return createNewLot({
+      userId: memoizedUser?.uid as string,
+    });
+  }, [memoizedUser]);
 
-    formData.append('uid', memoizedUser?.uid as string);
-
-    const result = await createNewLot(formData);
-    console.log(result)
+  const logout = async () => {
+    await handleLogout(setUser).then(() => router.push('/'));
   };
 
   const authorization = () => {
     router.push('/auth');
-  };
-
-  const logout = async () => {
-    await handleLogout(setUser).then(() => router.push('/'));
   };
 
   return (

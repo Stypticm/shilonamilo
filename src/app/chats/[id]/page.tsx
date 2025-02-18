@@ -10,14 +10,14 @@ import ChatSection from '@/components/chatComponents/ChatSection';
 import { User as CurrentUser, IChatMessage, ILot } from '@/lib/interfaces';
 import ExchangeStatusSection from '@/components/lotComponents/ExchangeStatusSection';
 import FeedbackSection from '@/components/feedbackComponents/FeedbackSection';
-import { isFeedBackAdded } from '../functions';
-import { toast } from '@/hooks/use-toast';
+import { isFeedBackAdded } from '@/lib/features/repositories/feedbacks';
+import { toast } from '@/lib/hooks/use-toast';
 import {
   onJoinChat,
   offMessage,
-  onMessageRecieved,
+  onMessageReceived,
   onSendMessage,
-} from '@/lib/features/websockets/chatHandler';
+} from '@/lib/features/websockets/chatHandlerClient';
 
 interface ChatIdRouteProps {
   params: Promise<{ id: string }>;
@@ -76,7 +76,7 @@ const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
     
     onJoinChat(id);
 
-    onMessageRecieved((data) => {
+    onMessageReceived((data) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 

@@ -26,7 +26,6 @@ export const getAllMyChats = async (userId: string) => {
       },
     });
 
-    // Для каждого чата находим партнёра и последнее сообщение
     const chatsWithCompanionLotId = await Promise.all(
       chats.map(async (chat) => {
         const companionLot = chat.lot1Id === userId ? chat.lot2 : chat.lot1;
