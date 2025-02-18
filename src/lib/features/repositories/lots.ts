@@ -41,21 +41,39 @@ export const getMyLots = async (userId: string): Promise<ILot[]> => {
   }
 };
 
-export const createNewLot = async (formData: FormData) => {
-  const userId = formData.get('lotId') as string;
+export async function createNewLot({ userId }: { userId: string }) {
+  const data = await prisma.lot.findFirst({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-  try {
-    await prisma.lot.create({
+  if (data === null) {
+    const data = await prisma.lot.create({
       data: {
-        userId,
+        userId: userId,
       },
     });
 
-    return { success: true, redirect: true };
-  } catch (error) {
-    throw new Error(`Failed to create lot: ${error}`);
+    return redirect(`/create/${data.id}/structure`);
+  } else if (!data.addedcategory && !data.addeddescription && !data.addedlocation) {
+    return redirect(`/create/${data.id}/structure`);
+  } else if (data.addedcategory && !data.addeddescription && !data.addedlocation) {
+    return redirect(`/create/${data.id}/description`);
+  } else if (!data.addedcategory && data.addeddescription && !data.addedlocation) {
+    return redirect(`/create/${data.id}/location`);
+  } else if (data.addedcategory && data.addeddescription && data.addedlocation) {
+    const data = await prisma.lot.create({
+      data: {
+        userId: userId,
+      },
+    });
+    return redirect(`/create/${data.id}/structure`);
   }
-};
+}
 
 export const getLotById = async (lotId: string): Promise<ILot | null> => {
   try {

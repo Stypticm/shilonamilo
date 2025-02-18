@@ -10,17 +10,16 @@ import Title from './Title';
 import { useSearch } from './SearchContext';
 
 import './styles/mainContent.css';
-import { getAllLots } from '@/lib/features/repositories/lots';
 import FilterMenu from './FilterMenu';
+import { useLots } from '@/lib/features/repositories/queries/lotsQueries';
 
 const MainContent = () => {
   const router = useRouter();
 
   const [user, setUser] = useState<CurrentUser | null>(null);
-  const [allLots, setAllLots] = useState<ILot[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const { searchQuery } = useSearch();
+
+  const { data: allLots, isLoading } = useLots(user?.uid || '', searchQuery);
 
   const [choosedCategory, setChoosedCategory] = useState('All');
 
@@ -28,38 +27,6 @@ const MainContent = () => {
     const unsubscribe = initAuthState(setUser);
     return () => unsubscribe();
   }, []);
-
-  const fetchLots = useCallback(
-    async (userId: string) => {
-      try {
-        const lots = await getAllLots(userId);
-        const correctedLots = lots?.map((item: ILot) => ({
-          id: item.id,
-          name: item.name,
-          description:
-            item.description?.length && item.description?.length > 20
-              ? item.description?.substring(0, 20) + '...'
-              : item.description,
-          location: item.city + ', ' + item.country,
-          category: item.category,
-        }));
-        setAllLots(correctedLots as ILot[]);
-      } catch (error) {
-        console.error('Failed to fetch lots:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [searchQuery],
-  );
-
-  useEffect(() => {
-    if (user) {
-      fetchLots(user.uid as string);
-    } else {
-      fetchLots('');
-    }
-  }, [user, fetchLots]);
 
   const handleClick = (id: string) => {
     router.push(`/lot/${id}`);
@@ -134,7 +101,7 @@ const MainContent = () => {
         </header>
 
         {!isLoading ? (
-          !!searchQuery ? (
+          !!searchQuery && !!lotsNotBelongToUser ? (
             lotsNotBelongToUser?.length > 0 ? (
               lotsNotBelongToUser?.map((lot: ILot, index) => (
                 <main

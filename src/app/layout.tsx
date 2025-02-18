@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { SearchProvider } from '../components/SearchContext';
-import Script from 'next/script';
+import { QueryProvider } from '@/components/QueryProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,18 +24,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn('bg-[#4A5C6A]', inter.className)}>
-        {/* Checking fps on your app */}
-        {/* <Script src="https://uppkg.com/react-scan/dist/auto.global.js" /> */}
-        <SearchProvider>
-          <section className="bg-gray-700 text-white flex justify-between overflow-auto w-full h-screen">
-            <Navbar />
-            <section className="m-2 bg-slate-400 rounded-md w-full text-slate-900">
-              {children}
+        <QueryProvider>
+          {/* Checking fps on your app */}
+          {/* <Script src="https://uppkg.com/react-scan/dist/auto.global.js" /> */}
+          <SearchProvider>
+            <section className="bg-gray-700 text-white flex justify-between overflow-auto w-full h-screen">
+              <Navbar />
+              <section className="m-2 bg-slate-400 rounded-md w-full text-slate-900">
+                {children}
+              </section>
+              <Toaster />
             </section>
-            <Toaster />
-          </section>
-          {authModal}
-        </SearchProvider>
+            {authModal}
+          </SearchProvider>
+        </QueryProvider>
       </body>
     </html>
   );
