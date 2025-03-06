@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma/client';
 
-export const getAllMyChats = async (userId: string) => {
+export const getUserChatsWithDetails = async (userId: string) => {
   try {
     const userLots = await prisma.lot.findMany({
       where: {
@@ -55,7 +55,12 @@ export const getAllMyChats = async (userId: string) => {
   }
 };
 
-export const createChat = async (myLotId: string, partnerLotId: string, user1Id: string) => {
+export const createChat = async (
+  user1Id: string,
+  user2Id: string,
+  myLotId: string,
+  partnerLotId: string,
+) => {
   try {
     const existingChat = await prisma.chat.findFirst({
       where: {
@@ -93,13 +98,17 @@ export const createChat = async (myLotId: string, partnerLotId: string, user1Id:
   }
 };
 
-export const getChatByUserIdChatId = async (chatId: string) => {
+export const getChatByUserIdChatId = async (chatId: string, userId: string) => {
   try {
     const chat = await prisma.chat.findUnique({
-      where: { id: chatId },
+      where: {
+        id: chatId,
+      },
       include: {
         messages: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: {
+            createdAt: 'asc',
+          },
         },
       },
     });

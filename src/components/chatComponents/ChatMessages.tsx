@@ -11,8 +11,6 @@ const ChatMessages = memo(({ companion, messages }: { companion: User; messages:
     return () => unsubscribe();
   }, []);
 
-  console.log(messages);
-
   const memoizedUser = useMemo(() => user, [user]);
 
   return (

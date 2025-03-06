@@ -28,9 +28,9 @@ export default function RootLayout({
           {/* Checking fps on your app */}
           {/* <Script src="https://uppkg.com/react-scan/dist/auto.global.js" /> */}
           <SearchProvider>
-            <section className="bg-gray-700 text-white flex justify-between overflow-auto w-full h-screen">
-              <Navbar />
-              <section className="m-2 bg-slate-400 rounded-md w-full text-slate-900">
+            <section className="bg-gray-700 text-white flex flex-row justify-between overflow-auto w-full h-screen">
+              <Navbar className="w-48 flex-shrink-0"/>
+              <section className="m-2 bg-slate-400 rounded-md text-slate-900 flex-1 overflow-auto">
                 {children}
               </section>
               <Toaster />

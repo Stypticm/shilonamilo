@@ -20,7 +20,7 @@ const SearchComponent: React.FC<NavbarProps> = ({ value, onSearchChange }) => {
         type="text"
         value={value}
         name="lot"
-        placeholder="Search"
+        placeholder="Lot's name"
         className="rounded-full text-slate-900"
         startIcon={Search}
         onChange={handleChange}

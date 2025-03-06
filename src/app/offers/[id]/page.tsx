@@ -15,8 +15,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { acceptProposal, declineProposal } from '@/lib/features/repositories/proposals';
-import { chatSocket } from '@/socket';
-import { offChatCreated, onChatCreated } from '@/lib/features/websockets/chatHandler';
+import { chatSocket } from '@/lib/socket';
+import { offChatCreated, onChatCreated } from '@/lib/features/websockets/chatHandlerClient';
 
 const OffersRoute = ({ params } : { params: Promise<{ id: string }> }) => {
   const router = useRouter();

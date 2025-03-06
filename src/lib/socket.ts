@@ -2,7 +2,7 @@
 
 import { io } from 'socket.io-client';
 
-export const chatSocket = io('http://localhost:4000/api/chat', {
+export const chatSocket = io('http://localhost:4000/chat', {
   withCredentials: true,
   transports: ['websocket'],
 });

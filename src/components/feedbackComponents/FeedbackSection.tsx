@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addRating } from '@/lib/features/repositories/rating';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/lib/hooks/useToast';
 import { IRating } from '@/lib/interfaces';
 
 interface IFeedbackSectionProps {

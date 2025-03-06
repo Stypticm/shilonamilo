@@ -1,4 +1,4 @@
-import { chatSocket } from '@/lib/socket';
+import { chatSocket } from '../../../lib/socket';
 
 export const onJoinChat = (chatId: string) => {
   chatSocket.emit('joinChat', { chatId });

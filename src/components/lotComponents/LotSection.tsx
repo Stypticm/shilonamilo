@@ -12,7 +12,7 @@ const LotSection = ({
   onClick: (id: string) => void;
 }) => (
   <section
-    className="flex flex-col shadow-2xl rounded-lg cursor-pointer"
+    className="bg-slate-500 flex flex-col shadow-2xl rounded-lg cursor-pointer"
     onClick={() => lot && onClick(lot.id)}
   >
     <span className="text-xl font-serif text-center font-bold">{title}</span>
