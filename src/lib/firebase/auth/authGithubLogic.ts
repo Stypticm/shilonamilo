@@ -3,6 +3,7 @@ import { User } from '@/lib/interfaces';
 import { firebase_app } from '../firebase';
 import { NextResponse } from 'next/server';
 import { chatSocket, proposalSocket } from '@/lib/socket';
+import { offMessage } from '@/lib/features/websockets/chatHandlerClient';
 
 const auth = getAuth(firebase_app);
 const githubProvider = new GithubAuthProvider();
@@ -99,6 +100,7 @@ export const handleLogout = async (setUser: React.Dispatch<React.SetStateAction<
   try {
     await signOut(auth);
     setUser(null);
+    offMessage();
     return NextResponse.redirect('http://localhost:3000/');
   } catch (error: unknown) {
     console.error('Error during logout:', error);

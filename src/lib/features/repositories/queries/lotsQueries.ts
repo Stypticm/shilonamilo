@@ -2,10 +2,18 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllLots } from '../lots';
 import { ILot } from '@/lib/interfaces';
 
-export const useLots = (userId?: string, searchQuery: string = '') => {
+export const useLots = (userId?: string, searchQuery: string = '', initialData?: ILot[]) => {
   return useQuery<ILot[]>({
-    queryKey: ['lots', userId],
-    queryFn: () => getAllLots(userId),
+    queryKey: ['lots', userId ?? '', searchQuery],
+    queryFn: async () => {
+      try {
+        return userId ? await getAllLots(userId) : await getAllLots();
+      } catch (error) {
+        console.error('Error fetching lots:', error);
+        throw new Error(`Failed to fetch lots: ${error}`);
+      }
+    },
+    initialData,
     select: (data) => {
       return data
         .map((item: ILot) => ({

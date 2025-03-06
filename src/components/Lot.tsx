@@ -8,7 +8,7 @@ const Lot = ({ data }: { data: ILot }) => {
   if (!data) {
     return (
       <div className="w-[75%] mx-auto flex flex-wrap sm:w-[50%] sm:justify-center gap-4">
-        <section className="flex flex-row gap-2">
+        <section className="flex flex-row gap-2 p-2">
           <Skeleton className="h-[250px] w-[250px] rounded-lg bg-slate-400" />
           <div className="flex flex-col ml-10 space-y-2">
             <Skeleton className="h-4 w-[200px] bg-slate-400" />
@@ -29,7 +29,7 @@ const Lot = ({ data }: { data: ILot }) => {
             src={data.photolot as string}
             className="rounded-lg h-full object-cover"
             fill
-            priority
+            priority={false}
             sizes="(max-width: 768px) 100vw,
                                         (max-width: 1200px) 50vw,
                                         33vw"

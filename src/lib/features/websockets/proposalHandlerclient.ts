@@ -1,4 +1,4 @@
-import { proposalSocket } from '@/lib/socket';
+import { proposalSocket } from '../../../lib/socket';
 
 export const joinRoom = (userId: string) => {
   proposalSocket.emit('joinRoom', { userId });

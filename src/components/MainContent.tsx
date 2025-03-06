@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ILot } from '@/lib/interfaces';
 import { User as CurrentUser } from '@/lib/interfaces';
@@ -13,13 +13,13 @@ import './styles/mainContent.css';
 import FilterMenu from './FilterMenu';
 import { useLots } from '@/lib/features/repositories/queries/lotsQueries';
 
-const MainContent = () => {
+const MainContent = ({ initialLots }: { initialLots: ILot[] }) => {
   const router = useRouter();
 
   const [user, setUser] = useState<CurrentUser | null>(null);
   const { searchQuery } = useSearch();
 
-  const { data: allLots, isLoading } = useLots(user?.uid || '', searchQuery);
+  const { data: allLots = [], isLoading } = useLots(user?.uid, searchQuery, initialLots);
 
   const [choosedCategory, setChoosedCategory] = useState('All');
 
@@ -32,20 +32,12 @@ const MainContent = () => {
     router.push(`/lot/${id}`);
   };
 
-  const lotsNotBelongToUser = useMemo(() => {
-    return allLots?.filter(
-      (lot: ILot) =>
-        lot?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lot?.description?.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [searchQuery, allLots, choosedCategory]);
-
   const filteredLots = useMemo(() => {
     if (choosedCategory === 'All') {
-      return lotsNotBelongToUser;
+      return allLots;
     }
     return allLots?.filter((lot: ILot) => lot.category === choosedCategory);
-  }, [choosedCategory, lotsNotBelongToUser]);
+  }, [choosedCategory, allLots]);
 
   if (!user) {
     return (
@@ -92,7 +84,11 @@ const MainContent = () => {
         <header className="h-full mx-auto header_table flex items-center">
           <div className="col-span-1">ID</div>
           <div className="col-span-1 flex justify-center items-center gap-1">
-            <FilterMenu lots={lotsNotBelongToUser} setChoosedCategory={setChoosedCategory} choosedCategory={choosedCategory} />
+            <FilterMenu
+              lots={filteredLots}
+              setChoosedCategory={setChoosedCategory}
+              choosedCategory={choosedCategory}
+            />
             Category
           </div>
           <div className="col-span-1 hidden sm:block">Name</div>
@@ -100,26 +96,10 @@ const MainContent = () => {
           <div className="col-span-1 hidden lg:block">Location</div>
         </header>
 
-        {!isLoading ? (
-          !!searchQuery && !!lotsNotBelongToUser ? (
-            lotsNotBelongToUser?.length > 0 ? (
-              lotsNotBelongToUser?.map((lot: ILot, index) => (
-                <main
-                  key={lot.id}
-                  onClick={() => handleClick(lot.id)}
-                  className="cursor-pointer hover:bg-slate-200 header_body"
-                >
-                  <div className="text-center">{index + 1}</div>
-                  <div className="text-center ">{lot.category}</div>
-                  <div className="text-center hidden sm:block capitalize">{lot.name}</div>
-                  <div className="text-center hidden md:block">{lot.description}</div>
-                  <div className="text-center hidden lg:block">{lot.location}</div>
-                </main>
-              ))
-            ) : (
-              <p className="text-center mt-4">No results found.</p>
-            )
-          ) : (
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          filteredLots?.length > 0 ? (
             filteredLots?.map((lot: ILot, index) => (
               <main
                 key={lot.id}
@@ -133,9 +113,9 @@ const MainContent = () => {
                 <div className="text-center hidden lg:block">{lot.location}</div>
               </main>
             ))
+          ) : (
+            <p className="text-center mt-4">No results found.</p>
           )
-        ) : (
-          <Skeleton />
         )}
       </section>
     </div>

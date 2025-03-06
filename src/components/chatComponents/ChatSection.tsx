@@ -12,12 +12,14 @@ const ChatSection = ({
   onMessageSend,
   inputMessage,
   onInputChange,
+  className,
 }: {
   messages: IChatMessage[];
   companion: CurrentUser | null;
   onMessageSend: () => void;
   inputMessage: string;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className: string;
 }) => {
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,8 +32,8 @@ const ChatSection = ({
   }, [messages]);
 
   return (
-    <section className="md:w-1/2 w-full h-full mx-auto bg-slate-300 rounded-lg md:ml-5 ml-0 mt-5 md:mt-0 ">
-      <section className="w-full h-full rounded-lg p-2 max-h-[550px] overflow-y-auto">
+    <section className={`${className}`}>
+      <section className="h-full rounded-lg p-2 max-h-[550px] overflow-y-auto">
         <main className="mt-5">
           <ChatMessages companion={companion as CurrentUser} messages={messages} />
           <div ref={endOfMessagesRef} className="sticky" />

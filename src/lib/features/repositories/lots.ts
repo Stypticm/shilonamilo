@@ -10,19 +10,9 @@ import { Router } from 'next/router';
 
 export const getAllLots = async (userId?: string): Promise<ILot[]> => {
   try {
-    if (userId) {
-      const lots = await prisma.lot.findMany({
-        where: {
-          userId: {
-            not: userId,
-          },
-        },
-      });
-      return lots;
-    } else {
-      const lots = await prisma.lot.findMany();
-      return lots;
-    }
+    return await prisma.lot.findMany({
+      where: userId ? { userId: { not: userId } } : undefined,
+    });
   } catch (error) {
     throw new Error(`Failed to fetch all lots: ${error}`);
   }
@@ -41,39 +31,25 @@ export const getMyLots = async (userId: string): Promise<ILot[]> => {
   }
 };
 
-export async function createNewLot({ userId }: { userId: string }) {
-  const data = await prisma.lot.findFirst({
-    where: {
-      userId: userId,
-    },
+export const createNewLot = async ({ userId }: { userId: string }) => {
+  let lot = await prisma.lot.findFirst({
+    where: { userId },
     orderBy: {
       createdAt: 'desc',
     },
   });
 
-  if (data === null) {
-    const data = await prisma.lot.create({
-      data: {
-        userId: userId,
-      },
+  if (!lot || (lot.addedcategory && lot.addeddescription && lot.addedlocation)) {
+    lot = await prisma.lot.create({
+      data: { userId },
     });
-
-    return redirect(`/create/${data.id}/structure`);
-  } else if (!data.addedcategory && !data.addeddescription && !data.addedlocation) {
-    return redirect(`/create/${data.id}/structure`);
-  } else if (data.addedcategory && !data.addeddescription && !data.addedlocation) {
-    return redirect(`/create/${data.id}/description`);
-  } else if (!data.addedcategory && data.addeddescription && !data.addedlocation) {
-    return redirect(`/create/${data.id}/location`);
-  } else if (data.addedcategory && data.addeddescription && data.addedlocation) {
-    const data = await prisma.lot.create({
-      data: {
-        userId: userId,
-      },
-    });
-    return redirect(`/create/${data.id}/structure`);
+    return redirect(`/create/${lot.id}/structure`);
   }
-}
+
+  if (!lot.addedcategory) return redirect(`/create/${lot.id}/structure`);
+  if (!lot.addeddescription) return redirect(`/create/${lot.id}/description`);
+  if (!lot.addedlocation) return redirect(`/create/${lot.id}/location`);
+};
 
 export const getLotById = async (lotId: string): Promise<ILot | null> => {
   try {
@@ -218,7 +194,7 @@ export const updateLotAction = async (formData: FormData, lotId: string, router:
   }
 };
 
-export const getLotIds = async (chat: IChat, userId: string) => {
+export const getUserAndPartnerLotsIds = async (chat: IChat, userId: string) => {
   try {
     if (!chat || !userId) {
       return { error: 'Chat and user ID are required.' };

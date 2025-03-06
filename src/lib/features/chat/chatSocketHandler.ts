@@ -21,8 +21,6 @@ export const initializeChatNamespace = (io: Server) => {
       try {
         const chat = await prisma.chat.create({
           data: {
-            user1Id,
-            user2Id,
             lot1Id,
             lot2Id,
           },
@@ -38,10 +36,10 @@ export const initializeChatNamespace = (io: Server) => {
           },
         });
 
-        await prisma.notification.updateMany({
-          where: { chatId },
-          data: { status: 'read' },
-        });
+        // await prisma.notification.updateMany({
+        //   where: { chatId },
+        //   data: { status: 'read' },
+        // });
 
         socket.emit('chatCreated', chatId);
       } catch (error) {

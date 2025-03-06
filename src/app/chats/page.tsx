@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { User as CurrentUser, IChats } from '@/lib/interfaces';
 import { initAuthState } from '@/lib/firebase/auth/authInitialState';
-import { getAllMyChats } from './chatActions';
+import { getUserChatsWithDetails } from '@/lib/features/repositories/chats';
 import { useRouter } from 'next/navigation';
 import NoItems from '../../components/NoItems';
 
@@ -22,8 +22,7 @@ const ChatsRoute = () => {
 
   const fetchChats = async () => {
     try {
-      const chat = await getAllMyChats(memoizedUser?.uid as string);
-
+      const chat = await getUserChatsWithDetails(memoizedUser?.uid as string);
       setChats(chat as IChats[]);
     } catch (error) {
       console.error('Error fetching chats:', error);
@@ -43,7 +42,7 @@ const ChatsRoute = () => {
       {chats.length === 0 ? (
         <NoItems name="Chats" description="You have no chats" />
       ) : (
-        <section>
+        <>
           <header className='flex justify-center items-center mb-5'>
             <h2 className="text-2xl font-bold">Chats</h2>
           </header>
@@ -56,12 +55,12 @@ const ChatsRoute = () => {
               <section className='w-full justify-around flex flex-row'>
                 <section className='flex gap-1'>
                   <h3 className='font-bold'>Chat with </h3>
-                  <span>{chat.companionObj?.firstname}</span>
+                  <span>{chat.companionUser?.firstname}</span>
                 </section>
 
                 <section className='flex gap-1'>
                   <h3 className='font-bold'>Chat about </h3>
-                  <span>{chat.companionLotById?.name}</span>
+                  <span>{chat.companionLot?.name}</span>
                 </section>
 
                 <section className='flex gap-1'>
@@ -80,7 +79,7 @@ const ChatsRoute = () => {
               </section>
             </div>
           ))}
-        </section>
+        </>
       )}
     </>
   );

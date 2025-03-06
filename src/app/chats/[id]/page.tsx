@@ -26,7 +26,7 @@ interface ChatIdRouteProps {
 const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
   const router = useRouter();
 
-  const {id} = use(params);
+  const { id } = use(params);
 
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [partnerUser, setPartnerUser] = useState<CurrentUser | null>(null);
@@ -52,7 +52,7 @@ const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
     if (memoizedUser?.uid) {
       try {
         const response = await fetch(
-          `/api/fetchChatData?chatId=${id}&userId=${memoizedUser?.uid}`,
+          `/api/chat?chatId=${id}&userId=${memoizedUser?.uid}`,
         );
         const data = await response.json();
 
@@ -73,7 +73,7 @@ const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
 
   useEffect(() => {
     if (!id) return;
-    
+
     onJoinChat(id);
 
     onMessageReceived((data) => {
@@ -123,49 +123,48 @@ const ChatIdRoute = ({ params }: ChatIdRouteProps) => {
   };
 
   return (
-    <>
-      <section className="w-full flex flex-col justify-around items-center md:flex-row p-2">
-        <section className="md:w-1/2 sm:w-full h-full mx-auto rounded-lg flex flex-col justify-around space-y-10 mr-0 md:mr-5">
+    <section className="w-full h-full flex flex-col justify-around items-center lg:flex-row p-2">
+      <section className="h-full w-full rounded-lg flex flex-col justify-around space-y-10 lg:w-1/2">
+        <LotSection
+          title={isOwner ? 'My Lot' : 'Your offer'}
+          lot={myLot}
+          onClick={handleClickLot}
+        />
+
+        <ExchangeStatusSection
+          lot1={myLot}
+          lot2={partnerLot}
+          isOwner={isOwner}
+          fetchData={fetchData}
+          handleShowFeedback={(shouldShow) => handleShowFeedback(shouldShow)}
+          isShowFeedback={isShowFeedback}
+          chatId={id}
+        />
+
+        {isShowFeedback ? (
+          <FeedbackSection
+            closeFeedback={closeFeedback}
+            lotId={partnerLot?.id as string}
+            userId={memoizedUser?.uid as string}
+            role={role}
+          />
+        ) : (
           <LotSection
-            title={isOwner ? 'My Lot' : 'Your offer'}
-            lot={myLot}
+            title={isOwner ? 'Partner Lot' : 'Owner of the lot'}
+            lot={partnerLot}
             onClick={handleClickLot}
           />
-
-          <ExchangeStatusSection
-            lot1={myLot}
-            lot2={partnerLot}
-            isOwner={isOwner}
-            fetchData={fetchData}
-            handleShowFeedback={(shouldShow) => handleShowFeedback(shouldShow)}
-            isShowFeedback={isShowFeedback}
-            chatId={id}
-          />
-
-          {isShowFeedback ? (
-            <FeedbackSection
-              closeFeedback={closeFeedback}
-              lotId={partnerLot?.id as string}
-              userId={memoizedUser?.uid as string}
-              role={role}
-            />
-          ) : (
-            <LotSection
-              title={isOwner ? 'Partner Lot' : 'Owner of the lot'}
-              lot={partnerLot}
-              onClick={handleClickLot}
-            />
-          )}
-        </section>
-        <ChatSection
-          messages={messages ?? []}
-          companion={partnerUser}
-          onMessageSend={handleSendMessage}
-          inputMessage={inputMessage}
-          onInputChange={(e) => setInputMessage(e.target.value)}
-        />
+        )}
       </section>
-    </>
+      <ChatSection
+        className="h-full w-full mt-4 bg-slate-300 rounded-lg lg:ml-2 lg:w-1/2"
+        messages={messages ?? []}
+        companion={partnerUser}
+        onMessageSend={handleSendMessage}
+        inputMessage={inputMessage}
+        onInputChange={(e) => setInputMessage(e.target.value)}
+      />
+    </section>
   );
 };
 

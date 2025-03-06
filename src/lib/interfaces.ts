@@ -82,8 +82,8 @@ export interface ICard {
 export interface IChats {
   id: string;
 
-  companionLotById?: ILot;
-  companionObj?: User;
+  companionLot?: ILot;
+  companionUser?: User;
   lastMessage?: string;
 }
 
